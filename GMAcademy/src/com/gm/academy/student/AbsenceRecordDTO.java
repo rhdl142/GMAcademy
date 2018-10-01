@@ -3,6 +3,7 @@ package com.gm.academy.student;
 public class AbsenceRecordDTO {
 	private String absenceSeq;
 	private String absenceSituation;
+	
 	public String getAbsenceSeq() {
 		return absenceSeq;
 	}

@@ -8,7 +8,12 @@ public class UtilPrint {
 	public final static int LONG = 80;
 	public final static int SHORT = 40;
 	public final static String[] MAIN = {"로그인","찾기(ID/PW)","로그아웃","종료하기"};
-
+	public final static String[] STUDENT_LOGIN = {"성적조회","출결","교사평가","상담일지","돌아가기"};
+	public final static String[] STUDNET_GRADE = {"필기 성적 조회","실기 성적 조회","출결 성적 조회","전체 성적 조회","돌아가기"};
+	public final static String[] STUDENT_ATTENDACE = {"입실등록","퇴실등록","출결현황","돌아가기"};
+	public final static String[] TEACHER_EVALUATION = {"교사평가등록","돌아가기"};
+	public final static String[] TEREGISTER = {"과정평가","과목평가"};
+	public final static String[] CUNSULTING = {"상담일지 조회","돌아가기"};
 	
 	//일자 menu
 	public void menu(String[] list) {
@@ -18,8 +23,8 @@ public class UtilPrint {
 	}
 	
 	// - 선긋기
-	public void bar(int size) {
-		for(int i=0; i<size; i++) {
+	public void bar() {
+		for(int i=0; i<80; i++) {
 			System.out.print("-");
 		}
 		System.out.println();
@@ -102,22 +107,6 @@ public class UtilPrint {
 		System.out.println();
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
