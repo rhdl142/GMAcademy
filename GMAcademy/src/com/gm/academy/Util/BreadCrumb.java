@@ -34,4 +34,7 @@ public class BreadCrumb {
 		
 		System.out.println(temp.substring(0,temp.length()-1));
 	}
+	public int size() {
+		return stack.size();
+	}
 }

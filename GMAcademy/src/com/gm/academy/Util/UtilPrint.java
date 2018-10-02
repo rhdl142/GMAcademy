@@ -1,15 +1,27 @@
 package com.gm.academy.Util;
 
 import java.util.Scanner;
+
 import com.gm.academy.MainClass;
+import com.gm.academy.teacher.TeacherUtil;
 
 public class UtilPrint {
 	
 	public final static int LONG = 80;
 	public final static int SHORT = 40;
 	public final static String[] MAIN = {"로그인","찾기(ID/PW)","로그아웃","종료하기"};
-
+	public final static String[] STUDENT_LOGIN = {"성적조회","출결","교사평가","상담일지","돌아가기"};
+	public final static String[] STUDNET_GRADE = {"필기 성적 조회","실기 성적 조회","출결 성적 조회","전체 성적 조회","돌아가기"};
+	public final static String[] STUDENT_ATTENDACE = {"입실등록","퇴실등록","출결현황","돌아가기"};
+	public final static String[] TEACHER_EVALUATION = {"교사평가등록","돌아가기"};
+	public final static String[] TEREGISTER = {"과정평가","과목평가"};
+	public final static String[] CUNSULTING = {"상담일지 조회","돌아가기"};
 	
+	//teacher
+	public final static String[] TEACHER_LOGIN= {"강의스케줄 조회","시험관리","성적관리","출결 현황 조회","교사 평가 조회","상담일지","돌아가기"};
+	public final static String[] TEACHER_ATTENDANCE = {
+		"기간별 조회","과정별 조회","돌아가기"	
+	};
 	//일자 menu
 	public void menu(String[] list) {
 		for(int i=0; i<list.length; i++) {
@@ -18,8 +30,8 @@ public class UtilPrint {
 	}
 	
 	// - 선긋기
-	public void bar(int size) {
-		for(int i=0; i<size; i++) {
+	public void bar() {
+		for(int i=0; i<80; i++) {
 			System.out.print("-");
 		}
 		System.out.println();
@@ -49,6 +61,10 @@ public class UtilPrint {
 		}
 		System.out.println(label);
 		line(UtilPrint.LONG);
+		if(TeacherUtil.loginTeacher!=null&&MainClass.crumb.size()>=3) {
+			TeacherUtil.myPage();
+			bar();
+		}
 	}
 	
 	//중타이틀
@@ -66,7 +82,11 @@ public class UtilPrint {
 	//사용자 접속중
 	public void header(String[] labels) {
 		for(String label : labels) {
-			System.out.printf("[%s]\t",label);
+			if(labels.equals("\t")) {
+				System.out.printf("%s\t",label);
+				continue;
+			}
+			System.out.printf("%s\t",label);
 		}
 		System.out.println();
 	}
@@ -102,22 +122,6 @@ public class UtilPrint {
 		System.out.println();
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
