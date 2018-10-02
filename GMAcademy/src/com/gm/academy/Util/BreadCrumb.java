@@ -20,7 +20,7 @@ public class BreadCrumb {
 		stack.pop();
 	}
 	
-	public void now() {
+	public void now() { 
 		//stack loop 출력
 		Iterator<String> iter = stack.iterator();
 		

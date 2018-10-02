@@ -3,7 +3,6 @@ package com.gm.academy.Util;
 import java.util.Scanner;
 
 import com.gm.academy.MainClass;
-import com.gm.academy.teacher.TeacherUtil;
 
 public class UtilPrint {
 	

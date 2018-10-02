@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import com.gm.academy.Util.DBUtil;
+import com.gm.academy.Util.TeacherUtil;
 import com.gm.academy.Util.UtilPrint;
 import com.gm.academy.admin.DistributionDTO;
 import com.gm.academy.exam.GradeDTO;
@@ -53,7 +54,7 @@ public class TeacherDAO {
 		} catch (Exception e) {
 			out.result("입력오류가 발생했습니다. 신중히 입력해주세요.");
 		}
-		return 0;
+		return 0; 
 	}
 
 	public ArrayList<Object[]> showAttendanceByDay(String year, String month, String day) {

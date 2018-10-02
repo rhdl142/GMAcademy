@@ -17,7 +17,7 @@ DAO > StudentDAO - sDAO
 */
 
 public class MainClass {
-	private static UtilScanner scan;
+	private static UtilScanner scan; 
 	private static UtilPrint out;
 
 	//프로그램 실행 중 어디서든 항상 사용할 자원 필요 > main() 소유 클래스의 정적 public 변수 생성

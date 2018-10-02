@@ -12,7 +12,7 @@ public class TeacherDTO {
 		TCHSeq = tCHSeq;
 	}
 	public String getTCHName() {
-		return TCHName;
+		return TCHName; 
 	}
 	public void setTCHName(String tCHName) {
 		TCHName = tCHName;

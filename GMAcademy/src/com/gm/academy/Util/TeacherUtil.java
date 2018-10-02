@@ -1,4 +1,4 @@
-package com.gm.academy.teacher;
+package com.gm.academy.Util;
 
 import java.util.ArrayList;
 
@@ -6,6 +6,8 @@ import com.gm.academy.admin.DistributionDTO;
 import com.gm.academy.lecture.LectureDAO;
 import com.gm.academy.lecture.LectureDTO;
 import com.gm.academy.lecture.SubjectDTO;
+import com.gm.academy.teacher.TeacherDAO;
+import com.gm.academy.teacher.TeacherDTO;
 
 public class TeacherUtil {
 	public static TeacherDTO loginTeacher = null;
@@ -17,14 +19,14 @@ public class TeacherUtil {
 		ArrayList<LectureDTO> array = new ArrayList<LectureDTO>();
 		LectureDAO dao = new LectureDAO();
 		array = dao.getLectureDTO();
-		return array;
+		return array; 
 	}
 
 	public static void setDistribution() {
 		TeacherDAO dao = new TeacherDAO();
 		TeacherUtil.distribution = dao.getDistribution();
 	}
-
+ 
 	public static void myPage() {
 		TeacherDAO tdao = new TeacherDAO();
 		ArrayList<LectureDTO> list = TeacherUtil.getLectureDTO();

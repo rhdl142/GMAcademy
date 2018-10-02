@@ -3,6 +3,7 @@ package com.gm.academy.teacher;
 import java.util.ArrayList;
 
 import com.gm.academy.MainClass;
+import com.gm.academy.Util.TeacherUtil;
 import com.gm.academy.Util.UtilPrint;
 import com.gm.academy.Util.UtilScanner;
 import com.gm.academy.admin.DistributionDTO;
@@ -18,7 +19,7 @@ public class TeacherController {
 
 	public TeacherController() {
 		this.scan = new UtilScanner();
-		this.out = new UtilPrint();
+		this.out = new UtilPrint(); 
 		this.tdao = new TeacherDAO();
 	}
 
