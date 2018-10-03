@@ -22,6 +22,10 @@ public class UtilPrint {
 	public final static String[] ADMIN_ATTENDMANAGEMENT = {"과정별 출결조회", "기간별 출결조회", "학생 출결조회", "출결 수정하기", "돌아가기"};		//관리자_출결관리 및 출결조회
 	public final static String[] ADMIN_TEXTBOOKMANAGEMENR = {"교재 사용현황", "교재 신청서 작성", "돌아가기"};		//관리자_교재관리
 	public static final String[] ADMIN_UPDATETEST = {"문제 수정", "배점 수정"};	
+	public final static String[] ADMINSTUDENT = {"교육생 조회","교육생 등록","교육생 삭제","교육생 수정","상담일지 관리","사후관리","돌아가기"};//교육생관리
+	public final static String[] STDUPDATE = {"학생명","주민번호","전화번호","돌아가기"};
+	public final static String[] COUNSELING = {"상담일지 조회","상담일지 등록","상담일지 삭제","상담일지 수정","돌아가기"};
+	public final static String[] OVERSIGHT = {"사후처리 조회","사후처리 등록","사후처리 삭제","사후처리 수정","돌아가기"};
 	
 	//일자 menu
 	public void menu(String[] list) {

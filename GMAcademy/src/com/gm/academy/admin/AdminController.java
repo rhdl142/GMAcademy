@@ -9,6 +9,9 @@ import com.gm.academy.Util.UtilPrint;
 import com.gm.academy.Util.UtilScanner;
 import com.gm.academy.lecture.LectureDTO;
 import com.gm.academy.lecture.SubjectDTO;
+import com.gm.academy.student.CourseRecordDTO;
+import com.gm.academy.student.StudentDTO;
+import com.gm.academy.student.StudentManageDTO;
 import com.gm.academy.teacher.TeacherDTO;
 
 public class AdminController {
@@ -109,7 +112,7 @@ public class AdminController {
 	            	 out.pause();
 	             }
 			}else if(input == 4) {
-				
+				studentMange(); 
 			}else if(input == 5) {
 				
 			}else if(input == 6) {
@@ -714,6 +717,885 @@ public class AdminController {
 		
 		
 	}//과목현황 조회
+
+//----------------------------------------------------------------------------------------------------------------------
+//교육생관리----------------------------------------------------------------------------------------------------------------------
+	private void studentMange() {
+		
+		while(true) {
+			
+			int input;
+			
+			MainClass.crumb.in("교육생관리");
+			
+			out.bigTitle("교육생 관리");
+			out.menu(UtilPrint.ADMINSTUDENT);
+			
+			input = scan.nextInt("선택");
+			MainClass.crumb.out();
+			if(input == 1) {
+				
+				MainClass.crumb.in("교육생조회");
+				out.bigTitle("교육생 조회");
+				list();
+				String seq = scan.next("과정 선택");
+				
+				if(seq != "0") {
+					String name = scan.next("이름");
+				
+					stdFind(seq,name);//해당 과정 교육생 찾기
+				}
+
+				out.pause();
+				MainClass.crumb.out();
+				
+			}else if(input == 2) {
+				
+				MainClass.crumb.in("교육생등록");
+				out.bigTitle("교육생 등록");
+				insertList();
+				String seq = scan.next("과정 선택");
+				stdInsert(seq);
+				MainClass.crumb.out();
+				
+			}else if(input == 3) {
+				MainClass.crumb.in("교육생삭제");
+				out.bigTitle("교육생 삭제");
+				list();
+				String seq = scan.next("과정 선택");
+				
+				if(seq != "0") {
+					String name = scan.next("이름");
+					
+					stdFind(seq,name);//해당 과정 교육생 찾기
+					stdDelete(name);//해당 과정 교육생 삭제
+				}
+				MainClass.crumb.out();
+				
+			}else if(input == 4) {
+				MainClass.crumb.in("교육생수정");
+				out.bigTitle("교육생 수정");
+				stdUpdate();
+				MainClass.crumb.out();
+			}else if(input == 5) {
+				MainClass.crumb.in("상담일지 관리");
+				counseling();
+				MainClass.crumb.out();
+			}else if(input == 6) {
+				MainClass.crumb.in("사후 관리");
+				
+				oversight();
+				MainClass.crumb.out();
+			}else if(input == 7) {
+				MainClass.crumb.out();
+				break;
+				
+			}
+			
+			
+			
+			
+			
+		}
+		
+	}
+
+
+
+	private void oversight() {	//사후 관리
+		
+		while(true) {
+			out.bigTitle("사후 관리");
+			out.menu(out.OVERSIGHT);
+			
+			System.out.println();
+			int input = scan.nextInt("선택");
+			System.out.println();
+			
+			if(input == 1) {
+				selectOversight();
+			}else if (input == 2) {
+				insertOversight();
+			}else if (input == 3) {
+				deleteOversight();
+			}else if (input == 4) {
+				updateOversight();				
+			}else if (input == 5) {
+				MainClass.crumb.out();
+				break;
+			}
+		}
+		
+	}
+
+
+
+	private void updateOversight() {
+
+		list();
+		
+		String input = scan.next("선택");
+		
+		stdList(input);
+		
+		
+		String seq = scan.next("학생 코드 입력");
+		
+		seq = "ST" + seq.substring(2);
+		
+		
+		vwStudentDTO std = dao.vwfind2(input,seq);
+		
+		
+		int cnt = dao.OversightCnt(std.getLectureseq(),std.getStdseq());
+		
+		
+		if(cnt == 1) {
+			StudentManageDTO dto = dao.selectStdManage(std.getLectureseq(),std.getStdseq());
+			
+			System.out.printf("[%s]\n\n[학생 코드]\t[학생명]\n\n%s\t\t%s\n\n[회사명]\n\n%s\n\n"
+					,std.getLecturename()
+					,std.getStdseq()
+					,std.getStdname()
+					,dto.getCompanyName()
+						);
+			
+			
+			String company = scan.next("수정 회사명");
+			
+			
+			if(!company.equals(dto.getCompanyName())) {
+				
+				
+				int result = dao.updateOversight(std.getStdseq(),company);
+			
+				if(result > 0) {
+					System.out.println("\n-> 수정 완료");					
+				}else {
+					System.out.println("\n-> 수정 실패");
+				}
+				
+			}
+			
+			
+		}else if(cnt == 0) {
+			System.out.println("찾으시는 자료는 없습니다.");
+			out.pause();
+		}
+		
+		
+	}
+
+
+	private void selectOversight() {
+
+		list();
+		
+		String input = scan.next("선택");
+		
+		stdList(input);
+		
+		
+		String seq = scan.next("학생 코드 입력");
+		
+		seq = "ST" + seq.substring(2);
+		
+		
+		vwStudentDTO std = dao.vwfind2(input,seq);
+		
+		
+		int cnt = dao.OversightCnt(std.getLectureseq(),std.getStdseq());
+		
+		
+		if(cnt == 1) {
+			StudentManageDTO dto = dao.selectStdManage(std.getLectureseq(),std.getStdseq());
+			
+			System.out.printf("[%s]\n\n[학생 코드]\t[학생명]\n\n%s\t\t%s\n\n[회사명]\n\n%s\n\n"
+					,std.getLecturename()
+					,std.getStdseq()
+					,std.getStdname()
+					,dto.getCompanyName()
+						);
+			
+			out.pause();
+			
+		}else if(cnt == 0) {
+			System.out.println("찾으시는 자료는 없습니다.");
+			out.pause();
+		}
+		
+		
+	}
+	
+	
+	private void insertOversight() {
+
+		list();
+		
+		String input = scan.next("선택");
+		
+		stdList(input);
+		
+		
+		String seq = scan.next("학생 코드 입력");
+		
+		seq = "ST" + seq.substring(2);
+		
+		
+		vwStudentDTO std = dao.vwfind2(input,seq);
+		
+		
+		int cnt = dao.OversightCnt(std.getLectureseq(),std.getStdseq());
+		
+		
+		if(cnt == 0) {
+			StudentManageDTO dto = new StudentManageDTO();
+			
+			String company = scan.next("회사 이름");
+			
+			dto.setCompanyName(company);
+			dto.setCourseSeq(seq.substring(2));
+			
+			int result = dao.insertOversight(dto);
+			
+			if(result > 0) {
+
+				
+				System.out.println("\n-> 입력 성공\n\n");
+				
+				System.out.printf("[%s]\n\n[학생 코드]\t[학생명]\n\n%s\t\t%s\n\n[회사명]\n\n%s\n\n"
+						,std.getLecturename()
+						,std.getStdseq()
+						,std.getStdname()
+						,dto.getCompanyName()
+							);
+				
+				out.pause();
+				
+			} else {
+				System.out.println("\n-> 입력 실패");
+				
+				out.pause();
+			}
+			
+		}else if(cnt == 1) {
+			System.out.println("이미 처리된 정보 입니다.");
+			out.pause();
+		}
+		
+		
+	}
+	
+	private void deleteOversight() {
+
+		list();
+		
+		String input = scan.next("선택");
+		
+		stdList(input);
+		
+		
+		String seq = scan.next("학생 코드 입력");
+		
+		seq = "ST" + seq.substring(2);
+		
+		
+		vwStudentDTO std = dao.vwfind2(input,seq);
+		
+		
+		int cnt = dao.OversightCnt(std.getLectureseq(),std.getStdseq());
+		
+		
+		if(cnt == 1) {
+			StudentManageDTO dto = dao.selectStdManage(std.getLectureseq(),std.getStdseq());
+			
+			System.out.printf("[%s]\n\n[학생 코드]\t[학생명]\n\n%s\t\t%s\n\n[회사명]\n\n%s\n\n"
+					,std.getLecturename()
+					,std.getStdseq()
+					,std.getStdname()
+					,dto.getCompanyName()
+						);
+			
+			out.pause();
+
+			String answer = scan.next("해당 정보를 삭제 하시겠습니까?(Y/N)");
+			
+			answer = answer.toUpperCase();
+			
+			if(answer.equals("Y")) {
+				
+				int result = dao.deleteOversight(std.getStdseq());
+				
+				if(result > 0) {
+					
+					System.out.println("\n-> 삭제 완료\n");
+					out.pause();
+					
+				} else {
+					
+					System.out.println("\n-> 삭제 실패\n");
+					out.pause();
+					
+				}
+				
+			}
+			
+			
+		}else if(cnt == 0) {
+			System.out.println("찾으시는 자료는 없습니다.");
+			out.pause();
+		}
+		
+	}
+	
+
+
+	private void counseling() {
+
+		while(true) {
+			
+			out.bigTitle("상담일지 관리");
+			out.menu(out.COUNSELING);
+			
+			int input = scan.nextInt("선택");
+			
+			if(input == 1) {
+				selectCouSnseling();
+			}else if(input == 2) {
+				insertCouSnseling();
+			}else if(input == 3) {
+				deleteCouSnseling();
+			}else if(input == 4) {
+				updateCouSnseling();
+			}else if(input == 5) {
+				
+				MainClass.crumb.out();
+				break;
+				
+			}
+			
+			
+		}
+		
+	}
+
+	private void updateCouSnseling() {
+
+		list();
+		
+		int seq = scan.nextInt("선택");
+		
+		cousnselingStList(seq);
+		
+		String input = scan.next("학생 코드");
+		
+		input = "ST" + input.substring(2);
+		
+			
+		if(input != null) {
+			
+			while(true) {
+			
+			vwStudentDTO std = dao.vwStd(input);
+			
+			ArrayList<CourseRecordDTO> list = dao.courseRecordStd(std.getStdseq());
+			
+			for(CourseRecordDTO courseRecord : list) {
+			System.out.println(String.format("[%s] \n\n[학생 코드]\t[학생명]\t[상담 날짜]\n%s\t\t%s\t%s\n[상담 내용]\n%s"
+												,std.getLecturename()
+												,std.getStdseq()
+												,std.getStdname()+"\t"
+												,courseRecord.getCounseRegdate()
+												,courseRecord.getCounseContents()
+												));
+			}
+			break;
+				
+			}
+			
+		} else {
+			System.out.println("잘못된 입력입니다.");
+		}
+		
+		System.out.println();
+		System.out.println("수정할 날짜를 입력해주세요(취소-> 0)");
+		System.out.println();
+		
+		String data = scan.next("날짜 입력");
+		
+		if(!data.equals("0")) {
+			
+
+			String contents = scan.next("상담 내용");
+			
+			int result = dao.updateCourseRecord(input,data,contents);
+			
+			if(result > 0) {
+				
+				System.out.println("\n-> 수정 완료");
+				System.out.println();
+				out.pause();
+				
+			}
+			
+		}else {
+		
+			System.out.println("-> 취소");
+			
+		}
+		
+	}
+
+
+	private void deleteCouSnseling() {
+
+		list();
+		
+		int seq = scan.nextInt("선택");
+		
+		cousnselingStList(seq);
+		
+		String input = scan.next("학생 코드");
+		
+		input = "ST" + input.substring(2);
+		
+		if(input != null) {
+			
+			while(true) {
+			
+			vwStudentDTO std = dao.vwStd(input);
+			
+			ArrayList<CourseRecordDTO> list = dao.courseRecordStd(std.getStdseq());
+			
+			for(CourseRecordDTO courseRecord : list) {
+			System.out.println(String.format("[%s] \n\n[학생 코드]\t[학생명]\t[상담 날짜]\n%s\t\t%s\t%s\n[상담 내용]\n%s"
+												,std.getLecturename()
+												,std.getStdseq()
+												,std.getStdname()
+												,courseRecord.getCounseRegdate()
+												,courseRecord.getCounseContents()
+												));
+			}
+			break;
+				
+			}
+			
+		} else {
+			System.out.println("잘못된 입력입니다.");
+		}
+		
+		System.out.println();
+		String data = scan.next("삭제할 날짜 입력(2000-01-01");
+		
+		String answer = scan.next("["+data+"] 해당 날짜 상담 기록을 삭제하시겠습까?(Y/N)");
+		
+		answer = answer.toUpperCase();
+		
+		if(answer.equals("Y")) {
+			
+			int result = dao.deleteCourseRecord(data,input);
+			
+			System.out.println(result);
+			
+			if(result > 0) {
+				System.out.println("-> 삭제 완료");
+				out.pause();
+			}else {
+				System.out.println("-> 삭제 실패");
+				out.pause();
+			}
+			
+			
+		}
+		
+		
+		
+	}
+
+
+	private void insertCouSnseling() {
+
+		System.out.println("상담일지 입력할 과정 선택해주세요.");
+		
+		list();
+		
+		String seq = scan.next("선택");
+		
+		stdList(seq);
+		
+
+
+		CourseRecord();
+		
+	}
+
+
+
+
+	
+
+
+	private void stdUpdate() {
+		
+		StudentDTO std = new StudentDTO();
+		while(true) {
+		out.menu(out.STDUPDATE);
+		
+		int input = scan.nextInt("선택");
+		
+		if(input == 1) {
+			String name = scan.next("이름");
+			
+			std.setSTDName(name);
+			
+			int nameCheck = dao.stdName(name);
+						
+			if(nameCheck > 0) {
+				
+				
+			
+				System.out.println("변경할 이름을 입력해주세요.");
+				String nameUpdate = scan.next("이름");
+				
+				int result = dao.nameUpdate(name,nameUpdate);
+				
+				if(result > 0) {
+					System.out.println("성공");
+				}
+				
+			}
+		}else if (input == 2) {
+			String ssn = scan.next("주민번호");
+			
+			std.setSTDSsn(ssn);
+			
+			int ssnCheck = dao.stdSsn(ssn);
+			
+			if(ssnCheck > 0) {
+				
+				
+			
+				System.out.println("변경할 주민번호를 입력해주세요.");
+				String ssnUpdate = scan.next("주민번호");
+				
+				int result = dao.ssnUpdate(ssn,ssnUpdate);
+				
+				if(result > 0) {
+					System.out.println("성공");
+				}
+				
+			}
+		}else if (input == 3) {
+			String tel = scan.next("전화번호");
+			
+			std.setSTDTel(tel);
+			
+			int telCheck = dao.stdTel(tel);
+			
+			if(telCheck > 0) {
+				
+				
+			
+				System.out.println("변경할 전화번호를 입력해주세요.");
+				String telUpdate = scan.next("전화번호");
+				
+				int result = dao.telUpdate(tel,telUpdate);
+				
+				if(result > 0) {
+					System.out.println("성공");
+				}
+				
+			}
+		}else if(input == 4) {
+			MainClass.crumb.out();
+			break;
+			
+		}
+			
+		}
+		
+	}
+
+
+	private void stdDelete(String name) {
+		
+		vwStudentDTO std = new vwStudentDTO();
+		
+		std.setStdname(name);
+		
+		int result = dao.stdCheck(name);
+		if(result > 0) {
+		
+			String input = scan.next("["+ name +"]"+"학생을 삭제 하시겠습니까?(y/n)");
+		
+			if(input.equals("y")) {
+				
+				int delete = dao.delete(name);
+				
+				if(delete > 0) {
+					System.out.println("-> 삭제 완료");
+					
+					out.pause();
+					MainClass.crumb.out();
+					}
+					
+			} else {
+				System.out.println("취소 되었습니다.");
+				out.pause();
+				MainClass.crumb.out();
+			}
+			
+		}
+		
+	}
+
+
+	private void stdInsert(String seq) {//교육생 등록
+
+		while(true) {
+		String stdSeq = scan.next("번호");//테스트후 지워야할것
+		String stdName = scan.next("이름");
+		String stdSsn = scan.next("주민번호(뒷자리)");
+		String stdTel = scan.next("전화번호");
+		
+		if(stdSeq != null || stdName != null || stdSsn != null || stdTel != null) {
+			
+			StudentDTO std = new StudentDTO();
+			
+			std.setSTDSeq(stdSeq);
+			std.setSTDName(stdName);
+			std.setSTDSsn(stdSsn);
+			std.setSTDTel(stdTel);
+			
+			int result = dao.insert(std);//교육생 등록
+			
+			if(result > 0) {
+				System.out.println(result);
+				
+				int result2 = dao.add(std,seq);
+				
+				if(result2 > 0) {
+					out.result(result2,"알림을 작성했습니다.");
+					out.pause();
+					MainClass.crumb.out();
+					break;
+				}
+				
+			}
+			
+		} else if(stdSeq == "0" || stdName == "0" || stdSsn == "0" || stdTel == "0") {
+			System.out.println("취소 되었습니다.");
+			System.out.println();
+			out.pause();
+			MainClass.crumb.out();
+			break;
+		} else {
+			System.out.println("다시입력해주세요!");
+		}
+		
+		}
+		
+	}
+
+
+
+
+	private void list() { //교육생 > 과정 
+		while(true) {
+		ArrayList<LectureDTO> list = dao.lList(MainClass.isAuth != null ? true : false);
+		
+		for(LectureDTO lecture : list) {
+			out.data(new Object[] {
+					
+					lecture.getLectureSeq(),
+					lecture.getLectuerName()
+					
+			});
+		
+		}
+		break;
+		
+		}
+		
+	}
+	
+	
+	private void stdList(String seq) {
+
+		while(true) {
+			ArrayList<vwStudentDTO> list = dao.stdList(seq);
+			
+			out.header(new String[] {"학생 코드","학생명"});
+			
+			for(vwStudentDTO student : list) {
+				out.data(new Object[]{
+					
+						student.getStdseq() +"\t",
+						student.getStdname()
+						
+				});
+			}
+			break;
+			
+		}
+
+		
+		
+	}
+	
+
+	private void CourseRecord() {
+		
+		String input = scan.next("학생 코드");
+		
+		input = "ST" + input.substring(2);
+		
+		if(input != null) {
+			vwStudentDTO std = dao.vwStd(input);
+			
+			System.out.println(String.format("[%s] \n\n[학생 코드]\t[학생명]\n%s\t\t%s"
+												,std.getLecturename()
+												,std.getStdseq()
+												,std.getStdname()
+												));
+			
+			String date = scan.next("등록날짜");
+			String content = scan.next("내용");
+			
+			CourseRecordDTO courseRecord = new CourseRecordDTO();
+			
+			courseRecord.setCounseRegdate(date);
+			courseRecord.setCounseContents(content);
+			courseRecord.setCourseSeq(std.getStdseq());
+			
+			
+			System.out.println(courseRecord.getCounseRegdate());
+			System.out.println(courseRecord.getCounseContents());
+			System.out.println(courseRecord.getCourseSeq());
+			
+			
+					
+			int result = dao.insetCourseRecord(courseRecord);
+			
+			if(result > 0) {
+				System.out.println("-> 입력 완료");
+			}else {
+				System.out.println("-> 입력 실패");
+			}
+		
+		} else {
+			System.out.println("잘못 입력되었습니다.");
+		}
+		
+	}
+
+
+	private void insertList() {
+		
+		while(true) {
+			ArrayList<LectureDTO> list = dao.insertList(MainClass.isAuth != null ? true : false);
+			
+			out.header(new String[] {"번호", "과정", "수강인원"});
+			
+			for(LectureDTO lecture : list) {
+				out.data(new Object[] {
+						
+						lecture.getLectureSeq(),
+						lecture.getLectuerName(),
+						lecture.getLectureCurrentSTD()
+						
+				});
+				
+			}
+			break;
+			
+		}
+		
+	}
+
+	private void selectCouSnseling() {
+		
+		list();
+		
+		int seq = scan.nextInt("선택");
+		
+		cousnselingStList(seq);
+		
+		String input = scan.next("학생 코드");
+		
+		input = "ST" + input.substring(2);
+		
+		if(input != null) {
+			
+			while(true) {
+			
+			vwStudentDTO std = dao.vwStd(input);
+			
+			ArrayList<CourseRecordDTO> list = dao.courseRecordStd(std.getStdseq());
+			
+			for(CourseRecordDTO courseRecord : list) {
+			System.out.println(String.format("[%s] \n\n[학생 코드]\t[학생명]\t[상담 날짜]\n%s\t\t%s\t%s\n[상담 내용]\n%s"
+												,std.getLecturename()
+												,std.getStdseq()
+												,std.getStdname()
+												,courseRecord.getCounseRegdate()
+												,courseRecord.getCounseContents()
+												));
+			}
+			break;
+			}
+			
+		} else {
+			System.out.println("잘못된 입력입니다.");
+		}
+		
+		
+	}
+
+
+	private void cousnselingStList(int seq) {
+		
+		while(true) {
+			ArrayList<courseRecoardListDTO> list = dao.cousnselingList(seq);
+			
+			out.header(new String[] {"학생 코드", "학생명", "날짜"});
+			
+			for(courseRecoardListDTO recoard : list) {
+				out.data(new Object[] {
+						
+						"ST"+recoard.getCourseseq()+"\t",
+						recoard.getStdName()+"\t",
+						recoard.getCounseregdate()
+						
+				});
+				
+			}
+			
+			break;
+		}
+		
+	}
+
+
+	private void stdFind(String seq, String name) {
+		
+		
+		int count = dao.find(seq,name);
+		
+		if(count > 0) {
+		
+		vwStudentDTO result = dao.vwfind(seq,name);
+		
+		System.out.printf("[이름] : %s(%s)\n",result.getStdname(),result.getStdseq());
+		System.out.printf("[과정명] : %s\n",result.getLecturename());
+		System.out.printf("[과정] : %s ~ %s\n",result.getLecturestartdate(),result.getLectureenddate());
+		System.out.printf("[강의실] : %s강의실\n",result.getClassseq());	
+		
+		} else {
+			System.out.println("해당 학생을 찾을 수 없습니다.");
+		}
+		
+	}
 
 //----------------------------------------------------------------------------------------------------------------------
 }

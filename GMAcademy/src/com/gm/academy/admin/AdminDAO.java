@@ -10,7 +10,9 @@ import com.gm.academy.Util.DBUtil;
 import com.gm.academy.exam.GradeDTO;
 import com.gm.academy.lecture.LectureDTO;
 import com.gm.academy.lecture.SubjectDTO;
+import com.gm.academy.student.CourseRecordDTO;
 import com.gm.academy.student.StudentDTO;
+import com.gm.academy.student.StudentManageDTO;
 import com.gm.academy.teacher.TeacherDTO;
 
 public class AdminDAO {
@@ -733,5 +735,823 @@ public class AdminDAO {
 		return null;
 	}
 //------------------------------------------------------------------------------------------------------------------------------------------
-//------------------------------------------------------------------------------------------------------------------------------------------	
+//교육생관리------------------------------------------------------------------------------------------------------------------------------------------
+	public AdminLogInDTO auth(AdminLogInDTO admin) {
+
+		AdminLogInDTO result = new AdminLogInDTO();
+		
+		try {
+			
+			String sql = "select adminid,adminpw from tbladminlogin where adminid = ? and adminpw = ?";
+			
+			PreparedStatement stat = conn.prepareStatement(sql);
+			
+			stat.setString(1, admin.getAdminID());
+			stat.setString(2, admin.getAdminPW());
+			
+			ResultSet rs = stat.executeQuery();
+			
+			if(rs.next()) {
+				
+				result.setAdminID(rs.getString("adminid"));
+				result.setAdminPW(rs.getString("adminpw"));
+				
+				return result;
+				
+			}
+			
+		} catch (Exception e) {
+			System.out.println("AdminDAO.auth() : " + e.toString());
+		}
+		
+		
+		return null;
+	}
+
+
+	public LectureDTO get(String seq) {
+		
+		LectureDTO lecture = new LectureDTO();
+		
+		try {
+			
+			String sql = "select lectureseq from tbllecture where lectureseq = 'L' || ?";
+			
+			
+			PreparedStatement stat = conn.prepareStatement(sql);
+			
+			stat.setString(1, seq);
+			
+			ResultSet rs = stat.executeQuery(sql);
+			
+			if(rs.next()) {
+				
+				lecture.setLectureSeq(rs.getString("lectureseq"));
+				
+				return lecture;
+			}
+			
+		} catch (Exception e) {
+			System.out.println("AdminDAO.get() : " + e.toString());
+		}
+		
+		
+		return null;
+	}
+
+	public vwStudentDTO vwfind(String seq, String name) {
+
+		vwStudentDTO result = new vwStudentDTO();
+		
+		try {
+			
+			
+			String sql = "select LECTURESEQ,LECTURENAME,LECTURESTARTDATE,LECTUREENDDATE,LECTUREPROGRESS,CLASSSEQ,STDSEQ,STDNAME,STDSSN,STDTEL,TCHSEQ,TCHNAME"
+					+ " from vwstudent where lectureseq = 'L'|| ? and stdname = ?";
+			
+			PreparedStatement stat = conn.prepareStatement(sql);
+			
+			stat.setString(1, seq);
+			stat.setString(2, name);
+			
+			ResultSet rs = stat.executeQuery();
+			
+			if(rs.next()) {
+				
+				result.setLectureseq(rs.getString("LECTURESEQ"));
+				result.setLecturename(rs.getString("LECTURENAME"));
+				result.setLecturestartdate(rs.getString("LECTURESTARTDATE"));
+				result.setLectureenddate(rs.getString("LECTUREENDDATE"));
+				result.setLectureprogress(rs.getString("LECTUREPROGRESS"));
+				result.setClassseq(rs.getString("CLASSSEQ"));
+				result.setStdseq(rs.getString("STDSEQ"));
+				result.setStdname(rs.getString("STDNAME"));
+				result.setStdssn(rs.getString("STDSSN"));
+				result.setStdtel(rs.getString("STDTEL"));
+				result.setTchseq(rs.getString("TCHSEQ"));
+				result.setTchname(rs.getString("TCHNAME"));
+				
+				return result;
+			}
+			
+			
+		} catch (Exception e) {
+			System.out.println("AdminDAO.vwfind() : " + e.toString());
+		}
+		
+		
+		
+		return null;
+	}
+
+	public int insert(StudentDTO std) {
+		
+		
+		try {
+			
+			
+			String sql = "insert into tblStudent values ('ST' || ?,?,?,?)";
+			
+			PreparedStatement stat = conn.prepareStatement(sql);
+			
+			stat.setString(1, std.getSTDSeq());
+			stat.setString(2, std.getSTDName());
+			stat.setString(3, std.getSTDSsn());
+			stat.setString(4, std.getSTDTel());
+			
+			
+			
+			return stat.executeUpdate();
+			
+			
+			
+		} catch (Exception e) {
+			System.out.println("AdminDAO.insert() : " + e.toString());
+		}
+		
+		return 0;
+	}
+
+	public int add(StudentDTO std, String seq) {
+		
+		
+		try {
+			
+			String sql = "insert into tblcourse values(?,'ST' || ?,'L'|| ?)";
+			
+			stat = conn.prepareStatement(sql);
+			
+			stat.setString(1, std.getSTDSeq());
+			stat.setString(2, std.getSTDSeq());
+			stat.setString(3, seq);
+			
+			System.out.println(std.getSTDSeq());
+			System.out.println(seq);
+			
+			return stat.executeUpdate();
+
+		} catch (Exception e) {
+			System.out.println("AdminDAO.add() : " + e.toString());
+		}
+		
+		return 0;
+	}
+
+	public int stdCheck(String name) {
+
+		try {
+			
+			String sql = "select count(*) as cnt from tblStudent where  stdname = ?";
+			
+			PreparedStatement stat = conn.prepareStatement(sql);
+			
+			stat.setString(1, name);
+			
+			ResultSet rs =  stat.executeQuery();
+			
+			if(rs.next()) {
+				return rs.getInt("cnt");
+			}
+			
+			
+			
+		} catch (Exception e) {
+			System.out.println("AdminDAO.stdCheck() : " + e.toString());
+		}
+		
+		return 0;
+	}
+
+	public int delete(String name) {
+
+		try {
+			
+			String sql = "delete from tblstudent where stdSeq = (select stdseq from tblstudent where stdname = ?)";
+			
+			PreparedStatement stat = conn.prepareStatement(sql);
+			
+			stat.setString(1, name);
+			
+				System.out.println(stat.executeUpdate());
+				return stat.executeUpdate();
+			
+		} catch (Exception e) {
+			System.out.println("AdminDAO.delete() : " + e.toString());
+		}
+		
+		return 0;
+	}
+
+	public ArrayList<LectureDTO> lList(boolean isAuth) {
+		
+		ArrayList<LectureDTO> list = new ArrayList<LectureDTO>();
+		
+		try {
+			
+			String sql = "select substr(lectureseq,2) as seq,lecturename from tbllecture";
+			
+			Statement stat = conn.createStatement();
+			ResultSet rs = stat.executeQuery(sql);
+			
+			while(rs.next()) {
+				
+				LectureDTO dto = new LectureDTO();
+				
+				dto.setLectureSeq(rs.getString("seq"));
+				dto.setLectuerName(rs.getString("lecturename"));
+				
+				list.add(dto);
+				
+			}
+			
+			return list;
+			
+		} catch (Exception e) {
+			System.out.println("AdminDAO.list() : " + e.toString());
+		}
+		
+		return null;
+	}
+	
+	public ArrayList<LectureDTO> insertList(boolean b) {
+		
+		
+		ArrayList<LectureDTO> list = new ArrayList<LectureDTO>();
+		
+		try {
+			
+			String sql = "select substr(l.lectureseq,2) as lectureseq, l.lecturename as lecturename, l.lecturecurrentstd as lecturecurrentstd from tbllecture l "
+							+" inner join"
+								+" (select lectureseq,count(*) as cnt from vwstudent group by lecturename,lectureseq order by lectureseq asc) s "
+									+" on l.lectureseq = s.lectureseq"
+										+" where l.lectureprogress = '강의예정' and l.lecturecurrentstd <= s.cnt";
+			
+			Statement stat = conn.createStatement();
+			ResultSet rs = stat.executeQuery(sql);
+			
+			while(rs.next()) {
+				
+				LectureDTO dto = new LectureDTO();
+				
+				dto.setLectureSeq(rs.getString("lectureseq"));
+				dto.setLectuerName(rs.getString("lecturename"));
+				dto.setLectureCurrentSTD(rs.getString("lecturecurrentstd"));
+				
+				list.add(dto);
+				
+			}
+			
+			return list;
+			
+		} catch (Exception e) {
+			System.out.println("AdminDAO.list() : " + e.toString());
+		}
+		
+		return null;
+	}
+	
+
+	public ArrayList<courseRecoardListDTO> cousnselingList(int seq) {
+		
+		ArrayList<courseRecoardListDTO> list = new ArrayList<courseRecoardListDTO>();
+		
+		try {
+			
+			String sql = "select r.courseseq as courseseq, c.stdname as stdname,to_char(r.counseregdate,'yyyy-mm-dd') as counseregdate,r.counsecontents as counsecontents from tblcourserecord r"
+					+	" inner join (select substr(stdseq,3) as courseseq,stdname from vwStudent where lectureseq = 'L' || ?) c" 
+					+ " on r.courseseq = c.courseseq order by r.counseseq asc";
+			
+			PreparedStatement stat = conn.prepareStatement(sql);
+			
+			stat.setInt(1, seq);
+			
+			
+			ResultSet rs = stat.executeQuery();
+			
+			while(rs.next()) {
+				courseRecoardListDTO dto = new courseRecoardListDTO();
+				
+				dto.setCourseseq(rs.getString("courseseq"));
+				dto.setStdName(rs.getString("stdname"));
+				dto.setCounseregdate(rs.getString("counseregdate"));
+				dto.setCounsecontents(rs.getString("counsecontents"));
+				
+				list.add(dto);
+				
+			}
+		
+			return list;
+			
+			
+		} catch (Exception e) {
+			System.out.println("AdminDAO.cousnselingList() : " + e.toString());
+		}
+		
+		return null;
+	}
+	
+	
+	public ArrayList<vwStudentDTO> stdList(String seq) {
+		
+		ArrayList<vwStudentDTO> list = new ArrayList<vwStudentDTO>();
+		
+		try {
+			
+			String sql = "select 'ST' || substr(stdseq,3) as stdseq,stdname from vwstudent where lectureseq = 'L' || ?";
+			
+			PreparedStatement stat = conn.prepareStatement(sql);
+			
+			stat.setString(1, seq);
+			
+			ResultSet rs = stat.executeQuery();
+			
+			while(rs.next()) {
+				vwStudentDTO dto = new vwStudentDTO();
+				
+				dto.setStdseq(rs.getString("stdseq"));
+				dto.setStdname(rs.getString("stdname"));
+			
+				list.add(dto);
+			}
+			
+			return list;
+			
+		} catch (Exception e) {
+			System.out.println("AdminDAO.stdList() : " + e.toString());
+		}
+		
+		return null;
+	}
+	
+	
+	public ArrayList<CourseRecordDTO> courseRecordStd(String stdseq) {
+
+		ArrayList<CourseRecordDTO> list = new ArrayList<CourseRecordDTO>();
+		
+		try {
+			
+			String sql = "select to_char(counseregdate,'yyyy-mm-dd') as counseregdate,counsecontents from tblcourserecord where  courseseq = substr(?,3)";
+			
+			PreparedStatement stat = conn.prepareStatement(sql);
+			
+			stat.setString(1, stdseq);
+			
+			ResultSet rs = stat.executeQuery();
+			
+			while(rs.next()) {
+				
+				CourseRecordDTO dto = new CourseRecordDTO();
+				
+				dto.setCounseRegdate(rs.getString("counseregdate"));
+				dto.setCounseContents(rs.getString("counsecontents"));
+				
+				list.add(dto);
+			}
+			
+			return list;
+			
+		} catch (Exception e) {
+			System.out.println("AdminDAO.courseRecordStd() : " + e.toString());
+		}
+		
+		return null;
+	}
+
+	
+	
+	public int find(String seq, String name) {
+
+		try {
+			
+			String sql = "select count(*) as cnt from vwstudent where lectureseq = 'L' || ? and stdname = ?";
+			
+			PreparedStatement stat = conn.prepareStatement(sql);
+			
+			stat.setString(1, seq);
+			stat.setString(2, name);
+			
+			ResultSet rs = stat.executeQuery();
+			
+			if(rs.next()) {
+				return rs.getInt("cnt");
+			}
+			
+		} catch (Exception e) {
+			System.out.println("AdminDAO.find() : " + e.toString());
+		}
+		
+		return 0;
+	}
+
+	public int stdName(String name) {
+
+		try {
+			
+			
+			String sql = "select count(*) as cnt from tblstudent where stdname = ?";
+			
+			PreparedStatement stat = conn.prepareStatement(sql);
+			
+			stat.setString(1, name);
+			
+			ResultSet rs = stat.executeQuery();
+			
+			if(rs.next()) {
+				return rs.getInt("cnt");
+			}
+			
+		} catch (Exception e) {
+			System.out.println("AdminDAO.stdName() : " + e.toString());
+		}
+		
+		
+		return 0;
+	}
+
+	public int nameUpdate(String name,String nameUpdate) {
+
+		
+		try {
+			
+			StudentDTO std = new StudentDTO();
+			
+			System.out.println(name);
+			System.out.println(nameUpdate);
+			
+			String sql = "update tblstudent set stdname = ? where stdname = ?";
+			
+			PreparedStatement stat = conn.prepareStatement(sql);
+			
+			stat.setString(1, nameUpdate);
+			stat.setString(2, name);
+			
+			return stat.executeUpdate();
+			
+		} catch (Exception e) {
+			System.out.println("AdminDAO.nameUpdate() : " + e.toString());
+		}
+		
+		return 0;
+	}
+	
+	
+	public int stdSsn(String ssn) {
+		
+		try {
+			
+			
+			String sql = "select count(*) as cnt from tblstudent where stdssn = ?";
+			
+			PreparedStatement stat = conn.prepareStatement(sql);
+			
+			stat.setString(1, ssn);
+			
+			ResultSet rs = stat.executeQuery();
+			
+			if(rs.next()) {
+				return rs.getInt("cnt");
+			}
+			
+		} catch (Exception e) {
+			System.out.println("AdminDAO.stdName() : " + e.toString());
+		}
+		
+		return 0;
+	}
+
+	public int ssnUpdate(String ssn, String ssnUpdate) {
+
+		try {
+			
+			StudentDTO std = new StudentDTO();
+			
+			System.out.println(ssn);
+			System.out.println(ssnUpdate);
+			
+			String sql = "update tblstudent set stdssn = ? where stdssn = ?";
+			
+			PreparedStatement stat = conn.prepareStatement(sql);
+			
+			stat.setString(1, ssnUpdate);
+			stat.setString(2, ssn);
+			
+			return stat.executeUpdate();
+			
+		} catch (Exception e) {
+			System.out.println("AdminDAO.nameUpdate() : " + e.toString());
+		}	
+		
+		return 0;
+	}
+
+	public int stdTel(String tel) {
+
+		try {
+			
+			
+			String sql = "select count(*) as cnt from tblstudent where stdssn = ?";
+			
+			PreparedStatement stat = conn.prepareStatement(sql);
+			
+			stat.setString(1, tel);
+			
+			ResultSet rs = stat.executeQuery();
+			
+			if(rs.next()) {
+				return rs.getInt("cnt");
+			}
+			
+		} catch (Exception e) {
+			System.out.println("AdminDAO.stdName() : " + e.toString());
+		}
+		
+		return 0;
+	}
+
+	public int telUpdate(String tel, String telUpdate) {
+
+		try {
+			
+			StudentDTO std = new StudentDTO();
+			
+			
+			String sql = "update tblstudent set stdssn = ? where stdssn = ?";
+			
+			PreparedStatement stat = conn.prepareStatement(sql);
+			
+			stat.setString(1, telUpdate);
+			stat.setString(2, tel);
+			
+			return stat.executeUpdate();
+			
+		} catch (Exception e) {
+			System.out.println("AdminDAO.nameUpdate() : " + e.toString());
+		}	
+		
+		return 0;
+	}
+
+	public vwStudentDTO vwStd(String input) {
+
+		try {
+			
+			vwStudentDTO std = new vwStudentDTO();
+			
+			String sql = "select lecturename,stdseq,stdname from vwstudent where stdseq = ?";
+			
+			PreparedStatement stat = conn.prepareStatement(sql);
+			
+			stat.setString(1,input);
+			
+			ResultSet rs = stat.executeQuery();
+			
+			if(rs.next()) {
+				
+				std.setLecturename(rs.getString("lecturename"));
+				std.setStdseq(rs.getString("stdseq"));
+				std.setStdname(rs.getString("stdname"));
+			}
+			return std;
+			
+			
+		} catch (Exception e) {
+			System.out.println("AdminDAO.vwStd() : " + e.toString());
+		}
+		
+		return null;
+	}
+
+	public int insetCourseRecord(CourseRecordDTO courseRecord) {
+
+		try {
+			
+			String sql = "insert into tblcourserecord values (counseseq.nextval,?,?,substr(?,3))";
+			
+			PreparedStatement stat = conn.prepareStatement(sql);
+			
+			stat.setString(1, courseRecord.getCounseRegdate());
+			stat.setString(2, courseRecord.getCounseContents());
+			stat.setString(3, courseRecord.getCourseSeq());
+			
+			return stat.executeUpdate();
+			
+		} catch (Exception e) {
+			System.out.println("AdminDAO.insetCourseRecord() : " + e.toString());
+		}
+		
+		return 0;
+	}
+
+	public int deleteCourseRecord(String data, String input) {
+
+		try {
+			String sql = "delete from tblcourserecord where to_char(counseregdate,'yyyy-mm-dd') = ? and courseseq = substr(?,3)";
+			
+			PreparedStatement stat = conn.prepareStatement(sql);
+			System.out.println(data);
+			System.out.println(input);
+			
+			stat.setString(1, data);
+			stat.setString(2, input);
+			
+			return stat.executeUpdate();
+			
+		} catch (Exception e) {
+			System.out.println("AdminDAO.deleteCourseRecord() : " + e.toString());
+		}
+		
+		return 0;
+	}
+
+	public int updateCourseRecord(String input, String data, String contents) {
+
+		try {
+			
+			String sql = "update tblcourserecord set counsecontents = ? where to_char(counseregdate,'yyyy-mm-dd') = ? and courseseq = substr(?,3)";
+			
+			PreparedStatement stat = conn.prepareStatement(sql);
+			
+			stat.setString(1, contents);
+			stat.setString(2, data);
+			stat.setString(3, input);
+			
+			return stat.executeUpdate();
+			
+		} catch (Exception e) {
+			System.out.println("AdminDAO.updateCourseRecord() : " + e.toString());
+		}
+		
+		return 0;
+	}
+
+	public int OversightCnt(String lectureseq, String stdseq) {
+
+		try {
+			
+			
+			String sql = "select count(*) as cnt from tblstudentmanage where courseseq = (select substr(stdseq,3) as courseseq from vwstudent where lectureseq = ? and stdseq = ?)";
+			
+			PreparedStatement stat = conn.prepareStatement(sql);
+			
+			stat.setString(1, lectureseq);
+			stat.setString(2, stdseq);
+			
+			ResultSet rs = stat.executeQuery();
+			
+			if(rs.next()) {
+				int cnt = rs.getInt("cnt");
+				System.out.println(rs.getInt("cnt"));
+				if(cnt > 0) {
+					return cnt;
+				} else {
+					return 0;
+				}
+				
+			}
+			
+			
+		} catch (Exception e) {
+			System.out.println("AdminDAO.OversightCnt() : " + e.toString());
+		}
+		
+		return 0;
+	}
+
+	public StudentManageDTO selectStdManage(String lectureseq, String stdseq) {
+
+		try {
+			
+			String sql = "select manageseq,companyname,courseseq from tblstudentmanage where courseseq = (select substr(stdseq,3) as courseseq from vwstudent where lectureseq = ? and stdseq = ?)";
+			
+			PreparedStatement stat = conn.prepareStatement(sql);
+			
+			stat.setString(1, lectureseq);
+			stat.setString(2, stdseq);
+			
+			ResultSet rs = stat.executeQuery();
+			
+			if(rs.next()) {
+				
+				StudentManageDTO dto = new StudentManageDTO();
+				
+				dto.setManageSeq(rs.getString("manageseq"));
+				dto.setCompanyName(rs.getString("companyname"));
+				dto.setCourseSeq(rs.getString("courseseq"));
+				
+				return dto;
+				
+			}
+			
+		} catch (Exception e) {
+			System.out.println("AdminDAO.selectStdManage() : " + e.toString());
+		}
+		
+		return null;
+	}
+
+	public vwStudentDTO vwfind2(String input, String seq) {
+
+		vwStudentDTO result = new vwStudentDTO();
+		
+		try {
+			
+			
+			String sql = "select LECTURESEQ,LECTURENAME,LECTURESTARTDATE,LECTUREENDDATE,LECTUREPROGRESS,CLASSSEQ,STDSEQ,STDNAME,STDSSN,STDTEL,TCHSEQ,TCHNAME"
+					+ " from vwstudent where lectureseq = 'L'|| ? and stdseq = ?";
+			
+			PreparedStatement stat = conn.prepareStatement(sql);
+			
+			stat.setString(1, input);
+			stat.setString(2, seq);
+			
+			ResultSet rs = stat.executeQuery();
+			
+			if(rs.next()) {
+				
+				result.setLectureseq(rs.getString("LECTURESEQ"));
+				result.setLecturename(rs.getString("LECTURENAME"));
+				result.setLecturestartdate(rs.getString("LECTURESTARTDATE"));
+				result.setLectureenddate(rs.getString("LECTUREENDDATE"));
+				result.setLectureprogress(rs.getString("LECTUREPROGRESS"));
+				result.setClassseq(rs.getString("CLASSSEQ"));
+				result.setStdseq(rs.getString("STDSEQ"));
+				result.setStdname(rs.getString("STDNAME"));
+				result.setStdssn(rs.getString("STDSSN"));
+				result.setStdtel(rs.getString("STDTEL"));
+				result.setTchseq(rs.getString("TCHSEQ"));
+				result.setTchname(rs.getString("TCHNAME"));
+				
+				return result;
+			}
+			
+			
+		} catch (Exception e) {
+			System.out.println("AdminDAO.vwfind() : " + e.toString());
+		}
+		
+		
+		
+		return null;
+	
+	}
+
+	public int insertOversight(StudentManageDTO dto) {
+
+		
+		try {
+			
+			String sql = "insert into tblstudentmanage values (manageseq.nextval,?,?)";
+			
+			PreparedStatement stat = conn.prepareStatement(sql);
+			
+			stat.setString(1, dto.getCompanyName());
+			stat.setString(2, dto.getCourseSeq());
+			
+			return stat.executeUpdate();
+			
+		} catch (Exception e) {
+			System.out.println("AdminDAO.insertOversight() : " + e.toString());
+		}
+		
+		return 0;
+	}
+
+	public int deleteOversight(String stdseq) {
+
+		try {
+			
+			String sql = "delete from tblstudentmanage where courseseq = substr(?,3)";
+			
+			PreparedStatement stat = conn.prepareStatement(sql);
+			
+			stat.setString(1, stdseq);
+			
+			return stat.executeUpdate();
+			
+		} catch (Exception e) {
+			System.out.println("AdminDAO.deleteOversight() : " + e.toString());
+		}
+		
+		return 0;
+	}
+
+	public int updateOversight(String stdseq, String company) {
+		
+		try {
+			
+			String sql = "update tblstudentmanage set companyname = ? where courseseq = substr(?,3)";
+			
+			PreparedStatement stat = conn.prepareStatement(sql);
+			
+			stat.setString(1, company);
+			stat.setString(2, stdseq);
+			
+			return stat.executeUpdate();
+			
+		} catch (Exception e) {
+			System.out.println("AdminDAO.deleteOversight() : " + e.toString());
+		}
+		
+		return 0;
+	}
 }
