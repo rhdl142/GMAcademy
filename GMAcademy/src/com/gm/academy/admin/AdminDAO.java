@@ -28,6 +28,30 @@ public class AdminDAO {
 		this.out = new UtilPrint();
 	}
 
+//로그인---------------------------------------------------------------------------------------------------------------------------	
+	//로그인확인
+	public String auth(AdminLogInDTO alDTO) {
+		try {
+			String sql = "select count(*) as cnt from tblAdminLogIn where adminid = ? and adminpw = ?";
+			
+			stat = conn.prepareStatement(sql);
+			
+			stat.setString(1, alDTO.getAdminID());
+			stat.setString(2, alDTO.getAdminPW());
+			
+			ResultSet rs = stat.executeQuery();
+			
+			if(rs.next()) {
+				return rs.getString("cnt");
+			}
+			
+		} catch (Exception e) {
+			System.out.println("AdminDAO.auth :" + e.toString());
+		}
+	
+		return null;
+	}
+//---------------------------------------------------------------------------------------------------------------------------
 //교사계정관리----------------------------------------------------------------------------------------------------------
 	
 	public ArrayList<TeacherDTO> list(boolean isAuth) { // 교사 조회
@@ -741,38 +765,6 @@ public class AdminDAO {
 	}
 //------------------------------------------------------------------------------------------------------------------------------------------
 //교육생관리------------------------------------------------------------------------------------------------------------------------------------------
-	public AdminLogInDTO auth(AdminLogInDTO admin) {
-
-		AdminLogInDTO result = new AdminLogInDTO();
-		
-		try {
-			
-			String sql = "select adminid,adminpw from tbladminlogin where adminid = ? and adminpw = ?";
-			
-			PreparedStatement stat = conn.prepareStatement(sql);
-			
-			stat.setString(1, admin.getAdminID());
-			stat.setString(2, admin.getAdminPW());
-			
-			ResultSet rs = stat.executeQuery();
-			
-			if(rs.next()) {
-				
-				result.setAdminID(rs.getString("adminid"));
-				result.setAdminPW(rs.getString("adminpw"));
-				
-				return result;
-				
-			}
-			
-		} catch (Exception e) {
-			System.out.println("AdminDAO.auth() : " + e.toString());
-		}
-		
-		
-		return null;
-	}
-
 
 	public LectureDTO get(String seq) {
 		
@@ -1705,7 +1697,8 @@ public class AdminDAO {
 		
 		return 0;
 	}
-//------------------------------------------------------------------------------------------------------------------------------------------
+	
+
 //교재관리-----------------------------------------------------------------------------------------------------------------------------------
 	//과목명,교재명,저자,가격 출력 교재관리 전체조회
 	public ArrayList<TextBookManagementDTO> textBookManagement() {

@@ -30,149 +30,172 @@ public class AdminController {
 
 
 	public void main(String id, String pw) {
-		
+		check(id, pw);
 		
 		MainClass.crumb.in("관리자");
 		while(true) {
-			out.middleTitle("관리자 페이지");
-			out.menu(UtilPrint.ADMINMAIN);
-			int input = scan.nextInt("선택");			
-			
-			if(input == 1) {
-				TeacherManagente(); //교사 계정 관리 메소드
-			}else if(input == 2) {
-				//개설 과정 관리///
-				while(true) {
-					MainClass.crumb.in("개설 과정 관리");
-					out.bigTitle("개설 과정 관리");
-					out.menu(UtilPrint.ADMIN_LECTURE_MANAGEMENT);
-					
-					input = scan.nextInt("선택");
-					
-					if(input == 1) {
-						MainClass.crumb.in("과정 현황 조회");
-						Admin_LectureCheck();
-						MainClass.crumb.out();				
-					}else if(input == 2) {
-						//과정 등록
-						MainClass.crumb.in("과정 등록");
-						Admin_LectureRegist();
-						MainClass.crumb.out();
-					}else if(input == 3) {
-						//과정 삭제
-						MainClass.crumb.in("과정 삭제");
-						Admin_LectureRemove();
-						MainClass.crumb.out();
-					}else if(input == 4) {
-						//과정 수정
-						MainClass.crumb.in("과정 수정");
-						Admin_LectureUpdate();
-						MainClass.crumb.out();
-					}else if(input == 5){
-						break;
-					}else {
-						System.out.println("잘못 입력하였습니다. 다시 입력하세요");
-						continue;
-					}
-				}//while
-			}else if(input == 3) {
-		       	 
-	        	 MainClass.crumb.in("개설과목 관리");
-	        	 
-	        	 out.bigTitle(">>개설과목 관리<<");
-	        	 out.menu(UtilPrint.ADMIN_SUBJECTMANAGEMENT);
-	        	 
-	        	 System.out.println();
-	             input = scan.nextInt(">>선택");
-	             
-	             //선택
-	             if(input == 1) {
-	            	 
-	            	 MainClass.crumb.in("과목 현황 조회");
-	            	 subjectlist();		//현재 강의중인 과정의 과목 리스트 출력 메소드
-	            	 MainClass.crumb.out();
-	            	 
-	             }else if(input == 2) {
-	            	 
-	            	 MainClass.crumb.in("과목 등록");
-	            	 addsubject();
-	            	 MainClass.crumb.out();
-	            	 
-	             }else if(input == 3) {
-	            	 
-	            	 MainClass.crumb.in("과목 삭제");
-	            	 deletesubject();
-	            	 MainClass.crumb.out();
-	            	 
-	             }else if(input == 4) {
-	            	 
-	            	 MainClass.crumb.in("과목 수정");
-	            	 updatesubject();
-	            	 MainClass.crumb.out();
-	            	 
-	             }else if(input == 5) {
-	            	 out.pause();
-	             }
-			}else if(input == 4) {
-				studentMange(); 
-			}else if(input == 5) {
-
-			}else if(input == 6) {
-				while (true) {
-					out.bigTitle("출결관리 및 출결조회");
-					out.menu(new String[] { "과정별 출결조회", "기간별 출결조회", "학생 출결조회", "출결 수정하기", "돌아가기" });
-					input = 0;
-					try {
-						input = scan.nextInt("선택");
-					} catch (Exception e) {
-						out.result("입력오류가 발생하였습니다. 신중히 입력해주시기 바랍니다.");
-					}
-					if (input == 1) {
-						// 과정별 출결조회
-						MainClass.crumb.in("과정별 출결조회");
-						showAttendanceByLecture();
-						MainClass.crumb.out();
-					} else if (input == 2) {
-						// 기간별 출결조회
-						MainClass.crumb.in("기간별 출결조회");
-						showAttendanceByDay();
-						MainClass.crumb.out();
-					} else if (input == 3) {
-						// 학생 출결조회
-						MainClass.crumb.in("학생 출결조회");
-						showAttendanceByStudent();
-						MainClass.crumb.out();
-					} else if (input == 4) {
-						// 출결 수정하기
-						MainClass.crumb.in("출결 수정하기");
-						updateAttendance();
-						MainClass.crumb.out();
-					} else {
-						// 돌아가기
-						break;
-					}
-				}				
-			}else if(input == 7) {
-				MainClass.crumb.in("교재관리");
-				textBookManagement();
-				MainClass.crumb.out();
-			}else if(input == 8) {
+			if(MainClass.isAuth == null) {
 				break;
+			} else {
+				out.bigTitle("관리자 페이지");
+				out.menu(UtilPrint.ADMINMAIN);
+				int input = scan.nextInt("선택");			
+				
+				if(input == 1) {
+					TeacherManagente(); //교사 계정 관리 메소드
+				}else if(input == 2) {
+					//개설 과정 관리///
+					while(true) {
+						MainClass.crumb.in("개설 과정 관리");
+						out.bigTitle("개설 과정 관리");
+						out.menu(UtilPrint.ADMIN_LECTURE_MANAGEMENT);
+						
+						input = scan.nextInt("선택");
+						
+						if(input == 1) {
+							MainClass.crumb.in("과정 현황 조회");
+							Admin_LectureCheck();
+							MainClass.crumb.out();				
+						}else if(input == 2) {
+							//과정 등록
+							MainClass.crumb.in("과정 등록");
+							Admin_LectureRegist();
+							MainClass.crumb.out();
+						}else if(input == 3) {
+							//과정 삭제
+							MainClass.crumb.in("과정 삭제");
+							Admin_LectureRemove();
+							MainClass.crumb.out();
+						}else if(input == 4) {
+							//과정 수정
+							MainClass.crumb.in("과정 수정");
+							Admin_LectureUpdate();
+							MainClass.crumb.out();
+						}else if(input == 5){
+							break;
+						}else {
+							System.out.println("잘못 입력하였습니다. 다시 입력하세요");
+							continue;
+						}
+					}//while
+				}else if(input == 3) {
+			       	 
+		        	 MainClass.crumb.in("개설과목 관리");
+		        	 
+		        	 out.bigTitle(">>개설과목 관리<<");
+		        	 out.menu(UtilPrint.ADMIN_SUBJECTMANAGEMENT);
+		        	 
+		        	 System.out.println();
+		             input = scan.nextInt(">>선택");
+		             
+		             //선택
+		             if(input == 1) {
+		            	 
+		            	 MainClass.crumb.in("과목 현황 조회");
+		            	 subjectlist();		//현재 강의중인 과정의 과목 리스트 출력 메소드
+		            	 MainClass.crumb.out();
+		            	 
+		             }else if(input == 2) {
+		            	 
+		            	 MainClass.crumb.in("과목 등록");
+		            	 addsubject();
+		            	 MainClass.crumb.out();
+		            	 
+		             }else if(input == 3) {
+		            	 
+		            	 MainClass.crumb.in("과목 삭제");
+		            	 deletesubject();
+		            	 MainClass.crumb.out();
+		            	 
+		             }else if(input == 4) {
+		            	 
+		            	 MainClass.crumb.in("과목 수정");
+		            	 updatesubject();
+		            	 MainClass.crumb.out();
+		            	 
+		             }else if(input == 5) {
+		            	 out.pause();
+		             }
+				}else if(input == 4) {
+					studentMange(); 
+				}else if(input == 5) {
+	
+				}else if(input == 6) {
+					while (true) {
+						out.bigTitle("출결관리 및 출결조회");
+						out.menu(new String[] { "과정별 출결조회", "기간별 출결조회", "학생 출결조회", "출결 수정하기", "돌아가기" });
+						input = 0;
+						try {
+							input = scan.nextInt("선택");
+						} catch (Exception e) {
+							out.result("입력오류가 발생하였습니다. 신중히 입력해주시기 바랍니다.");
+						}
+						if (input == 1) {
+							// 과정별 출결조회
+							MainClass.crumb.in("과정별 출결조회");
+							showAttendanceByLecture();
+							MainClass.crumb.out();
+						} else if (input == 2) {
+							// 기간별 출결조회
+							MainClass.crumb.in("기간별 출결조회");
+							showAttendanceByDay();
+							MainClass.crumb.out();
+						} else if (input == 3) {
+							// 학생 출결조회
+							MainClass.crumb.in("학생 출결조회");
+							showAttendanceByStudent();
+							MainClass.crumb.out();
+						} else if (input == 4) {
+							// 출결 수정하기
+							MainClass.crumb.in("출결 수정하기");
+							updateAttendance();
+							MainClass.crumb.out();
+						} else {
+							// 돌아가기
+							break;
+						}
+					}				
+				}else if(input == 7) {
+					MainClass.crumb.in("교재관리");
+					textBookManagement();
+					MainClass.crumb.out();
+				}else if(input == 8) {
+					break;
+				}
+				
+				
 			}
-			
-			
 		}
-
 		
 	}
 
+//로그인--------------------------------------------------------------------------------------------	
+		//로그인
+		private void check(String id, String pw) {
+			AdminLogInDTO alDTO = new AdminLogInDTO();
+			
+			alDTO.setAdminID(id);
+			alDTO.setAdminPW(pw);
+			
+			int result = Integer.parseInt(dao.auth(alDTO));
+			
+			if(result == 0) {
+				MainClass.isAuth = null;
+			} else {
+				MainClass.isAuth = alDTO.getAdminID();
+			}
+		
+			out.result(result,"인증에 성공했습니다.");
+			out.pause();
+		}
+//------------------------------------------------------------------------------------------------------------------------------------------
 //교사계정관리-------------------------------------------------------------------------------------------------	
 	
 	private void TeacherManagente() {//교사 계정 관리 메소드
 		MainClass.crumb.in("교사 계정 관리");
 		while(true) {
 			int input;
-			out.middleTitle(">>교사 계정 관리<<");
+			out.bigTitle(">>교사 계정 관리<<");
 			out.menu(UtilPrint.ADMINTEACHERMANAGEMENT);
 			input = scan.nextInt("선택");
 			if(input == 1) {
@@ -200,7 +223,7 @@ public class AdminController {
 		MainClass.crumb.in("교사 수정");
 		while(true) {
 			int input;
-			out.middleTitle(">> 교사 수정 <<");
+			out.bigTitle(">> 교사 수정 <<");
 			out.menu(UtilPrint.ADMINTEACHERUPDATEMENU);
 			input = scan.nextInt("선택");
 			if(input == 1) { // 이름 수정
@@ -216,7 +239,7 @@ public class AdminController {
 	
 	private void TeacherUpdateTel() { // 전화번호 수정
 		MainClass.crumb.in("전화번호 수정");
-		out.middleTitle(">> 전화번호 수정 <<");
+		out.bigTitle(">> 전화번호 수정 <<");
 		out.bar(40);
 		TeacherList();
 		String tchTelBefor = scan.next("▶전화 번호");
@@ -234,7 +257,7 @@ public class AdminController {
 
 	private void TeacherUpdateName() { // 이름 수정
 		MainClass.crumb.in("이름 수정");
-		out.middleTitle(">> 이름 수정 <<");
+		out.bigTitle(">> 이름 수정 <<");
 		out.bar(40);
 		TeacherList();
 		String tchNameBefor = scan.next("▶교사 이름");
@@ -256,7 +279,7 @@ public class AdminController {
 		
 		
 		MainClass.crumb.in("교사 삭제");
-		out.middleTitle(">> 교사 삭제 <<");
+		out.bigTitle(">> 교사 삭제 <<");
 		TeacherList();
 		out.bar(40);
 		
@@ -285,7 +308,7 @@ public class AdminController {
 	//교사 등록 메소드
 	private void TeacherRegister() {
 		MainClass.crumb.in("교사 등록");
-		out.middleTitle(">> 교사 등록 <<");
+		out.bigTitle(">> 교사 등록 <<");
 		TeacherList();
 		out.bar(40);
 		
@@ -678,7 +701,7 @@ public class AdminController {
 //개설과목관리----------------------------------------------------------------------------------------------------------------------
 	private void updatesubject() {
 		
-		out.middleTitle(">>과목 수정<<");
+		out.bigTitle(">>과목 수정<<");
 		
 		//과목 수정
 		String updatesubjectname = scan.next("수정할 과목명 : ");
@@ -699,7 +722,7 @@ public class AdminController {
 
 	private void deletesubject() {
 	
-		out.middleTitle(">>과목 삭제<<");
+		out.bigTitle(">>과목 삭제<<");
 		
 		//과목 삭제
 		String subjectname = scan.next("삭제할 과목명 : ");
@@ -719,7 +742,7 @@ public class AdminController {
 
 	private void addsubject() {
 	
-		out.middleTitle(">>과목 등록<<");
+		out.bigTitle(">>과목 등록<<");
 		
 		//과목 등록
 		String subjectname = scan.next("등록할 과목명 : ");
@@ -739,7 +762,7 @@ public class AdminController {
 
 	private void subjectlist() {
 		
-		out.middleTitle(">>과목현황 조회<<");
+		out.bigTitle(">>과목현황 조회<<");
 		
 		//과목코드, 과목명 목록 출력
 		ArrayList<SubjectDTO> list = dao.subjectlist();
@@ -1668,7 +1691,7 @@ public class AdminController {
 		}
 		String date = String.format("%s-%s-%s",year,month,day);
 		//출결상태입력
-		out.middleTitle("변경할 사항");
+		out.bigTitle("변경할 사항");
 		out.menu(new String[] {
 				"정상","지각","조퇴","외출","병가","기타"
 		});

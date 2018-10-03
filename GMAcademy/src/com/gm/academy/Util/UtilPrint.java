@@ -91,18 +91,6 @@ public class UtilPrint {
 		line(UtilPrint.LONG);
 	}
 	
-	//중타이틀
-	public void middleTitle(String label) {
-		MainClass.crumb.now();
-		
-		line(UtilPrint.SHORT);
-		for(int i=0; i<(UtilPrint.SHORT/2)-label.length(); i++) {
-			System.out.printf(" ");
-		}
-		System.out.println(label);
-		line(UtilPrint.SHORT);
-	}
-	
 	//사용자 접속중
 	public void header(String[] labels) {
 		for(String label : labels) {

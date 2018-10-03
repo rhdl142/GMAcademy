@@ -19,19 +19,38 @@ DAO > StudentDAO - sDAO
 public class MainClass {
 	private static UtilScanner scan;
 	private static UtilPrint out;
-
+	private static AdminController adminC;
+	private static StudentController studentC;
+	private static TeacherController teacherC;
+	private static ExamController examC;
+	private static LectureController lectureC;
+	
 	//프로그램 실행 중 어디서든 항상 사용할 자원 필요 > main() 소유 클래스의 정적 public 변수 생성
 	public static BreadCrumb crumb;
-	public static String isAuth;
+	public static String isAuth;  //seq (ST1)
+	public static String tel;
 	public static String name;
-	public static String seq;
-	public static boolean isAdmin;//관리자? 유저?
+	public static String lectureName;
+	public static String lectureDate;
+	public static String lectureSeq;
+	public static String tchSeq;
+	public static String courseSeq;
 	
 	static {
+		adminC = new AdminController();
+		studentC = new StudentController();
+		teacherC = new TeacherController();
 		scan = new UtilScanner();
 		out = new UtilPrint();
 		crumb = new BreadCrumb();
 		isAuth = null;
+		tel = null;
+		name = null;
+		lectureName = null;
+		lectureDate = null;
+		lectureSeq = null;
+		tchSeq = null;
+		courseSeq = null;
 	}
 	
 	public static void main(String[] args) {
