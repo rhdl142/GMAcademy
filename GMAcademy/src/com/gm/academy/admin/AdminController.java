@@ -8,7 +8,9 @@ import com.gm.academy.MainClass;
 import com.gm.academy.Util.UtilPrint;
 import com.gm.academy.Util.UtilScanner;
 import com.gm.academy.lecture.LectureDTO;
+import com.gm.academy.lecture.PublisherDTO;
 import com.gm.academy.lecture.SubjectDTO;
+import com.gm.academy.lecture.TextBookDTO;
 import com.gm.academy.student.CourseRecordDTO;
 import com.gm.academy.student.StudentDTO;
 import com.gm.academy.student.StudentManageDTO;
@@ -151,10 +153,10 @@ public class AdminController {
 					}
 				}				
 			}else if(input == 7) {
-				
-			}else if(input == 8) {
-				
+				MainClass.crumb.in("교재관리");
+				textBookManagement();
 				MainClass.crumb.out();
+			}else if(input == 8) {
 				break;
 			}
 			
@@ -1844,4 +1846,169 @@ public class AdminController {
 			}
 		}
 	}
+//---------------------------------------------------------------------------------------------------------------------------
+//교재관리---------------------------------------------------------------------------------------------------------------------------
+	//교재관리
+	private void textBookManagement() {
+		while(true) {
+			out.bigTitle("교재관리");
+			out.menu(UtilPrint.TEXTBOOK_MANAGEMENT);
+			
+			int input = scan.nextInt("선택");
+		
+			if (input == 1) {
+				out.bigTitle("교재현황");
+				out.menu(UtilPrint.TEXTBOOK_STATUS);
+				
+				input = scan.nextInt("선택");
+
+				if(input == 1) {
+					MainClass.crumb.in("교재 사용 현황(전체조회)");
+					
+					out.bigTitle("전체조회");
+					
+					ArrayList<TextBookManagementDTO> list = dao.textBookManagement();
+
+					int page = 1;
+					while (true) {
+						int onePage = 7;
+						int index = (page * onePage) - onePage;
+
+						out.header(new String[] { "[저자명]", "[가격]", "[과목명]", "[교재명]" });
+
+						for (int i = index; i < index + onePage; i++) {
+							if (i >= list.size()) {
+								break;
+							}
+
+							out.data(new Object[] { list.get(i).getTextBookWriter(), list.get(i).getTextBookPrice(),
+									list.get(i).getSubjectName(), list.get(i).getTextBookName() });
+						}
+						out.bar();
+						System.out.println("(0:돌아가기)\t\t" + page + "/"
+								+ (list.size() % onePage == 0 ? list.size() / onePage : list.size() / onePage + 1));
+						out.bar();
+						page = scan.nextInt("페이지");
+						out.bar();
+						if (page == 0) {
+							break;
+						}
+					}
+					MainClass.crumb.out();
+
+				} else if(input == 2) {
+					MainClass.crumb.in("과정조회");
+					out.bigTitle("과정조회");
+					
+					ArrayList<LectureDTO> llist = dao.lectureNumber();
+					
+					out.header(new String[] { "[과정번호]", "[과정명]" });
+					
+					for(LectureDTO lDTO : llist) {
+						out.data(new Object[] {lDTO.getLectureSeq(), lDTO.getLectuerName()});
+					}
+					
+					String lec = scan.next("과정 번호");
+					
+					ArrayList<TextBookManagementDTO> list = dao.textBookLecture(lec);
+					
+					out.header(new String[] { "[저자명]", "[가격]", "[과목명]", "[교재명]" });
+					
+					for(TextBookManagementDTO tbmDTO : list) {
+						out.data(new Object[] {tbmDTO.getTextBookWriter(),tbmDTO.getTextBookPrice()
+								,tbmDTO.getSubjectName(), tbmDTO.getTextBookName()});
+					}
+					
+					MainClass.crumb.out();
+					out.pause();
+				} else if(input == 3) {
+					
+				} else {
+					out.result("잘못입력하였습니다.");
+				}
+			} else if(input == 2) {
+				MainClass.crumb.in("교재 신청서 작성");
+				out.bigTitle("교재등록");
+				
+				String textBookName = scan.next("교재명");
+				String writer = scan.next("저자명");
+				String price = scan.next("가격");
+				
+				ArrayList<PublisherDTO> plist = dao.publisher();
+				
+				int page = 1;
+			      while (true) {
+			         int onePage = 7;
+			         int index = (page * onePage) - onePage;
+			         // 헤더
+			         out.header(new String[] { "[출판사코드]", "[출판사명]"});
+			         for (int i = index; i < index + onePage; i++) {
+			            if (i >= plist.size()) {
+			               break;
+			            }
+
+			            out.data(new Object[] {plist.get(i).getPublisherSeq(), plist.get(i).getPublisherName()});
+			         }
+			         out.bar();
+			         System.out.println("(0:돌아가기)\t\t" + page + "/"
+			               + (plist.size() % onePage == 0 ? plist.size() / onePage : plist.size() / onePage + 1));
+			         out.bar();
+			         page = scan.nextInt("페이지");
+			         out.bar();
+			         if (page == 0) {
+			            break;
+			         }
+			      }
+				
+				String publisher = scan.next("출판사");
+				
+				ArrayList<SubjectDTO> list = dao.subject();
+				
+				page = 1;
+			      while (true) {
+			         int onePage = 7;
+			         int index = (page * onePage) - onePage;
+			         // 헤더
+			         out.header(new String[] { "[과정코드]", "[과목명]"});
+			         for (int i = index; i < index + onePage; i++) {
+			            if (i >= list.size()) {
+			               break;
+			            }
+
+			            out.data(new Object[] {list.get(i).getSubjectSeq(), list.get(i).getSubjectName()});
+			         }
+			         out.bar();
+			         System.out.println("(0:돌아가기)\t\t" + page + "/"
+			               + (list.size() % onePage == 0 ? list.size() / onePage : list.size() / onePage + 1));
+			         out.bar();
+			         page = scan.nextInt("페이지");
+			         out.bar();
+			         if (page == 0) {
+			            break;
+			         }
+			      }
+			      
+				String subjectCode = scan.next("과목코드");
+				
+				TextBookDTO tbDTO = new TextBookDTO();
+				
+				tbDTO.setTextBookName(textBookName);
+				tbDTO.setTextBookWriter(writer);
+				tbDTO.setTextBookPrice(price);
+				tbDTO.setPublisherSeq(publisher);
+				tbDTO.setSubjectSeq(subjectCode);
+				
+				int result = dao.textBookApplicationWrite(tbDTO);
+				
+				out.result(result,"교재를 등록하였습니다.");
+				out.pause();
+				MainClass.crumb.out();
+			} else if(input == 3) {
+				break;
+			} else {
+				out.result("잘못입력하였습니다.");
+			}
+		}
+	}
+//-------------------------------------------------------------------------------------------------------------------------------------------------
 }

@@ -32,7 +32,8 @@ public class UtilPrint {
 	public final static String[] TEACHER_EVALUATION = {"교사평가등록","돌아가기"};
 	public final static String[] TEREGISTER = {"과정평가","과목평가"};
 	public final static String[] CUNSULTING = {"상담일지 조회","돌아가기"};
-	
+	public final static String[] TEXTBOOK_MANAGEMENT = {"교재 사용 현황","교재 신청서 작성","돌아가기"};
+	public final static String[] TEXTBOOK_STATUS = {"전체조회","과정조회","돌아가기"};
 	//일자 menu
 	public void menu(String[] list) {
 		for(int i=0; i<list.length; i++) {

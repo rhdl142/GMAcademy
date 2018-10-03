@@ -8,10 +8,11 @@ import java.util.ArrayList;
 
 import com.gm.academy.Util.DBUtil;
 import com.gm.academy.Util.UtilPrint;
-import com.gm.academy.Util.UtilScanner;
 import com.gm.academy.exam.GradeDTO;
 import com.gm.academy.lecture.LectureDTO;
+import com.gm.academy.lecture.PublisherDTO;
 import com.gm.academy.lecture.SubjectDTO;
+import com.gm.academy.lecture.TextBookDTO;
 import com.gm.academy.student.CourseRecordDTO;
 import com.gm.academy.student.StudentDTO;
 import com.gm.academy.student.StudentManageDTO;
@@ -1704,4 +1705,178 @@ public class AdminDAO {
 		
 		return 0;
 	}
+//------------------------------------------------------------------------------------------------------------------------------------------
+//교재관리-----------------------------------------------------------------------------------------------------------------------------------
+	//과목명,교재명,저자,가격 출력 교재관리 전체조회
+	public ArrayList<TextBookManagementDTO> textBookManagement() {
+		ArrayList<TextBookManagementDTO> list = new ArrayList<>();
+		
+		try {
+			String sql = "select " + 
+					"    s.subjectName, " + 
+					"    t.textbookwriter, " + 
+					"    textBookName, " + 
+					"    t.textbookprice " + 
+					" from tblTextBook t " + 
+					"    inner join tblSubject s " + 
+					"        on t.subjectSeq = s.subjectSeq " + 
+					"            order by length(s.subjectName) ";
+			
+			Statement stat = conn.createStatement();
+			
+			ResultSet rs = stat.executeQuery(sql);
+			
+			while(rs.next()) {
+				TextBookManagementDTO tbmDTO = new TextBookManagementDTO();
+				
+				tbmDTO.setSubjectName(rs.getString("subjectName"));
+				tbmDTO.setTextBookWriter(rs.getString("textbookwriter"));
+				tbmDTO.setTextBookName(rs.getString("textBookName"));
+				tbmDTO.setTextBookPrice(rs.getString("textbookprice"));
+				
+				list.add(tbmDTO);
+			}
+			
+			return list;
+		} catch (Exception e) {
+			System.out.println("AdminDAO.textBookManagement :" + e.toString());
+		}
+		return null;
+	}
+
+	//과목명,교재명,저자,가격 출력 교재관리 과정조회
+	public ArrayList<TextBookManagementDTO> textBookLecture(String lec) {
+		ArrayList<TextBookManagementDTO> list = new ArrayList<>();
+		
+		try {
+			String sql = "select s.subjectName, tb.textBookname, tb.textBookWriter, tb.textBookprice from tblLectureSubject ls " + 
+					"    left outer join tblTextBook tb " + 
+					"        on tb.textBookSeq = ls.textBookSeq " + 
+					"            inner join tblSubject s " + 
+					"                on ls.subjectSeq = s.subjectSeq " + 
+					"                    where ls.lectureSeq = ?";
+			
+			PreparedStatement stat = conn.prepareStatement(sql);
+			
+			stat.setString(1, lec);
+			
+			ResultSet rs = stat.executeQuery();
+			
+			
+			while(rs.next()) {
+				TextBookManagementDTO tbmDTO = new TextBookManagementDTO();
+				
+				tbmDTO.setSubjectName(rs.getString("subjectName"));
+				tbmDTO.setTextBookName(rs.getString("textBookname"));
+				tbmDTO.setTextBookWriter(rs.getString("textBookWriter"));
+				tbmDTO.setTextBookPrice(rs.getString("textBookprice"));
+				
+				list.add(tbmDTO);
+			}
+			
+			return list;
+		} catch (Exception e) {
+			System.out.println("AdminDAO.textBookLecture :" + e.toString());
+		}
+		return null;
+	}
+
+	//과정명 과정번호 출력, 교재관리 과정조회
+	public ArrayList<LectureDTO> lectureNumber() {
+		ArrayList<LectureDTO> list = new ArrayList<>();
+		
+		try {
+			String sql ="select lectureSeq, lectureName from tblLecture";
+			
+			Statement stat = conn.createStatement();
+			ResultSet rs = stat.executeQuery(sql);
+			
+			while(rs.next()) {
+				LectureDTO lDTO = new LectureDTO();
+				
+				lDTO.setLectureSeq(rs.getString("lectureSeq"));
+				lDTO.setLectuerName(rs.getString("lectureName"));
+				
+				list.add(lDTO);
+			}
+			
+			return list;
+		} catch (Exception e) {
+			System.out.println("AdminDAO.lectureNumber :" + e.toString());
+		}
+		return null;
+	}
+
+	//과목명, 과목코드 출력 교재관리_교재등록
+	public ArrayList<SubjectDTO> subject() {
+		ArrayList<SubjectDTO> list = new ArrayList<>();
+		
+		try {
+			String sql = "select * from tblSubject";
+			
+			Statement stat = conn.createStatement();
+			ResultSet rs = stat.executeQuery(sql);
+			
+			while(rs.next()) {
+				SubjectDTO sDTO = new SubjectDTO();
+				
+				sDTO.setSubjectSeq(rs.getString("subjectSeq"));
+				sDTO.setSubjectName(rs.getString("subjectName"));
+				
+				list.add(sDTO);
+			}
+			
+			return list;
+		} catch (Exception e) {
+			System.out.println("AdminDAO.subject :" + e.toString());
+		}
+		return null;
+	}
+
+	//출판사명, 출판사코드 출력 교재관리_교재등록
+	public ArrayList<PublisherDTO> publisher() {
+		ArrayList<PublisherDTO> list = new ArrayList<>();
+		
+		try {
+			String sql = "select * from tblPublisher";
+			
+			Statement stat = conn.createStatement();
+			ResultSet rs = stat.executeQuery(sql);
+			
+			while(rs.next()) {
+				PublisherDTO pDTO = new PublisherDTO();
+				
+				pDTO.setPublisherName(rs.getString("publisherName"));
+				pDTO.setPublisherSeq(rs.getString("publisherSeq"));
+				
+				list.add(pDTO);
+			}
+			
+			return list;
+		} catch (Exception e) {
+			System.out.println("AdminDAO.publisher :" + e.toString());
+		}
+		return null;
+	}
+
+	//교재관리_교재신청하기
+	public int textBookApplicationWrite(TextBookDTO tbDTO) {
+		try {
+			String sql = "insert into tblTextBook values (textBookSeq.nextval,?,?,?,?,?)";
+			
+			PreparedStatement stat = conn.prepareStatement(sql);
+			
+			stat.setString(1, tbDTO.getTextBookName());
+			stat.setString(2, tbDTO.getTextBookWriter());
+			stat.setString(3, tbDTO.getTextBookPrice());
+			stat.setString(4, tbDTO.getPublisherSeq());
+			stat.setString(5, tbDTO.getSubjectSeq());
+			
+			return stat.executeUpdate();
+		} catch (Exception e) {
+			System.out.println("AdminDAO.textBookApplicationWrite :" + e.toString());
+		}
+		return 0;
+	}
+//-----------------------------------------------------------------------------------------------------------------------------------
 }
