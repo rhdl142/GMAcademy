@@ -1872,4 +1872,246 @@ public class AdminDAO {
 		return 0;
 	}
 //-----------------------------------------------------------------------------------------------------------------------------------
+//학원현황-----------------------------------------------------------------------------------------------------------------------------------
+	public ArrayList<Object[]> getLecture(String str) {
+		String sql = "select l.lectureName as 과정명,to_char(l.lecturestartDate,'yyyy-mm-dd' ) as 시작일, "
+				+ " to_char(l.lectureenddate,'yyyy-mm-dd') as 종료일, t.tchName as 교사명 "
+				+ "    from tblLecture l inner join tblTeacher t on l.tchSeq = t.tchSeq "
+				+ "            where lectureProgress = ? ";
+		try {
+			stat = conn.prepareStatement(sql);
+			stat.setString(1, str);
+			ResultSet rs = stat.executeQuery();
+			ArrayList<Object[]> olist = new ArrayList<Object[]>();
+			while (rs.next()) {
+				olist.add(new Object[] { rs.getString("시작일"), rs.getString("종료일"), rs.getString("교사명"),
+						rs.getString("과정명") });
+			}
+			return olist;
+		} catch (Exception e) {
+			out.result("입력오류가 발생했습니다. 신중히 입력해주시기 바랍니다.");
+		}
+
+		return null;
+	}
+
+	public ArrayList<Object[]> getRecommendedCompany() {
+		String sql = "select * from tblRecommendCompany ";
+		try {
+			Statement state = conn.createStatement();
+			ResultSet rs = state.executeQuery(sql);
+			ArrayList<Object[]> olist = new ArrayList<Object[]>();
+			while (rs.next()) {
+				olist.add(new Object[] { rs.getString("RECCOMPANYSEQ"), rs.getString("RECCOMPANYNAME"),
+						rs.getString("RECCOMPANYPAYMENT"), rs.getString("RECCOMPANYLOCATION") });
+			}
+			return olist;
+		} catch (Exception e) {
+			out.result("입력오류가 발생했습니다. 신중히 입력해주시기 바랍니다.");
+		}
+
+		return null;
+	}
+
+	public int addRecommendCompany(String name, String location, String payment) {
+		String sql = "insert into tblRecommendCompany values" + "(RecCompanySeq.nextval,?,?,?)";
+
+		try {
+			stat = conn.prepareStatement(sql);
+			stat.setString(1, name);
+			stat.setString(2, location);
+			stat.setString(3, payment);
+			return stat.executeUpdate();
+		} catch (Exception e) {
+			out.result("입력오류가 발생했습니다. 신중히 입력해주시기 바랍니다.");
+		}
+		return 0;
+	}
+
+	public int removeRecommendCompany(int seq) {
+		String sql = "delete from tblRecommendCompany where RecCompanySeq =?";
+		try {
+			stat = conn.prepareStatement(sql);
+			stat.setInt(1, seq);
+			return stat.executeUpdate();
+		} catch (Exception e) {
+			out.result("입력오류가 발생했습니다. 신중히 입력해주시기 바랍니다.");
+		}
+		return 0;
+	}
+
+	public int updateRecommendedCompany(String name, String location, String payment, int seq) {
+		String sql = "update tblRecommendCompany set RecCompanyName = ? ,RecCompanyLocation = ? ,"
+				+ " RecCompanyPayment= ? where RecCompanySeq = ?";
+		try {
+			stat = conn.prepareStatement(sql);
+			stat.setString(1, name);
+			stat.setString(2, location);
+			stat.setString(3, payment);
+			stat.setInt(4, seq);
+			return stat.executeUpdate();
+		} catch (Exception e) {
+			out.result("입력오류가 발생했습니다. 신중히 입력해주시기 바랍니다.");
+		}
+
+		return 0;
+	}
+
+	public ArrayList<Object[]> getLectureAndTeacher() {
+		String sql = "select l.lectureseq as 번호, t.tchName as 교사명, l.lectureName as 과정명 "
+				+ "    from tblLecture l inner join tblTeacher t on t.tchseq = l.tchseq ";
+		try {
+			Statement state = conn.createStatement();
+			ResultSet rs = state.executeQuery(sql);
+			ArrayList<Object[]> olist = new ArrayList<Object[]>();
+			while (rs.next()) {
+				olist.add(new Object[] { rs.getString("번호"), rs.getString("교사명"), rs.getString("과정명") });
+			}
+			return olist;
+		} catch (Exception e) {
+			out.result("입력오류가 발생했습니다. 신중히 입력해주시기 바랍니다.");
+		}
+		return null;
+	}
+
+	public ArrayList<Object[]> getSubject(String seq) {
+		String sql = "";
+		if (seq.indexOf("TC") > -1) {
+			sql = "select t.tchName as 교사명, l.lectureName as 과정명, s.subjectName as 과목명, l.lectureprogress as 현황  "
+					+ "    from tblLectureSubject ls inner join tblSubject s on s.subjectSeq = ls.subjectSeq "
+					+ "        inner join tblLecture l on l.lectureSeq = ls.lectureSeq "
+					+ "            inner join tblTeacher t on l.tchseq = t.tchseq "
+					+ "                where t.tchSeq = ?";
+		} else {
+			sql = "select * from "
+					+ "(select l.lectureName as 과정명, to_char(ls.subjectstartdate,'yyyy-mm-dd') as 시작일,to_char(ls.subjectenddate,'yyyy-mm-dd') as 종료일, "
+					+ "    s.subjectName as 과목명 "
+					+ "        from tblLectureSubject ls inner join tblLecture l on l.lectureSeq = ls.lectureSeq "
+					+ "            inner join tblSubject s on s.subjectSeq = ls.subjectSeq "
+					+ "                where l.lectureSeq = ? ) order by 시작일 ";
+		}
+		try {
+			stat = conn.prepareStatement(sql);
+			stat.setString(1, seq);
+			ResultSet rs = stat.executeQuery();
+			ArrayList<Object[]> olist = new ArrayList<Object[]>();
+			if (seq.indexOf("TC") > -1) {
+				while(rs.next()) {
+					olist.add(new Object[] {
+							rs.getString("교사명"),rs.getString("과정명")+"\t",rs.getString("현황"),rs.getString("과목명")
+					});
+				}
+				return olist;
+			} else {
+				while (rs.next()) {
+					olist.add(new Object[] { rs.getString("과정명") + "\t", rs.getString("시작일"), rs.getString("종료일"),
+							rs.getString("과목명")
+
+					});
+				}
+				return olist;
+			}
+
+		} catch (Exception e) {
+			out.result("입력오류가 발생했습니다. 신중히 입력해주시기 바랍니다.");
+		}
+
+		return null;
+	}
+
+	public ArrayList<Object[]> getAllTeacher() {
+		String sql = "select tchseq as 교사번호, tchName as 교사명 from tblTeacher";
+		try {
+			Statement state = conn.createStatement();
+			ResultSet rs = state.executeQuery(sql);
+			ArrayList<Object[]> olist = new ArrayList<Object[]>();
+			while (rs.next()) {
+				olist.add(new Object[] { rs.getString("교사번호"), rs.getString("교사명") });
+			}
+			return olist;
+		} catch (Exception e) {
+			out.result("입력오류가 발생했습니다. 신중히 입력해주시기 바랍니다.");
+		}
+
+		return null;
+	}
+
+	public ArrayList<Object[]> getAllLecture() {
+		String sql = "select l.lectureSeq as 과정변호,to_char(l.lecturestartdate,'yyyy-mm-dd') as 시작일, to_char(l.lectureenddate,'yyyy-mm-dd') as 종료일 " + 
+				"    ,t.tchName as 교사명, l.lectureName as 과정명 " + 
+				"        from tblLecture l inner join tblTeacher t on t.tchSeq = l.tchSeq";
+		try {
+			Statement state = conn.createStatement();			
+			ResultSet rs = state.executeQuery(sql);
+			ArrayList<Object[]> olist = new ArrayList<Object[]>();
+			while(rs.next()) {
+				olist.add(new Object[] {
+					rs.getString("과정변호"),"\t"+rs.getString("교사명"),rs.getString("시작일"),
+					rs.getString("종료일"),rs.getString("과정명")
+				});
+			}
+			return olist;
+		} catch (Exception e) {
+			out.result("입력오류가 발생했습니다. 신중히 입력해주시기 바랍니다.");
+		}
+		return null;
+	}
+
+	public ArrayList<Object[]> getEmploymentRate(String sel) {
+		String sql = "select (select lectureName from tblLecture where lectureSeq = ?) as 과정명, "
+				+ " (select count(*) from tblStudent s inner join tblCourse c on s.stdSeq = c.stdSeq " + 
+				"    inner join tblLecture l on l.lectureSeq = c.lectureSeq " + 
+				"        inner join tblStudentManage sm on sm.courseseq = c.courseseq " + 
+				"            where l.lectureSeq = ?)/(select count(*) from tblCourse c inner join tblStudent s on s.stdseq = c.stdSeq " + 
+				"    inner join tblLecture l on l.lectureSeq = c.lectureSeq " + 
+				"        where l.lectureSeq = ?)*100 as 취업률 from dual";
+		try {
+			stat = conn.prepareStatement(sql);
+			stat.setString(1, sel);
+			stat.setString(2, sel);
+			stat.setString(3, sel);
+			ResultSet rs = stat.executeQuery();
+			ArrayList<Object[]> olist = new ArrayList<Object[]>();
+			
+			if(rs.next()) {
+				olist.add(new Object[] {
+					rs.getString("과정명"),"\t"+rs.getString("취업률")+"%"
+				});
+			}
+			return olist;
+		} catch (Exception e) {
+			out.result("입력오류가 발생했습니다. 신중히 입력해주시기 바랍니다.");
+		}
+		
+		return null;
+	}
+
+	public ArrayList<Object[]> getCompletionRate(String sel) {
+		String sql ="select (select lectureName from tblLecture where lectureSeq = ? ) as 과정명, " + 
+				"    (select count(*) from tblLectureComplete lc inner join tblCourse c on lc.courseSeq = c.courseSeq " + 
+				"    inner join tblLecture l on l.lectureSeq = c.lectureSeq where l.lectureSeq = ? )/(select count(*) from tblLecture l inner join tblCourse c on c.lectureSeq = l.lectureSeq " + 
+				"    where l.lectureSeq = ? )*100 as 수료율, (select count(*) from tblDropOut do inner join tblCourse c on c.courseseq = do.courseseq " + 
+				"    inner join tblLecture l on l.lectureSeq = c.lectureSeq where l.lectureSeq = ?) as 중도탈락 " + 
+				"        from dual";
+		try {
+			stat = conn.prepareStatement(sql);
+			stat.setString(1, sel);
+			stat.setString(2, sel);
+			stat.setString(3, sel);
+			stat.setString(4, sel);
+			ResultSet rs = stat.executeQuery();
+			ArrayList<Object[]> olist = new ArrayList<Object[]>();
+			while(rs.next()) {
+				olist.add(new Object[] {
+					rs.getString("과정명"),"\t"+rs.getString("수료율")+"%",rs.getString("중도탈락")+"명"	
+				});
+			}
+			return olist;
+		} catch (Exception e) {
+			out.result("입력오류가 발생했습니다. 신중히 입력해주시기 바랍니다.");
+		}
+		
+		return null;
+	}
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 }

@@ -34,6 +34,10 @@ public class UtilPrint {
 	public final static String[] CUNSULTING = {"상담일지 조회","돌아가기"};
 	public final static String[] TEXTBOOK_MANAGEMENT = {"교재 사용 현황","교재 신청서 작성","돌아가기"};
 	public final static String[] TEXTBOOK_STATUS = {"전체조회","과정조회","돌아가기"};
+	public final static String[] ADMIN_LOGIN = {"교사 계정 관리","개설 과정 관리","개설 과목 관리","교육생 관리","시험관리 및 성적조회","출결관리 및 출결조회","교재관리","추천회사 관리","돌아가기"};
+	public final static String[] SEARCH_ID_PW = {"ID찾기","PW찾기","돌아가기"};
+	public final static String[] USER_CHOICE = {"교사","교육생","돌아가기"};
+
 	//일자 menu
 	public void menu(String[] list) {
 		for(int i=0; i<list.length; i++) {
