@@ -7,7 +7,10 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 import com.gm.academy.Util.DBUtil;
+import com.gm.academy.exam.GradeDTO;
 import com.gm.academy.lecture.LectureDTO;
+import com.gm.academy.lecture.SubjectDTO;
+import com.gm.academy.student.StudentDTO;
 import com.gm.academy.teacher.TeacherDTO;
 
 public class AdminDAO {
@@ -503,5 +506,232 @@ public class AdminDAO {
 		}
 		return 0;
 	}
-	
+//------------------------------------------------------------------------------------------------------------------------------------------
+//개설과목관리------------------------------------------------------------------------------------------------------------------------------------------
+	public ArrayList<SubjectDTO> subjectlist() {   //과목 목록(강의중인 과정에 속한)
+		
+		ArrayList<SubjectDTO> list = new ArrayList<SubjectDTO>();
+		
+		try {
+			
+			String sql = "select A.subjectseq,  A.subjectname from " + 
+									"(select s.subjectseq as subjectseq,  s.subjectname as subjectname from tbllecturesubject ls " + 
+									"    inner join tblLecture l " + 
+									"        on l.lectureseq = ls.lectureseq " + 
+									"            inner join tblSubject s " + 
+									"                on s.subjectseq = ls.subjectseq " + 
+									"                    where l.lectureprogress = '강의중' " + 
+									"                        order by s.subjectname) A " + 
+									"                            group by A.subjectseq, A.subjectname " + 
+									"								order by A.subjectseq";
+			Statement stat = conn.createStatement();
+			ResultSet rs = stat.executeQuery(sql);
+			
+			while(rs.next()) {
+				//레코드 1줄 > DTO 1개 > list
+				SubjectDTO dto = new SubjectDTO();
+				dto.setSubjectSeq(rs.getString("subjectseq"));		//과목 번호
+				dto.setSubjectName(rs.getString("subjectname"));		//과목 명
+				list.add(dto);
+			}
+			
+			return list;
+			
+		} catch (Exception e) {
+			System.out.println("AdminDAO.subjectlist() : " + e.toString());
+		}
+		
+		return null;
+		
+	}
+
+	public int addsubject(SubjectDTO subject) {   //과목 추가
+		
+		try {
+			
+			String sql = "insert into tblSubject values('S'||subjectSeq.nextval, ?)";
+			PreparedStatement stat = conn.prepareStatement(sql);
+			
+			stat.setString(1, subject.getSubjectName());
+			
+			return stat.executeUpdate();
+			
+		} catch (Exception e) {
+			System.out.println("AdminDAO.addsubject() : " + e.toString());
+		}
+		
+		return 0;
+	}
+
+	public int deletesubject(SubjectDTO subject) {		//과목 삭제
+		
+		try {
+			
+			String sql = "delete from tblSubject where subjectname = ?";
+			
+			PreparedStatement stat = conn.prepareStatement(sql);
+			
+			stat.setString(1, subject.getSubjectName());
+			
+			return stat.executeUpdate();
+			
+		} catch (Exception e) {
+			System.out.println("AdminDAO.deletesubject() : " + e.toString());
+		}
+		
+		return 0;
+	}
+
+	public int updatesubject(SubjectDTO subject) {		//과목 수정
+		
+		try {
+			
+			String sql = "update tblsubject set subjectname = ? " + 
+									"where subjectseq = (select subjectseq from tblSubject where subjectname = ?)";
+			
+			PreparedStatement stat = conn.prepareStatement(sql);
+			
+			stat.setString(1, subject.getUpdatesubjectName());
+			stat.setString(2, subject.getSubjectName());
+			
+			stat.executeUpdate();
+
+			
+		} catch (Exception e) {
+			System.out.println("AdminDAO.updatesubject() : " + e.toString());
+		}
+		
+		return 0;
+	}
+
+	public ArrayList<LectureDTO> lecturelist() {			//과정 목록(강의중인 과정 범위)
+		
+		ArrayList<LectureDTO> list = new ArrayList<LectureDTO>();
+		
+		try {
+			
+			String sql = "select lectureseq, " + 
+								"     	   lecturename, " + 
+								"         to_char(lecturestartdate, 'yyyy-mm-dd') ||' ~ '|| to_char(lectureenddate, 'yyyy-mm-dd') as period " + 
+								"				from tblLecture " + 
+								"        			where lectureprogress = '강의중'";
+			
+			Statement stat = conn.createStatement();
+			ResultSet rs = stat.executeQuery(sql);
+			
+			while(rs.next()) {
+				//레코드 1줄 > DTO 1개 > list
+				LectureDTO dto = new LectureDTO();
+				dto.setLectureSeq(rs.getString("lectureseq"));
+				dto.setLectuerName(rs.getString("lecturename"));
+				dto.setPeriod(rs.getString("period"));
+				list.add(dto);
+			}
+			
+			return list;
+			
+		} catch (Exception e) {
+			System.out.println("AdminDAO.lecturelist() : " + e.toString());
+		}
+		
+		return null;
+	}
+
+	public ArrayList<SubjectDTO> studentSubjectList(String studentSeq, String studentName) {
+		
+		ArrayList<SubjectDTO> list = new ArrayList<SubjectDTO>();
+		
+		try {
+			
+			String sql = "select sb.subjectseq, sb.subjectname from tblCourse c " + 
+					"    inner join tblStudent s " + 
+					"        on c.stdseq = s.stdseq " + 
+					"            inner join tblLecture l " + 
+					"                on c.lectureseq = l.lectureseq " + 
+					"                    inner join tblGrade g " + 
+					"                        on c.courseseq = g.courseseq " + 
+					"                            inner join tbllecturesubject ls " + 
+					"                                on ls.lectureseq = l.lectureseq " + 
+					"                                    inner join tblSubject sb " + 
+					"                                        on ls.subjectseq = sb.subjectseq " + 
+					"                                                where s.stdseq = ? and s.stdname = ? " + 
+					"                                                     and g.gradenotescore <> 0 " + 
+					"                                                        order by sb.subjectseq desc";
+			
+			PreparedStatement stat = conn.prepareStatement(sql);
+			
+			stat.setString(1, studentSeq);
+			stat.setString(2, studentName);
+			
+			ResultSet rs = stat.executeQuery();
+			
+			while(rs.next()) {
+				SubjectDTO dto = new SubjectDTO();
+				dto.setSubjectSeq(rs.getString("subjectSeq"));
+				dto.setSubjectName(rs.getString("subjectname"));
+				list.add(dto);
+			}
+			
+			return list;
+			
+		} catch (Exception e) {
+			System.out.println("AdminDAO.studentsubjectlist() : " + e.toString());
+		}
+		return null;
+	}
+
+	public GradeDTO studentGradeInfo(String studentSeq, String studentName, String input) {
+		
+		StudentDTO student = new StudentDTO();
+		GradeDTO grade = new GradeDTO();
+		LectureDTO lecture = new LectureDTO();
+		SubjectDTO subject = new SubjectDTO();
+		
+		//선택한 과목코드 입력받은 뒤 해당 학생의 성적 출력 메소드
+		try {
+			
+			String sql = "select s.stdseq, s.stdname, g.gradenotescore as 필기점수, g.gradeskillscore as 실기점수, g.gradeattendancescore as 출석점수, l.lecturename, sb.subjectname from tblCourse c " + 
+					"    inner join tblStudent s " + 
+					"        on c.stdseq = s.stdseq " + 
+					"            inner join tblLecture l " + 
+					"                on c.lectureseq = l.lectureseq " + 
+					"                    inner join tblGrade g " + 
+					"                        on c.courseseq = g.courseseq " + 
+					"                            inner join tbllecturesubject ls " + 
+					"                                on ls.lectureseq = l.lectureseq " + 
+					"                                    inner join tblSubject sb " + 
+					"                                        on ls.subjectseq = sb.subjectseq " + 
+					"                                                where s.stdseq = ? and s.stdname = ? and sb.subjectseq = ? " + 
+					"                                                     and g.gradenotescore <> 0";
+			
+			PreparedStatement stat = conn.prepareStatement(sql);
+			
+			stat.setString(1, studentSeq);
+			stat.setString(2, studentName);
+			stat.setString(3, input);
+			
+			ResultSet rs = stat.executeQuery();
+			
+			if(rs.next()) {
+				
+				student.setSTDSeq(rs.getString("stdseq"));
+				student.setSTDName(rs.getString("stdname"));
+				grade.setGradeNoteScore(rs.getString("필기점수"));
+				grade.setGradeSkillScore(rs.getString("실기점수"));
+				grade.setGradeAttendanceScore(rs.getString("출석점수"));
+				lecture.setLectuerName(rs.getString("lecturename"));
+				subject.setSubjectName(rs.getString("subjectname"));
+				
+				return grade;
+				
+			}
+			
+		} catch (Exception e) {
+			System.out.println("AdminDAO.studentGradeInfo() : " + e.toString());
+		}
+		
+		return null;
+	}
+//------------------------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------------------	
 }

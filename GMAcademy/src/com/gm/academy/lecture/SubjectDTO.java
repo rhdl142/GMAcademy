@@ -3,6 +3,8 @@ package com.gm.academy.lecture;
 public class SubjectDTO {
 	private String subjectSeq;
 	private String subjectName;
+	private String updatesubjectname;
+	
 	public String getSubjectSeq() {
 		return subjectSeq;
 	}
@@ -15,11 +17,15 @@ public class SubjectDTO {
 	public void setSubjectName(String subjectName) {
 		this.subjectName = subjectName;
 	}
+	public String getUpdatesubjectName() {
+		return updatesubjectname;
+	}
+	public void setUpdatesubjectName(String updatesubjectname) {
+		this.updatesubjectname = updatesubjectname;
+	}
+	
 	@Override
 	public String toString() {
 		return "Subject [subjectSeq=" + subjectSeq + ", subjectName=" + subjectName + "]";
 	}
-	
-	
-	
 }

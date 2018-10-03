@@ -11,6 +11,7 @@ public class LectureDTO {
 	private String lectureCurrentSTD; //현재 수강 인원
 	private String TCHSeq; //교사 번호
 	private String TeacherName; //교사 명
+	private String period;
 	
 	public String getLectureSeq() {
 		return lectureSeq;
@@ -66,12 +67,11 @@ public class LectureDTO {
 	public void setTCHSeq(String TCHSeq) {
 		this.TCHSeq = TCHSeq;
 	}
-	@Override
-	public String toString() {
-		return "Lecture [lectureSeq=" + lectureSeq + ", lectuerName=" + lectureName + ", lectureStartDate="
-				+ lectureStartDate + ", lectureEndDate=" + lectureEndDate + ", classSeq=" + classSeq
-				+ ", lectureProgress=" + lectureProgress + ", lectureAcceptSTD=" + lectureAcceptSTD
-				+ ", lectureCurrentSTD=" + lectureCurrentSTD + ", TCHSeq=" + TCHSeq + "]";
+	public String getPeriod() {
+		return period;
+	}
+	public void setPeriod(String period) {
+		this.period = period;
 	}
 	public String getLectureName() {
 		return lectureName;
@@ -85,5 +85,12 @@ public class LectureDTO {
 	public void setTeacherName(String teacherName) {
 		this.TeacherName = teacherName;
 	}
-
+	@Override
+	public String toString() {
+		return "LectureDTO [lectureSeq=" + lectureSeq + ", lectureName=" + lectureName + ", lectureStartDate="
+				+ lectureStartDate + ", lectureEndDate=" + lectureEndDate + ", classSeq=" + classSeq
+				+ ", lectureProgress=" + lectureProgress + ", lectureAcceptSTD=" + lectureAcceptSTD
+				+ ", lectureCurrentSTD=" + lectureCurrentSTD + ", TCHSeq=" + TCHSeq + ", TeacherName=" + TeacherName
+				+ ", period=" + period + "]";
+	}
 }	

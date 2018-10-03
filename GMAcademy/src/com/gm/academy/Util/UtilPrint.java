@@ -13,8 +13,15 @@ public class UtilPrint {
 	public final static String[] ADMINTLECTUREMANAGEMENT = {"과정 현황 조회", "과정 등록", "과정 삭제", "과정 수정", "과정 검색", "돌아가기"};
 	public final static String[] ADMINTEACHERUPDATEMENU = {"이름 수정","전화번호 수정","돌아가기"};
 	public final static String[] ADMIN_LECTURE_MANAGEMENT = {"과정 현황 조회","과정 등록","과정 삭제","과정 수정","돌아가기"};
-	 public static final String[] ADMIM_LETUREUPDATE = {"과정 명 수정","과정 날짜 수정","과정 상태 수정","인원수 수정","강의실 수정","교사 코드 수정","돌아아기"}; //관리자_과정 수정
-	
+	public static final String[] ADMIM_LETUREUPDATE = {"과정 명 수정","과정 날짜 수정","과정 상태 수정","인원수 수정","강의실 수정","교사 코드 수정","돌아아기"}; //관리자_과정 수정
+	public final static String[] ADMIN_TEACHERMANAGEMENT = {"교사 재직 현황", "교사 등록", "교사 삭제", "교사 정보 수정", "돌아가기"};	//관리자_교사계정 관리
+	public final static String[] ADMIN_LECTUREMANEGEMENT = {"과정 현황 조회", "과정 등록", "과정 삭제", "과정 수정", "과정 검색", "돌아가기"};	//관리자_개설과정 관리
+	public final static String[] ADMIN_SUBJECTMANAGEMENT = {"과목 현황 조회", "과목 등록", "과목 삭제", "과목 수정", "돌아가기"};		//관리자_개설과목 관리
+	public final static String[] ADMIN_STUDENTMANAGEMENT = {"교육생 조회", "교육생 등록", "교육생 삭제", "교육생 수정", "상담일지 관리", "사후관리", "돌아가기"};	//관리자_교육생 관리
+	public final static String[] ADMIN_TESTMANAGEMENT = {"시험 정보 조회", "시험 정보 수정하기", "학생별 성적 조회", "성적 수정하기", "돌아가기"};		//관리자_시험관리 및 성적조회
+	public final static String[] ADMIN_ATTENDMANAGEMENT = {"과정별 출결조회", "기간별 출결조회", "학생 출결조회", "출결 수정하기", "돌아가기"};		//관리자_출결관리 및 출결조회
+	public final static String[] ADMIN_TEXTBOOKMANAGEMENR = {"교재 사용현황", "교재 신청서 작성", "돌아가기"};		//관리자_교재관리
+	public static final String[] ADMIN_UPDATETEST = {"문제 수정", "배점 수정"};	
 	
 	//일자 menu
 	public void menu(String[] list) {

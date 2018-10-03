@@ -8,6 +8,7 @@ import com.gm.academy.MainClass;
 import com.gm.academy.Util.UtilPrint;
 import com.gm.academy.Util.UtilScanner;
 import com.gm.academy.lecture.LectureDTO;
+import com.gm.academy.lecture.SubjectDTO;
 import com.gm.academy.teacher.TeacherDTO;
 
 public class AdminController {
@@ -70,7 +71,43 @@ public class AdminController {
 					}
 				}//while
 			}else if(input == 3) {
-				
+		       	 
+	        	 MainClass.crumb.in("개설과목 관리");
+	        	 
+	        	 out.bigTitle(">>개설과목 관리<<");
+	        	 out.menu(UtilPrint.ADMIN_SUBJECTMANAGEMENT);
+	        	 
+	        	 System.out.println();
+	             input = scan.nextInt(">>선택");
+	             
+	             //선택
+	             if(input == 1) {
+	            	 
+	            	 MainClass.crumb.in("과목 현황 조회");
+	            	 subjectlist();		//현재 강의중인 과정의 과목 리스트 출력 메소드
+	            	 MainClass.crumb.out();
+	            	 
+	             }else if(input == 2) {
+	            	 
+	            	 MainClass.crumb.in("과목 등록");
+	            	 addsubject();
+	            	 MainClass.crumb.out();
+	            	 
+	             }else if(input == 3) {
+	            	 
+	            	 MainClass.crumb.in("과목 삭제");
+	            	 deletesubject();
+	            	 MainClass.crumb.out();
+	            	 
+	             }else if(input == 4) {
+	            	 
+	            	 MainClass.crumb.in("과목 수정");
+	            	 updatesubject();
+	            	 MainClass.crumb.out();
+	            	 
+	             }else if(input == 5) {
+	            	 out.pause();
+	             }
 			}else if(input == 4) {
 				
 			}else if(input == 5) {
@@ -599,5 +636,84 @@ public class AdminController {
 		out.pause();
 		
 	}//LectureCheck
+//----------------------------------------------------------------------------------------------------------------------
+//개설과목관리----------------------------------------------------------------------------------------------------------------------
+	private void updatesubject() {
+		
+		out.middleTitle(">>과목 수정<<");
+		
+		//과목 수정
+		String updatesubjectname = scan.next("수정할 과목명 : ");
+		String subjectname = scan.next("기존 과목명 : ");
+		
+		//DAO 위임 > update
+		SubjectDTO subject = new SubjectDTO();
+		
+		subject.setUpdatesubjectName(updatesubjectname);
+		subject.setSubjectName(subjectname);
+		
+		int result = dao.updatesubject(subject);
+		
+		out.result("과목을 수정하였습니다.");
+		out.pause();
+}
 
+
+	private void deletesubject() {
+	
+		out.middleTitle(">>과목 삭제<<");
+		
+		//과목 삭제
+		String subjectname = scan.next("삭제할 과목명 : ");
+		
+		//DAO 위임 > delete
+		SubjectDTO subject = new SubjectDTO();
+		
+		subject.setSubjectName(subjectname);
+		
+		int result = dao.deletesubject(subject);
+		
+		out.result(result, "과목을 삭제하였습니다.");
+		out.pause();
+	
+}
+
+
+	private void addsubject() {
+	
+		out.middleTitle(">>과목 등록<<");
+		
+		//과목 등록
+		String subjectname = scan.next("등록할 과목명 : ");
+		
+		//DAO 위임 > insert
+		SubjectDTO subject = new SubjectDTO();
+		
+		subject.setSubjectName(subjectname);
+		
+		int result = dao.addsubject(subject);
+		
+		out.result(result, "과목을 등록하였습니다.");
+		out.pause();
+		
+}
+
+
+	private void subjectlist() {
+		
+		out.middleTitle(">>과목현황 조회<<");
+		
+		//과목코드, 과목명 목록 출력
+		ArrayList<SubjectDTO> list = dao.subjectlist();
+		
+		out.header(new String[] {"과목번호", "과목명"});
+		
+		for(SubjectDTO dto : list) {
+			out.data(new Object[] {dto.getSubjectSeq() + "\t", dto.getSubjectName()});
+		}
+		
+		
+	}//과목현황 조회
+
+//----------------------------------------------------------------------------------------------------------------------
 }
