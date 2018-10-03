@@ -7,6 +7,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 import com.gm.academy.Util.DBUtil;
+import com.gm.academy.Util.UtilPrint;
+import com.gm.academy.Util.UtilScanner;
 import com.gm.academy.exam.GradeDTO;
 import com.gm.academy.lecture.LectureDTO;
 import com.gm.academy.lecture.SubjectDTO;
@@ -18,9 +20,11 @@ import com.gm.academy.teacher.TeacherDTO;
 public class AdminDAO {
 	private Connection conn;
 	private PreparedStatement stat;
-
+	private UtilPrint out;
+	
 	public AdminDAO() {
 		this.conn = DBUtil.getConnection("localhost","Project","java1234");
+		this.out = new UtilPrint();
 	}
 
 //교사계정관리----------------------------------------------------------------------------------------------------------
@@ -1551,6 +1555,152 @@ public class AdminDAO {
 		} catch (Exception e) {
 			System.out.println("AdminDAO.deleteOversight() : " + e.toString());
 		}
+		
+		return 0;
+	}
+//---------------------------------------------------------------------------------------------------------------------
+//출결관리 및 출결조회---------------------------------------------------------------------------------------------------------------------
+	public ArrayList<Object[]> getLecture() {
+		String sql ="select lectureseq as 과정번호, lectureName as 과정명, " + 
+				"        lectureenddate-lecturestartdate||'일' as 기간 " + 
+				"            from tblLecture where lectureprogress = '강의중'";
+		ArrayList<Object[]> olist = new ArrayList<Object[]>();
+		try {
+			stat= conn.prepareStatement(sql);
+			ResultSet rs = stat.executeQuery();
+			while(rs.next()) {
+				olist.add(new Object[] {
+					rs.getString("과정번호"),rs.getString("기간"),"\t"+rs.getString("과정명")	
+				});
+			}
+			return olist;
+		} catch (Exception e) {
+			out.result("입력오류가 발생했습니다. 신중히 입력해주시기 바랍니다.");
+		}		
+		return null;
+	}
+	public ArrayList<Object[]> getAttendance(String sel) {
+		String sql="select s.stdSeq as 학생번호,s.stdName as 학생명, s.stdtel as 전화번호, " + 
+				"    to_char(ad.ontime,'yyyy-mm-dd') as 날짜,ab.absencesituation as 출결 " + 
+				"        from tblattendance ad  " + 
+				"            inner join tblCourse c on c.courseseq = ad.courseseq " + 
+				"                inner join tblStudent s on s.stdseq = c.stdseq " + 
+				"                    inner join tblabsencerecord  ab on ab.absenceSeq = ad.absenceSeq " + 
+				"                        where lectureSeq = ?";
+		try {
+			stat=conn.prepareStatement(sql);
+			stat.setString(1, sel);
+			ResultSet rs = stat.executeQuery();
+			ArrayList<Object[]> olist = new ArrayList<Object[]>();
+			while(rs.next()) {
+				olist.add(new Object[] {
+						rs.getString("학생번호")
+						,rs.getString("학생명")
+						,rs.getString("전화번호")
+						,rs.getString("날짜"),
+						rs.getString("출결")
+				});
+			}
+			return olist;
+		} catch (Exception e) {
+			out.result("입력오류가 발생했습니다. 신중히 입력해주시기 바랍니다.");
+		}
+		
+		return null;
+	}
+	public ArrayList<Object[]> getAttendanceByDay(String year, String month, String day) {
+		String sql = "select s.stdName as 학생명, l.lectureName as 과정명, to_char(ontime,'hh24:mi:ss') as 출석시간, to_char(offtime,'hh24:mi:ss') as 퇴실시간, " + 
+				"    ab.absenceSituation as 출결 " + 
+				"        from tblattendance ad inner join tblabsencerecord ab on ad.absenceseq = ab.absenceseq " + 
+				"            inner join tblCourse c on c.courseSeq = ad.courseseq " + 
+				"                inner join tblStudent s on s.stdSeq = c.stdSeq " + 
+				"                    inner join tblLecture l on l.lectureSeq = c.lectureSeq " + 
+				"                        where to_char(ontime,'yyyy-mm-dd') = ? and to_char(offtime,'yyyy-mm-dd') = ?";
+		ArrayList<Object[]> olist = new ArrayList<Object[]>();
+		try {
+			String date = year+"-"+month+"-"+day;
+			PreparedStatement stat = conn.prepareStatement(sql);
+			stat.setString(1, date);
+			stat.setString(2, date);
+			ResultSet rs = stat.executeQuery();
+			while(rs.next()) {
+				olist.add(new Object[] {
+					rs.getString("학생명"),rs.getString("출석시간")
+					,rs.getString("퇴실시간"),rs.getString("출결"),
+					rs.getString("과정명")
+				});
+			}
+			return olist;
+		} catch (Exception e) {
+			out.result("입력오류가 발생했습니다. 신중히 입력해주시기 바랍니다.");
+		}
+		
+		
+		
+		
+		return null;
+	}
+	public ArrayList<StudentDTO> getStudentDTO(String stdName) {
+		String sql="select * from tblStudent where stdName = ?";
+		try {
+			stat = conn.prepareStatement(sql);
+			stat.setString(1, stdName);
+			ResultSet rs = stat.executeQuery();
+			ArrayList<StudentDTO> slist = new ArrayList<StudentDTO>();
+			while(rs.next()) {
+				StudentDTO dto = new StudentDTO();
+				dto.setSTDSeq(rs.getString("stdSeq"));
+				dto.setSTDName(rs.getString("stdName"));
+				dto.setSTDSsn(rs.getString("stdSsn"));
+				dto.setSTDTel(rs.getString("stdTel"));
+				slist.add(dto);
+			}
+			return slist;
+		} catch (Exception e) {
+			out.result("입력오류가 발생했습니다. 신중히 입력해주시기 바랍니다.");
+		}
+		return null;
+	}
+	public ArrayList<Object[]> getAttendanceByStudent(String stdSeq) {
+		String sql ="select to_char(ontime,'yyyy-mm-dd') as 날짜 ,  ab.absencesituation as 출결, " + 
+				"    to_char(ontime,'hh24:mi:ss') as 출입시간,to_char(offtime,'hh24:mi:ss') as 퇴실시간 " + 
+				"        from tblattendance a inner join tblCourse c on c.courseseq = a.courseseq " + 
+				"            inner join tblabsencerecord ab on ab.absenceseq = a.absenceseq " + 
+				"                inner join tblStudent s on s.stdSeq = c.stdSeq " + 
+				"                    where s.stdSeq = ? ";
+		try {
+			stat=conn.prepareStatement(sql);
+			stat.setString(1, stdSeq);
+			ResultSet rs = stat.executeQuery();
+			ArrayList<Object[]> olist = new ArrayList<Object[]>();
+			while(rs.next()) {
+				olist.add(new Object[] {
+					rs.getString("날짜"),rs.getString("출입시간"),rs.getString("퇴실시간"),rs.getString("출결")	
+				});
+				
+			}
+			return olist;
+		} catch (Exception e) {
+			out.result("입력오류가 발생했습니다. 신중히 입력해주시기 바랍니다.");
+		}
+		
+		
+		return null;
+	}
+	public int updateAttendance(String stdSeq, String date, String situation) {
+		String sql ="update tblAttendance set absenceSeq = ? where TO_CHAR(ONTIME,'YYYY-MM-DD') = ? and courseSeq=" + 
+				"    (select courseSeq from tblCourse c inner join tblLecture l on c.lectureSeq = l.lectureSeq " + 
+				"        where c.stdSeq = ? and l.lectureProgress = '강의중')";
+		try {
+			stat=conn.prepareStatement(sql);
+			stat.setString(1, situation);
+			stat.setString(2, date);
+			stat.setString(3, stdSeq);
+			return stat.executeUpdate();
+		} catch (Exception e) {
+			System.out.println("AdminDAO.updateAttendance() : " + e.toString());
+		}
+		
 		
 		return 0;
 	}

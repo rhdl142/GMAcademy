@@ -26,6 +26,12 @@ public class UtilPrint {
 	public final static String[] STDUPDATE = {"학생명","주민번호","전화번호","돌아가기"};
 	public final static String[] COUNSELING = {"상담일지 조회","상담일지 등록","상담일지 삭제","상담일지 수정","돌아가기"};
 	public final static String[] OVERSIGHT = {"사후처리 조회","사후처리 등록","사후처리 삭제","사후처리 수정","돌아가기"};
+	public final static String[] STUDENT_LOGIN = {"성적조회","출결","교사평가","상담일지","돌아가기"};
+	public final static String[] STUDNET_GRADE = {"필기 성적 조회","실기 성적 조회","출결 성적 조회","전체 성적 조회","돌아가기"};
+	public final static String[] STUDENT_ATTENDACE = {"입실등록","퇴실등록","출결현황","돌아가기"};
+	public final static String[] TEACHER_EVALUATION = {"교사평가등록","돌아가기"};
+	public final static String[] TEREGISTER = {"과정평가","과목평가"};
+	public final static String[] CUNSULTING = {"상담일지 조회","돌아가기"};
 	
 	//일자 menu
 	public void menu(String[] list) {
@@ -37,6 +43,14 @@ public class UtilPrint {
 	// - 선긋기
 	public void bar(int size) {
 		for(int i=0; i<size; i++) {
+			System.out.print("-");
+		}
+		System.out.println();
+	}
+	
+	// - 선긋기
+	public void bar() {
+		for(int i=0; i<80; i++) {
 			System.out.print("-");
 		}
 		System.out.println();

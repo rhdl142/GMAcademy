@@ -114,9 +114,42 @@ public class AdminController {
 			}else if(input == 4) {
 				studentMange(); 
 			}else if(input == 5) {
-				
+
 			}else if(input == 6) {
-				
+				while (true) {
+					out.bigTitle("출결관리 및 출결조회");
+					out.menu(new String[] { "과정별 출결조회", "기간별 출결조회", "학생 출결조회", "출결 수정하기", "돌아가기" });
+					input = 0;
+					try {
+						input = scan.nextInt("선택");
+					} catch (Exception e) {
+						out.result("입력오류가 발생하였습니다. 신중히 입력해주시기 바랍니다.");
+					}
+					if (input == 1) {
+						// 과정별 출결조회
+						MainClass.crumb.in("과정별 출결조회");
+						showAttendanceByLecture();
+						MainClass.crumb.out();
+					} else if (input == 2) {
+						// 기간별 출결조회
+						MainClass.crumb.in("기간별 출결조회");
+						showAttendanceByDay();
+						MainClass.crumb.out();
+					} else if (input == 3) {
+						// 학생 출결조회
+						MainClass.crumb.in("학생 출결조회");
+						showAttendanceByStudent();
+						MainClass.crumb.out();
+					} else if (input == 4) {
+						// 출결 수정하기
+						MainClass.crumb.in("출결 수정하기");
+						updateAttendance();
+						MainClass.crumb.out();
+					} else {
+						// 돌아가기
+						break;
+					}
+				}				
 			}else if(input == 7) {
 				
 			}else if(input == 8) {
@@ -1598,4 +1631,217 @@ public class AdminController {
 	}
 
 //----------------------------------------------------------------------------------------------------------------------
+//출결관리및출결조회----------------------------------------------------------------------------------------------------------------------
+	/**
+	 * 출결 수정하기 메소드
+	 */
+	private void updateAttendance() {
+		out.bigTitle("출결 수정하기");
+		
+		//학생명 입력
+		String stdName = scan.next("학생명");
+		ArrayList<StudentDTO> slist = new ArrayList<StudentDTO>();
+		slist = dao.getStudentDTO(stdName);
+		//헤더 출력
+		out.header(new String[] {
+				"학생번호","학생명"
+		});
+		//데이터 출력
+		for(int i =0 ; i<slist.size();i++) {
+			out.data(new Object[] {
+					slist.get(i).getSTDSeq(),slist.get(i).getSTDName()
+			});
+		}
+		//학생코드입력
+		String stdSeq = scan.next("학생번호");
+		//날짜입력
+		String year = scan.next("시작 년도");
+		String month = scan.next("시작 월");
+		if(month.length()==1) {
+			month="0"+month;
+		}
+		String day = scan.next("시작 일");
+		if(day.length()==1) {
+			day="0"+day;
+		}
+		String date = String.format("%s-%s-%s",year,month,day);
+		//출결상태입력
+		out.middleTitle("변경할 사항");
+		out.menu(new String[] {
+				"정상","지각","조퇴","외출","병가","기타"
+		});
+		String situation = scan.next("출결");
+		
+		int result = dao.updateAttendance(stdSeq,date,situation);
+		out.result(result, "출결사항을 성공적으로 수정하였습니다.");
+		
+		out.pause();
+	}
+
+	/**
+	 * 학생별 출결조회 메소드
+	 */
+	private void showAttendanceByStudent() {
+		out.bigTitle("학생별 출결조회");
+		//데이터 입력(이름)
+		String stdName = scan.next("학생명");
+		//데이터 추출
+		ArrayList<StudentDTO> slist = new ArrayList<StudentDTO>();
+		slist = dao.getStudentDTO(stdName);
+		if(slist.size()==0) {
+			out.bar();
+			System.out.println("\t\t학생 데이터가 없습니다.");
+			
+			out.bar();
+			out.pause("※뒤로가시려면 엔터키를 눌러주세요");
+			return;
+		}
+		//헤더 출력
+		out.header(new String[] {
+				"[학생코드]","[학생명]","[전화번호]","[주민번호]"
+		});
+		//데이터출력
+		for(int i =0; i<slist.size();i++) {
+			out.data(new Object[] {
+					slist.get(i).getSTDSeq(),"\t"+slist.get(i).getSTDName(),slist.get(i).getSTDTel(),slist.get(i).getSTDSsn()
+			});
+		}
+		//학생번호 입력(유일키)
+		String stdSeq = scan.next("학생번호");
+		ArrayList<Object[]> olist = dao.getAttendanceByStudent(stdSeq);
+		//데이터 출력
+		int page = 1;
+		while (true) {
+			int onePage = 10;
+			int index = (page * onePage) - onePage;
+			if (page >= olist.size()) {
+				System.out.println("페이지수를 초과하였습니다. 범위 내의 숫자를 입력해주세요");
+				continue;
+			}
+			out.header(new String[] { "[날짜]","  ","[출석시간]", "[퇴실시간]", "[출결]"});
+			for (int i = index; i < index + onePage; i++) {
+				if (i >= olist.size()) {
+					break;
+				}
+				out.data(olist.get(i));
+			}
+			out.bar();
+			System.out.println("(0:돌아가기)\t\t" + page + "/"
+					+ (olist.size() % onePage == 0 ? olist.size() / onePage : olist.size() / onePage + 1));
+			out.bar();
+			try {
+				page = scan.nextInt("페이지");
+				if(page==0) {
+					break;
+				}
+			} catch (Exception e) {
+				System.out.println("입력오류가 발생했습니다. 신중히 입력해주시기 바랍니다.");
+			}
+		}
+	}
+
+	/**
+	 * 기간별 출결조회 메소드
+	 */
+	private void showAttendanceByDay() {
+		out.bigTitle("기간별 출결조회");
+		// 헤더출력
+		System.out.println("[기간 입력]");
+		String year = scan.next("시작 년도");
+		String month = scan.next("시작 월");
+		if(month.length()==1) {
+			month="0"+month;
+		}
+		String day = scan.next("시작 일");
+		if(day.length()==1) {
+			day="0"+day;
+		}
+		out.bar();
+		// 헤더
+		out.header(new String[] { "학생명", "과정명", "출석시간", "퇴근시간", "출결상황" });
+		// 데이터
+		ArrayList<Object[]> olist = dao.getAttendanceByDay(year, month, day);
+		int page = 1;
+		while (true) {
+			int onePage = 10;
+			int index = (page * onePage) - onePage;
+			if (page <= olist.size()) {
+				System.out.println("페이지수를 초과하였습니다. 범위 내의 숫자를 입력해주세요");
+				continue;
+			}
+			out.header(new String[] { "[학생명]","[출석시간]", "[퇴실시간]", "[출결]", "[과정명]"});
+			for (int i = index; i < index + onePage; i++) {
+				if (i >= olist.size()) {
+					break;
+				}
+				out.data(olist.get(i));
+			}
+			out.bar();
+			System.out.println("(0:돌아가기)\t\t" + page + "/"
+					+ (olist.size() % onePage == 0 ? olist.size() / onePage : olist.size() / onePage + 1));
+			out.bar();
+			try {
+				page = scan.nextInt("페이지");
+				if(page==0) {
+					break;
+				}
+			} catch (Exception e) {
+				System.out.println("입력오류가 발생했습니다. 신중히 입력해주시기 바랍니다.");
+			}
+		}
+
+	}
+
+	/**
+	 * 과정별 출결조회 메소드
+	 */
+	private void showAttendanceByLecture() {
+		out.bigTitle("과정별 출결조회");
+		// 헤더출력
+		out.header(new String[] { "과정코드", "기간", "\t", "과정명" });
+		// 데이터 출력(현재 강의(진행)중인 과정)
+		ArrayList<Object[]> olist = dao.getLecture();
+		for (int i = 0; i < olist.size(); i++) {
+			out.data(olist.get(i));
+		}
+		// 선택
+		String sel = "";
+		try {
+			sel = scan.next("과정코드");
+		} catch (Exception e) {
+			out.result("입력오류가 발생했습니다. 신중히 입력해주시기 바랍니다.");
+		}
+		out.bar();
+		olist = dao.getAttendance(sel);
+		// 페이징
+		int page = 1;
+		while (true) {
+			int onePage = 10;
+			int index = (page * onePage) - onePage;
+			if (page >= olist.size()) {
+				System.out.println("페이지수를 초과하였습니다. 범위 내의 숫자를 입력해주세요");
+				continue;
+			}
+			
+			out.header(new String[] { "[학생코드]", "[학생명]", "[전화번호]", "", "[날짜]", "[출결]" });
+			for (int i = index; i < index + onePage; i++) {
+				if (i >= olist.size()) {
+					break;
+				}
+				out.data(olist.get(i));
+			}
+			out.bar();
+			System.out.println("(0:돌아가기)\t\t" + page + "/"
+					+ (olist.size() % onePage == 0 ? olist.size() / onePage : olist.size() / onePage + 1));
+			out.bar();
+			try {
+				page = scan.nextInt("페이지");
+				if(page==0) {
+					break;
+				}
+			} catch (Exception e) {
+				System.out.println("입력오류가 발생했습니다. 신중히 입력해주시기 바랍니다.");
+			}
+		}
+	}
 }
