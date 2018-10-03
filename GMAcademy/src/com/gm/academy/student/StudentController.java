@@ -365,4 +365,38 @@ public class StudentController {
 		System.out.printf("[과정명] : %s\n",MainClass.lectureName);
 		System.out.printf("[과정기간] : %s\n",MainClass.lectureDate);
 	}
+//------------------------------------------------------------------------------------------
+//ID/PW찾기------------------------------------------------------------------------------------------
+	/**
+	 * 교육생 ID/PW찾기
+	 * 
+	 * @param name 이름
+	 * @param telCode 전화번호 및 코드
+	 * @param cate ID/PW찾기 구분
+	 */
+	public void search(String name, String telCode, int cate) {
+		StudentDTO sDTO = new StudentDTO();
+		
+		if(cate == 1) { 
+			sDTO.setCate(1);
+			sDTO.setSTDName(name);
+			sDTO.setSTDTel(telCode);
+			dao.search(sDTO);
+			out.header(new String[] {"[이름]","[전화번호]","[코드]"});
+			out.data(new Object[] {sDTO.getSTDName()
+					+ sDTO.getSTDTel()
+					+ sDTO.getSTDSeq()});
+		} else {
+			sDTO.setCate(2);
+			sDTO.setSTDName(name);
+			sDTO.setSTDSeq(telCode);
+			dao.search(sDTO);
+			out.header(new String[] {"[이름]","[전화번호]","[비밀번호]"});
+			out.data(new Object[] {sDTO.getSTDName()
+					+ sDTO.getSTDTel()
+					+ sDTO.getSTDSsn()});
+		}
+		
+		out.result(sDTO != null ? 1:0,"ID/PW찾기에 성공했습니다.");
+	}
 }

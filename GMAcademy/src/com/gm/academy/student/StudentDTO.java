@@ -6,6 +6,7 @@ public class StudentDTO {
 	private String STDSsn;
 	private String STDTel;
 	private String STDLecCnt;
+	private int cate;
 	public String getSTDSeq() {
 		return STDSeq;
 	}
@@ -36,11 +37,15 @@ public class StudentDTO {
 	public void setSTDLecCnt(String sTDLecCnt) {
 		STDLecCnt = sTDLecCnt;
 	}
+	public int getCate() {
+		return cate;
+	}
+	public void setCate(int cate) {
+		this.cate = cate;
+	}
 	@Override
 	public String toString() {
 		return "Student [STDSeq=" + STDSeq + ", STDName=" + STDName + ", STDSsn=" + STDSsn + ", STDTel=" + STDTel
 				+ ", STDLecCnt=" + STDLecCnt + "]";
 	}
-	
-	
 }

@@ -14,6 +14,8 @@ public class UtilPrint {
 	public final static String[] TEACHER_EVALUATION = {"교사평가등록","돌아가기"};
 	public final static String[] TEREGISTER = {"과정평가","과목평가"};
 	public final static String[] CUNSULTING = {"상담일지 조회","돌아가기"};
+	public final static String[] SEARCH_ID_PW = {"ID찾기","PW찾기","돌아가기"};
+	public final static String[] USER_CHOICE = {"교사","교육생","돌아가기"};
 	
 	//일자 menu
 	public void menu(String[] list) {

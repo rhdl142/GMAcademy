@@ -91,7 +91,65 @@ public class MainClass {
 	
 	//ID/PW찾기
 	private static void search() {
+		MainClass.crumb.in("ID/PW 찾기");
+		
+		String name = null;
+		String tel = null;
+		
+		while(true) {
+			out.bigTitle("ID/PW 찾기");
+			
+			out.menu(UtilPrint.SEARCH_ID_PW);
+			int input = scan.nextInt("선택");
+			
+			if(input == 1) {
+				out.bigTitle("ID 찾기");
+				
+				MainClass.crumb.in("ID찾기");
+				
+				out.menu(UtilPrint.USER_CHOICE);
+				input = scan.nextInt("선택");
+				
+				name = scan.next("이름");
+				tel = scan.next("전화번호");
+				
+				if(input == 1) {
+					
+				} else if(input == 2) {
+					studentC.search(name, tel, 1);
+				}
+				
+				MainClass.crumb.out();
+				
+				out.pause();
+			} else if(input == 2) {
+				out.bigTitle("PW 찾기");
+				
+				MainClass.crumb.in("PW찾기");
+				
+				out.menu(UtilPrint.USER_CHOICE);
+				input = scan.nextInt("선택");
 
+				name = scan.next("이름");
+				tel = scan.next("코드");
+				
+				if(input == 1) {
+					
+				} else if(input == 2) {
+					studentC.search(name, tel, 2);
+				}
+				
+				MainClass.crumb.out();
+				
+				out.pause();
+			} else if(input == 3) {
+				break;
+			} else {
+				out.result("잘못입력하였습니다.");
+			}
+		}
+		
+		MainClass.crumb.out();		
 	}
 	
 	//로그인

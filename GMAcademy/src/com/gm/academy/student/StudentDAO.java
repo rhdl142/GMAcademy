@@ -290,7 +290,51 @@ public class StudentDAO {
 		}
 		return null;
 	}
+
+//-------------------------------------------------------------------------------------------------------------------------------
+//ID/PW찾기-------------------------------------------------------------------------------------------------------------------------------
+	public StudentDTO search(StudentDTO sDTO) {
+		String sql = null;
+		
+		try {
+			if(sDTO.getCate() == 1) {
+				sql = "select STDSeq from tblStudent where STDName = ? and STDTel = ?";
+				PreparedStatement stat = conn.prepareStatement(sql);
+				
+				stat.setString(1, sDTO.getSTDName());
+				stat.setString(2, sDTO.getSTDTel());
+				
+				ResultSet rs = stat.executeQuery();
+		
+				if(rs.next()) {
+					sDTO.setSTDSeq(rs.getString("STDSeq"));
+				}
+				
+				return sDTO;
+			} else {
+				sql = "select STDSsn, STDTel from tblStudent where STDName = ? and STDSeq = ?";
+				PreparedStatement stat = conn.prepareStatement(sql);
+
+				stat.setString(1, sDTO.getSTDName());
+				stat.setString(2, sDTO.getSTDSeq());
+
+				ResultSet rs = stat.executeQuery();
+
+				if(rs.next()) {					
+					sDTO.setSTDSsn(rs.getString("STDSsn"));
+					sDTO.setSTDTel(rs.getString("STDTel"));
+				}
+				
+				return sDTO;
+			}	
+		} catch (Exception e) {
+			System.out.println("StudentDAO.search :" + e.toString());
+		}
+		return null;
+	}
+//-------------------------------------------------------------------------------------------------------------------------------
 }
+
 
 
 
