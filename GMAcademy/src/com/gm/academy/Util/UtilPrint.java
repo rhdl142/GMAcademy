@@ -8,7 +8,11 @@ public class UtilPrint {
 	public final static int LONG = 80;
 	public final static int SHORT = 40;
 	public final static String[] MAIN = {"로그인","찾기(ID/PW)","로그아웃","종료하기"};
-
+	public final static String[] ADMINMAIN = {"교사 계정 관리","개설 과정 관리","개설 과목 관리","교육생 관리","시험 관리 및 성적 조회","출결 관리 및 출결 조회","관리자 교재관리","돌아가기"};
+	public final static String[] ADMINTEACHERMANAGEMENT = {"교사 재직 현황", "교사 등록","교사 삭제","교사 정보 수정", "돌아가기"};
+	public final static String[] ADMINTLECTUREMANAGEMENT = {"과정 현황 조회", "과정 등록", "과정 삭제", "과정 수정", "과정 검색", "돌아가기"};
+	public final static String[] ADMINTEACHERUPDATEMENU = {"이름 수정","전화번호 수정","돌아가기"};
+	
 	
 	//일자 menu
 	public void menu(String[] list) {
@@ -24,6 +28,14 @@ public class UtilPrint {
 		}
 		System.out.println();
 	}
+	
+	// - 선긋기
+		public void bar2(int size) {
+			for(int i=0; i<size; i++) {
+				System.out.print("=");
+			}
+			System.out.println();
+		}
 	
 	//일시정지 label 입력
 	public void pause(String label) {
@@ -81,7 +93,7 @@ public class UtilPrint {
 	
 	//결과 원하는 msg입력
 	public void result(String msg) {
-		System.out.println("[결과]"+ msg);
+		System.out.println(msg);
 		System.out.println();
 	}
 	

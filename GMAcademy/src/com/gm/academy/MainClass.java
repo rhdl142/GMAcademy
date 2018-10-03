@@ -80,8 +80,8 @@ public class MainClass {
 		StudentController studentC = new StudentController();
 		TeacherController teacherC = new TeacherController();
 
-		String id = scan.next("아이디 : ");
-		String pw = scan.next("비밀번호 : ");
+		String id = scan.next("아이디");
+		String pw = scan.next("비밀번호");
 		
 		if(id.contains("ST")) {
 			studentC.main(id,pw);
