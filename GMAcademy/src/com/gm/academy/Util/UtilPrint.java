@@ -18,9 +18,10 @@ public class UtilPrint {
 	
 	//teacher
 	public final static String[] TEACHER_LOGIN= {"강의스케줄 조회","시험관리","성적관리","출결 현황 조회","교사 평가 조회","상담일지","돌아가기"};
-	public final static String[] TEACHER_ATTENDANCE = {
-		"기간별 조회","과정별 조회","돌아가기"	
-	};
+	public final static String[] TEACHER_ATTENDANCE = {"기간별 조회","과정별 조회","돌아가기"};
+	public final static String[] SEARCH_ID_PW = {"ID찾기","PW찾기","돌아가기"};
+	public final static String[] USER_CHOICE = {"교사","교육생","돌아가기"};
+	
 	//일자 menu
 	public void menu(String[] list) {
 		for(int i=0; i<list.length; i++) {

@@ -539,4 +539,45 @@ public class TeacherDAO {
 		}
 		return null;
 	}
+//-------------------------------------------------------------------------------------------------------------------------
+//ID/PW찾기-------------------------------------------------------------------------------------------------------------------------
+	public TeacherDTO search(TeacherDTO tDTO) {
+		String sql = null;
+		
+		try {
+			if(tDTO.getCate() == 1) {
+				sql = "select TCHSeq from tblTeacher where TCHName = ? and TCHTel = ?";
+				PreparedStatement stat = conn.prepareStatement(sql);
+				
+				stat.setString(1, tDTO.getTCHName());
+				stat.setString(2, tDTO.getTCHTel());
+				
+				ResultSet rs = stat.executeQuery();
+		
+				if(rs.next()) {
+					tDTO.setTCHSeq(rs.getString("TCHSeq"));
+				}
+				
+				return tDTO;
+			} else {
+				sql = "select TCHSsn,TCHTel from tblTeacher where TCHName = ? and TCHSeq = ?";
+				PreparedStatement stat = conn.prepareStatement(sql);
+
+				stat.setString(1, tDTO.getTCHName());
+				stat.setString(2, tDTO.getTCHSeq());
+
+				ResultSet rs = stat.executeQuery();
+
+				if(rs.next()) {					
+					tDTO.setTCHSsn(rs.getString("TCHSsn"));
+					tDTO.setTCHTel(rs.getString("TCHTel"));
+				}
+				
+				return tDTO;
+			}	
+		} catch (Exception e) {
+			System.out.println("TeacherDTO.search :" + e.toString());
+		}
+		return null;
+	}
 }

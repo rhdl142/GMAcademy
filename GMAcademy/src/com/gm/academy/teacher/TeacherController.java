@@ -771,4 +771,31 @@ public class TeacherController {
 			System.out.println("잘못 입력하셨습니다. 다시 입력해주세요.");
 		}
 	}
+//---------------------------------------------------------------------------------------------------------------
+//ID/PW찾기---------------------------------------------------------------------------------------------------------------
+	public void search(String name, String telCode, int cate) {
+		TeacherDTO tDTO = new TeacherDTO();
+		
+		if(cate == 1) { 
+			tDTO.setCate(1);
+			tDTO.setTCHName(name);
+			tDTO.setTCHTel(telCode);
+			tdao.search(tDTO);
+			out.header(new String[] {"[이름]","[전화번호]","[코드]"});
+			out.data(new Object[] {tDTO.getTCHName()
+					+ tDTO.getTCHTel()
+					+ tDTO.getTCHSeq()});
+		} else {
+			tDTO.setCate(2);
+			tDTO.setTCHName(name);
+			tDTO.setTCHSeq(telCode);
+			tdao.search(tDTO);
+			out.header(new String[] {"[이름]","[전화번호]","[비밀번호]"});
+			out.data(new Object[] {tDTO.getTCHName()
+					+ tDTO.getTCHTel()
+					+ tDTO.getTCHSsn()});
+		}
+		
+		out.result(tDTO != null ? 1:0,"ID/PW찾기에 성공했습니다.");
+	}
 }
