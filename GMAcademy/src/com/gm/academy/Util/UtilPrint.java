@@ -12,6 +12,8 @@ public class UtilPrint {
 	public final static String[] ADMINTEACHERMANAGEMENT = {"교사 재직 현황", "교사 등록","교사 삭제","교사 정보 수정", "돌아가기"};
 	public final static String[] ADMINTLECTUREMANAGEMENT = {"과정 현황 조회", "과정 등록", "과정 삭제", "과정 수정", "과정 검색", "돌아가기"};
 	public final static String[] ADMINTEACHERUPDATEMENU = {"이름 수정","전화번호 수정","돌아가기"};
+	public final static String[] ADMIN_LECTURE_MANAGEMENT = {"과정 현황 조회","과정 등록","과정 삭제","과정 수정","돌아가기"};
+	 public static final String[] ADMIM_LETUREUPDATE = {"과정 명 수정","과정 날짜 수정","과정 상태 수정","인원수 수정","강의실 수정","교사 코드 수정","돌아아기"}; //관리자_과정 수정
 	
 	
 	//일자 menu

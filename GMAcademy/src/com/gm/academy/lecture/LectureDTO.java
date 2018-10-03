@@ -1,15 +1,17 @@
 package com.gm.academy.lecture;
 
 public class LectureDTO {
-	private String lectureSeq;
-	private String lectuerName;
-	private String lectureStartDate;
-	private String lectureEndDate;
-	private String classSeq;
-	private String lectureProgress;
-	private String lectureAcceptSTD;
-	private String lectureCurrentSTD;
-	private String TCHSeq;
+	private String lectureSeq; //과정번호
+	private String lectureName; //과정 명
+	private String lectureStartDate; //과정 시작일
+	private String lectureEndDate; //과정 종료일
+	private String classSeq; //강의실 번호
+	private String lectureProgress; //강의 진행 현황
+	private String lectureAcceptSTD; //강의 수용 인원
+	private String lectureCurrentSTD; //현재 수강 인원
+	private String TCHSeq; //교사 번호
+	private String TeacherName; //교사 명
+	
 	public String getLectureSeq() {
 		return lectureSeq;
 	}
@@ -17,10 +19,10 @@ public class LectureDTO {
 		this.lectureSeq = lectureSeq;
 	}
 	public String getLectuerName() {
-		return lectuerName;
+		return lectureName;
 	}
 	public void setLectuerName(String lectuerName) {
-		this.lectuerName = lectuerName;
+		this.lectureName = lectuerName;
 	}
 	public String getLectureStartDate() {
 		return lectureStartDate;
@@ -61,15 +63,27 @@ public class LectureDTO {
 	public String getTCHSeq() {
 		return TCHSeq;
 	}
-	public void setTCHSeq(String tCHSeq) {
-		TCHSeq = tCHSeq;
+	public void setTCHSeq(String TCHSeq) {
+		this.TCHSeq = TCHSeq;
 	}
 	@Override
 	public String toString() {
-		return "Lecture [lectureSeq=" + lectureSeq + ", lectuerName=" + lectuerName + ", lectureStartDate="
+		return "Lecture [lectureSeq=" + lectureSeq + ", lectuerName=" + lectureName + ", lectureStartDate="
 				+ lectureStartDate + ", lectureEndDate=" + lectureEndDate + ", classSeq=" + classSeq
 				+ ", lectureProgress=" + lectureProgress + ", lectureAcceptSTD=" + lectureAcceptSTD
 				+ ", lectureCurrentSTD=" + lectureCurrentSTD + ", TCHSeq=" + TCHSeq + "]";
 	}
-	
+	public String getLectureName() {
+		return lectureName;
+	}
+	public void setLectureName(String lectureName) {
+		this.lectureName = lectureName;
+	}
+	public String getTeacherName() {
+		return TeacherName;
+	}
+	public void setTeacherName(String teacherName) {
+		this.TeacherName = teacherName;
+	}
+
 }	

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import com.gm.academy.MainClass;
 import com.gm.academy.Util.UtilPrint;
 import com.gm.academy.Util.UtilScanner;
+import com.gm.academy.lecture.LectureDTO;
 import com.gm.academy.teacher.TeacherDTO;
 
 public class AdminController {
@@ -34,7 +35,40 @@ public class AdminController {
 			if(input == 1) {
 				TeacherManagente(); //교사 계정 관리 메소드
 			}else if(input == 2) {
-
+				//개설 과정 관리///
+				while(true) {
+					MainClass.crumb.in("개설 과정 관리");
+					out.bigTitle("개설 과정 관리");
+					out.menu(UtilPrint.ADMIN_LECTURE_MANAGEMENT);
+					
+					input = scan.nextInt("선택");
+					
+					if(input == 1) {
+						MainClass.crumb.in("과정 현황 조회");
+						Admin_LectureCheck();
+						MainClass.crumb.out();				
+					}else if(input == 2) {
+						//과정 등록
+						MainClass.crumb.in("과정 등록");
+						Admin_LectureRegist();
+						MainClass.crumb.out();
+					}else if(input == 3) {
+						//과정 삭제
+						MainClass.crumb.in("과정 삭제");
+						Admin_LectureRemove();
+						MainClass.crumb.out();
+					}else if(input == 4) {
+						//과정 수정
+						MainClass.crumb.in("과정 수정");
+						Admin_LectureUpdate();
+						MainClass.crumb.out();
+					}else if(input == 5){
+						break;
+					}else {
+						System.out.println("잘못 입력하였습니다. 다시 입력하세요");
+						continue;
+					}
+				}//while
 			}else if(input == 3) {
 				
 			}else if(input == 4) {
@@ -56,6 +90,8 @@ public class AdminController {
 
 		
 	}
+
+//교사계정관리-------------------------------------------------------------------------------------------------	
 	
 	private void TeacherManagente() {//교사 계정 관리 메소드
 		MainClass.crumb.in("교사 계정 관리");
@@ -249,5 +285,319 @@ public class AdminController {
 		MainClass.crumb.out();
 
 	}
+	
+//----------------------------------------------------------------------------------------------------------
+	
+//개설과정관리----------------------------------------------------------------------------------------------------------
+	
+	private void Admin_LectureUpdate() {
+		out.bigTitle("과정 수정");
+		
+		ArrayList<LectureDTO> lecList = dao.LectureList();
+
+		out.header(new String[] { "과정코드", "시작날짜", "종료날짜", "진행여부", "과정 명" });
+		for (LectureDTO lec : lecList) {
+			out.data(new Object[] { lec.getLectureSeq() + "\t", lec.getLectureStartDate(), lec.getLectureEndDate(),
+					lec.getLectureProgress() + "\t", lec.getLectuerName() });
+		} // for
+		out.line(UtilPrint.LONG);
+		
+		while(true) {
+			
+			out.bigTitle("과정 수정");
+			out.menu(UtilPrint.ADMIM_LETUREUPDATE);
+			int select = scan.nextInt("▶ 선택");
+
+			if (select == 1) {
+				// 과정 명 수정
+				MainClass.crumb.in("과정 명 수정");
+				LectureNameUpdate();
+				MainClass.crumb.out();
+			} else if (select == 2) {
+				// 과정 날짜 수정
+				MainClass.crumb.in("과정 날짜 수정");
+				LectureDateUpdate();
+				MainClass.crumb.out();
+			} else if (select == 3) {
+				// 강의 진행 여부 수정
+				MainClass.crumb.in("강의 진행 여부 수정");
+				LectureProgressUpdate();
+				MainClass.crumb.out();
+			} else if (select == 4) {
+				// 학생 수 수정
+				MainClass.crumb.in("학생 인원 수정");
+				LetureStudentUpdate();
+				MainClass.crumb.out();
+			} else if (select == 5) {
+				// 강의실 번호 수정
+				MainClass.crumb.in("강의실 번호 수정");
+				LectureClassRoomUpdate();
+				MainClass.crumb.out();
+			} else if (select == 6) {
+				// 교사 코드 수정
+				MainClass.crumb.in("교사 코드 수정");
+				LectureTeacherUpdate();
+				MainClass.crumb.out();
+			} else if (select == 7) {
+				// 돌아가기
+				break;
+			}
+		}
+		
+		
+	}
+
+	private void LectureTeacherUpdate() {
+		
+		while (true) {
+			out.bigTitle("교사 코드 수정");
+
+			String lectureSeq = scan.next("▶ 수정할 과정 코드 입력 (0 : 돌아가기)");
+
+			if (!lectureSeq.equals("0")) {
+				String TCHSeq = scan.next("▶ 수정할 교사 코드 입력");
+
+				LectureDTO lecDTO = new LectureDTO();
+
+				lecDTO.setLectureSeq(lectureSeq);
+				lecDTO.setTCHSeq(TCHSeq);
+
+				int result = dao.updateTeacher(lecDTO);
+
+				out.result(result, " ■교사 코드 수정 성공■");
+				out.pause();
+			}else 
+				break;
+		}
+	}
+
+
+	private void LectureClassRoomUpdate() {
+		
+		while(true) {
+			out.bigTitle("강의실 수정");
+			
+			String lectureSeq = scan.next("▶ 수정할 과정 코드 입력 (0 : 돌아가기)");
+			if(!lectureSeq.equals("0")) {
+
+				String classSeq = scan.next("▶ 수정할 강의실 번호 입력");
+				LectureDTO lecDTO = new LectureDTO();
+
+				lecDTO.setLectureSeq(lectureSeq);
+				lecDTO.setClassSeq(classSeq);
+
+				int result = dao.updateClassRoom(lecDTO);
+
+				out.result(result, " ■강의실 수정 성공■");
+				out.pause();
+			}else
+				break;
+		}
+	}
+
+
+	private void LetureStudentUpdate() {
+
+		while (true) {
+			out.bigTitle("학생 인원 수정");
+
+			String lectureSeq = scan.next("▶ 수정할 과정 코드 입력 (0 : 돌아가기)");
+
+			if (!lectureSeq.equals("0")) {
+				String lectureAcceptSTD = scan.next("▶ 수정할 총 인원 입력");
+				String lectureCurrentSTD = scan.next("▶ 수정할 현 수강 인원 입력");
+
+				LectureDTO lecDTO = new LectureDTO();
+
+				lecDTO.setLectureSeq(lectureSeq);
+				lecDTO.setLectureAcceptSTD(lectureAcceptSTD);
+				lecDTO.setLectureCurrentSTD(lectureCurrentSTD);
+
+				int result = dao.updateStuedent(lecDTO);
+				out.result(result, " ■학생 인원 수정 성공■");
+				out.pause();
+			}else
+				break;
+		}
+	}
+
+	private void LectureProgressUpdate() {
+		while (true) {
+
+			out.bigTitle("강의 진행 여부 수정");
+
+			String lectureSeq = scan.next("▶ 수정할 과정 코드 입력 (0 : 돌아가기)");
+			if (!lectureSeq.equals("0")) {
+				String lectureProgress = scan.next("▶ 강의 진행 여부 입력");
+
+				LectureDTO lecDTO = new LectureDTO();
+
+				lecDTO.setLectureSeq(lectureSeq);
+				lecDTO.setLectureProgress(lectureProgress);
+
+				int result = dao.updateLectureProgress(lecDTO);
+
+				out.result(result, " ■강의 진행 여부 수정 성공■");
+				out.pause();
+			}else
+				break;
+		}
+	}
+
+	private void LectureDateUpdate() {
+		while (true) {
+			out.bigTitle("과정 날짜 수정");
+			String lectureSeq = scan.next("▶ 수정할 과정 코드 입력(0 : 돌아가기)");
+			if (!lectureSeq.equals("0")) {
+				String lectureStartDate = scan.next("▶ 과정 시작 날짜 입력");
+				String lectureEndDate = scan.next("▶ 과정 종료 날짜 입력");
+
+				LectureDTO lecDTO = new LectureDTO();
+
+				lecDTO.setLectureSeq(lectureSeq);
+				lecDTO.setLectureStartDate(lectureStartDate);
+				lecDTO.setLectureEndDate(lectureEndDate);
+
+				int result = dao.updateLectureDate(lecDTO);
+
+				out.result(result, " ■과정 날짜 수정 성공■");
+				out.pause();
+			}else
+				break;
+		}
+
+	}
+
+	private void LectureNameUpdate() {
+
+		while (true) {
+			out.bigTitle("과정 명 수정");
+
+			String lectureSeq = scan.next("▶ 수정할 과정 코드 입력(0 : 돌아가기)");
+			if (!lectureSeq.equals("0")) {
+				String lectureName = scan.next("▶ 수정 할 과목 명 입력");
+
+				LectureDTO lecDTO = new LectureDTO();
+
+				lecDTO.setLectureSeq(lectureSeq);
+				lecDTO.setLectuerName(lectureName);
+
+				int result = dao.updateLectureName(lecDTO);
+
+				out.result(result, " ■과정 명 수정 성공■");
+				out.pause();
+			}else
+				break;
+		}
+	}
+
+
+	private void Admin_LectureRemove() {
+		ArrayList<LectureDTO> lecList = dao.LectureList();
+
+		out.bigTitle("과정 삭제");
+		out.header(new String[] { "과정코드", "시작날짜", "종료날짜", "진행여부", "과정 명" });
+		for (LectureDTO lec : lecList) {
+			out.data(new Object[] { lec.getLectureSeq() + "\t", lec.getLectureStartDate(), lec.getLectureEndDate(),
+					lec.getLectureProgress() + "\t", lec.getLectuerName() });
+		} // for
+		out.line(UtilPrint.LONG);
+
+		String seq = scan.next("▶ 삭제할 과정 코드 입력(0 : 돌아가기)");
+		if (!seq.equals("0")) {
+			LectureDTO lecDTO = new LectureDTO();
+			lecDTO.setLectureSeq(seq);
+
+			int result = dao.LectureRemove(lecDTO);
+
+			out.result(result, " ■과정 삭제 성공■");
+			out.pause();
+		} else
+			System.out.println("과정 삭제 종료");
+		out.pause();
+	}
+
+
+	private void Admin_LectureRegist() {
+		out.bigTitle("과정 등록");
+
+		String lectureName = scan.next("▶ 과정 명 (0 : 돌아가기)");
+		if (!lectureName.equals("0")) {
+			String lectureStartDate = scan.next("▶ 과정 시작 날짜");
+			String lectureEndDate = scan.next("▶ 과정 종료 날짜");
+			String classSeq = scan.next("▶ 강의실 번호");
+			String lectureProgress = scan.next("▶ 강의 진행 여부");
+			String lectureAcceptSTD = scan.next("▶ 수강 가능 인원");
+			String lectureCurrentSTD = scan.next("▶ 현재 수강 인원");
+			String tchSeq = scan.next("▶ 교사 코드");
+
+			// DTO통합
+			LectureDTO lecDTO = new LectureDTO();
+
+			lecDTO.setLectuerName(lectureName);
+			lecDTO.setLectureStartDate(lectureStartDate);
+			lecDTO.setLectureEndDate(lectureEndDate);
+			lecDTO.setClassSeq(classSeq);
+			lecDTO.setLectureProgress(lectureProgress);
+			lecDTO.setLectureAcceptSTD(lectureAcceptSTD);
+			lecDTO.setLectureCurrentSTD(lectureCurrentSTD);
+			lecDTO.setTCHSeq(tchSeq);
+
+			int result = dao.lectureRegister(lecDTO);
+
+			out.result(result, " ■과정 등록 성공■");
+			out.pause();
+		}else
+			System.out.println("과정 등록 종료");
+		out.pause();
+	}
+
+
+	private void Admin_LectureCheck() {
+
+		//리스트 출력
+		out.bigTitle("과정 현황 조회");
+		ArrayList<LectureDTO> lecList = dao.LectureList();
+
+		out.header(new String[] {"과정코드","시작날짜","종료날짜","진행여부","과정 명"});
+		for(LectureDTO lec : lecList) {
+			out.data(new Object[] {
+					lec.getLectureSeq()+"\t",
+					lec.getLectureStartDate(),
+					lec.getLectureEndDate(),
+					lec.getLectureProgress()+"\t",
+					lec.getLectuerName()
+			});
+		}//for
+		out.line(UtilPrint.LONG);
+		
+		
+		
+	
+		//삭제 코드 입력받기
+		String lecSeq = scan.next("▶ 과정 세부 내역 보기(코드 입력)(0 : 돌아가기)");
+		if(!lecSeq.equals("0")) {
+			
+			ArrayList<LectureDTO> lecDetail = dao.LectureDetail(lecSeq);
+			out.header(new String[] {"과정코드","진행여부","교사이름","수강인원","강의실","과정 명"});
+			for(LectureDTO lec : lecDetail) {
+				out.data(new Object[] {
+					lec.getLectureSeq()+"\t",
+					lec.getLectureProgress()+"\t",
+					lec.getTeacherName()+"\t",
+					lec.getLectureCurrentSTD()+"\t",
+					lec.getClassSeq(),
+					lec.getLectuerName()
+				});//for
+				out.line(UtilPrint.LONG);
+			}
+			
+		}else {
+			System.out.println("과정 현황 보기 종료");
+		}
+		
+		out.pause();
+		
+	}//LectureCheck
 
 }
