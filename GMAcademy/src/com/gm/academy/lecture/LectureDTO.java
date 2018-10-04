@@ -1,17 +1,17 @@
 package com.gm.academy.lecture;
 
 public class LectureDTO {
-	private String lectureSeq; //과정번호
-	private String lectureName; //과정 명
-	private String lectureStartDate; //과정 시작일
-	private String lectureEndDate; //과정 종료일
-	private String classSeq; //강의실 번호
-	private String lectureProgress; //강의 진행 현황
-	private String lectureAcceptSTD; //강의 수용 인원
-	private String lectureCurrentSTD; //현재 수강 인원
-	private String TCHSeq; //교사 번호
-	private String TeacherName; //교사 명
+	private String lectureSeq;
+	private String lectuerName;
+	private String lectureStartDate;
+	private String lectureEndDate;
+	private String classSeq;
+	private String lectureProgress;
+	private String lectureAcceptSTD;
+	private String lectureCurrentSTD;
+	private String TCHSeq;
 	private String period;
+	private String TeacherName; //교사 명
 	
 	public String getLectureSeq() {
 		return lectureSeq;
@@ -20,10 +20,10 @@ public class LectureDTO {
 		this.lectureSeq = lectureSeq;
 	}
 	public String getLectuerName() {
-		return lectureName;
+		return lectuerName;
 	}
 	public void setLectuerName(String lectuerName) {
-		this.lectureName = lectuerName;
+		this.lectuerName = lectuerName;
 	}
 	public String getLectureStartDate() {
 		return lectureStartDate;
@@ -64,8 +64,8 @@ public class LectureDTO {
 	public String getTCHSeq() {
 		return TCHSeq;
 	}
-	public void setTCHSeq(String TCHSeq) {
-		this.TCHSeq = TCHSeq;
+	public void setTCHSeq(String tCHSeq) {
+		TCHSeq = tCHSeq;
 	}
 	public String getPeriod() {
 		return period;
@@ -73,24 +73,17 @@ public class LectureDTO {
 	public void setPeriod(String period) {
 		this.period = period;
 	}
-	public String getLectureName() {
-		return lectureName;
-	}
-	public void setLectureName(String lectureName) {
-		this.lectureName = lectureName;
-	}
 	public String getTeacherName() {
 		return TeacherName;
 	}
 	public void setTeacherName(String teacherName) {
-		this.TeacherName = teacherName;
+		TeacherName = teacherName;
 	}
 	@Override
 	public String toString() {
-		return "LectureDTO [lectureSeq=" + lectureSeq + ", lectureName=" + lectureName + ", lectureStartDate="
+		return "Lecture [lectureSeq=" + lectureSeq + ", lectuerName=" + lectuerName + ", lectureStartDate="
 				+ lectureStartDate + ", lectureEndDate=" + lectureEndDate + ", classSeq=" + classSeq
 				+ ", lectureProgress=" + lectureProgress + ", lectureAcceptSTD=" + lectureAcceptSTD
-				+ ", lectureCurrentSTD=" + lectureCurrentSTD + ", TCHSeq=" + TCHSeq + ", TeacherName=" + TeacherName
-				+ ", period=" + period + "]";
+				+ ", lectureCurrentSTD=" + lectureCurrentSTD + ", TCHSeq=" + TCHSeq + "]";
 	}
 }	

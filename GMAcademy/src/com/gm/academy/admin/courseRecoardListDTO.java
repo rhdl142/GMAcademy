@@ -3,6 +3,7 @@ package com.gm.academy.admin;
 public class courseRecoardListDTO {
 
 	private String courseseq;
+	private String stdSeq;
 	private String stdName;
 	private String counseregdate;
 	private String counsecontents;
@@ -25,6 +26,15 @@ public class courseRecoardListDTO {
 	}
 	public void setCounsecontents(String counsecontents) {
 		this.counsecontents = counsecontents;
+		
+	
+		
+	}
+	public String getStdSeq() {
+		return stdSeq;
+	}
+	public void setStdSeq(String stdSeq) {
+		this.stdSeq = stdSeq;
 	}
 	public String getStdName() {
 		return stdName;
@@ -34,9 +44,11 @@ public class courseRecoardListDTO {
 	}
 	@Override
 	public String toString() {
-		return "courseRecoardListDTO [courseseq=" + courseseq + ", stdName=" + stdName + ", counseregdate="
-				+ counseregdate + ", counsecontents=" + counsecontents + "]";
+		return "courseRecoardListDTO [courseseq=" + courseseq + ", stdSeq=" + stdSeq + ", stdName=" + stdName
+				+ ", counseregdate=" + counseregdate + ", counsecontents=" + counsecontents + "]";
 	}
+	
+	
 	
 	
 	

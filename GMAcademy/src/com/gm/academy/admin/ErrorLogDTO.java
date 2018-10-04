@@ -4,6 +4,7 @@ public class ErrorLogDTO {
 	private String errorSeq;
 	private String errorCode;
 	private String errorDate;
+	private String part;
 	public String getErrorSeq() {
 		return errorSeq;
 	}
@@ -22,10 +23,14 @@ public class ErrorLogDTO {
 	public void setErrorDate(String errorDate) {
 		this.errorDate = errorDate;
 	}
+	public String getPart() {
+		return part;
+	}
+	public void setPart(String part) {
+		this.part = part;
+	}
 	@Override
 	public String toString() {
 		return "ErrorLog [errorSeq=" + errorSeq + ", errorCode=" + errorCode + ", errorDate=" + errorDate + "]";
 	}
-	
-	
 }

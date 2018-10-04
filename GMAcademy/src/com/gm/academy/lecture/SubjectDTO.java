@@ -3,8 +3,9 @@ package com.gm.academy.lecture;
 public class SubjectDTO {
 	private String subjectSeq;
 	private String subjectName;
-	private String updatesubjectname;
-	
+	private String updatesubjectName;
+	private String lectureName;
+	private String lectureSeq;
 	public String getSubjectSeq() {
 		return subjectSeq;
 	}
@@ -17,15 +18,27 @@ public class SubjectDTO {
 	public void setSubjectName(String subjectName) {
 		this.subjectName = subjectName;
 	}
-	public String getUpdatesubjectName() {
-		return updatesubjectname;
+	public String getUpdatesubjectname() {
+		return updatesubjectName;
 	}
-	public void setUpdatesubjectName(String updatesubjectname) {
-		this.updatesubjectname = updatesubjectname;
+	public void setUpdatesubjectname(String updatesubjectname) {
+		this.updatesubjectName = updatesubjectname;
 	}
-	
+	public String getLectureName() {
+		return lectureName;
+	}
+	public void setLectureName(String lectureName) {
+		this.lectureName = lectureName;
+	}
+	public String getLectureSeq() {
+		return lectureSeq;
+	}
+	public void setLectureSeq(String lectureSeq) {
+		this.lectureSeq = lectureSeq;
+	}
 	@Override
 	public String toString() {
-		return "Subject [subjectSeq=" + subjectSeq + ", subjectName=" + subjectName + "]";
+		return "SubjectDTO [subjectSeq=" + subjectSeq + ", subjectName=" + subjectName + ", updatesubjectname="
+				+ updatesubjectName + ", lectureName=" + lectureName + ", lectureSeq=" + lectureSeq + "]";
 	}
 }

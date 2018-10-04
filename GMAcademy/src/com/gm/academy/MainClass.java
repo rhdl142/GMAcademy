@@ -8,7 +8,6 @@ import com.gm.academy.Util.UtilScanner;
 import com.gm.academy.admin.AdminController;
 import com.gm.academy.admin.AdminDAO;
 import com.gm.academy.exam.ExamController;
-import com.gm.academy.lecture.LectureController;
 import com.gm.academy.student.StudentController;
 import com.gm.academy.teacher.TeacherController;
 import com.gm.academy.teacher.TeacherDAO;
@@ -27,7 +26,6 @@ public class MainClass {
 	private static StudentController studentC;
 	private static TeacherController teacherC;
 	private static ExamController examC;
-	private static LectureController lectureC;
 	private static AdminDAO dao;
 
 	// 프로그램 실행 중 어디서든 항상 사용할 자원 필요 > main() 소유 클래스의 정적 public 변수 생성

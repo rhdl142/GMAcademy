@@ -39,6 +39,9 @@ public class UtilPrint {
 	public final static String[] USER_CHOICE = {"교사","교육생","돌아가기"};
 	public final static String[] ADMIN_UPDATEGRADE = {"필기점수 수정", "실기점수 수정", "출석점수 수정"};
 	public final static String[] ADMIN_UPDATETESTQUEST = {"필기문제 수정","실기문제 수정"};
+	public final static String[] LOG_MENU = {"에러로그","로그인로그","로그","돌아가기"};
+	public final static String[] LOGIN_LOG = {"관리자 로그인 로그","교사 로그인 로그","교육생 로그인 로그","돌아가기"};
+	
 	//일자 menu
 	public void menu(String[] list) {
 		for(int i=0; i<list.length; i++) {

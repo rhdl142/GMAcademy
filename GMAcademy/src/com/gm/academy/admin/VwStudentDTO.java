@@ -1,6 +1,6 @@
 package com.gm.academy.admin;
 
-public class vwStudentDTO {
+public class VwStudentDTO {
 
 	private String lectureseq;
 	private String lecturename;
@@ -8,6 +8,7 @@ public class vwStudentDTO {
 	private String lectureenddate;
 	private String lectureprogress;
 	private String classseq;
+	private String courseseq;
 	private String stdseq;
 	private String stdname;
 	private String stdssn;
@@ -91,15 +92,21 @@ public class vwStudentDTO {
 	public void setTchname(String tchname) {
 		this.tchname = tchname;
 	}
-	
-	
+	public String getCourseseq() {
+		return courseseq;
+	}
+	public void setCourseseq(String courseseq) {
+		this.courseseq = courseseq;
+	}
 	@Override
 	public String toString() {
 		return "vwStudentDTO [lectureseq=" + lectureseq + ", lecturename=" + lecturename + ", lecturestartdate="
 				+ lecturestartdate + ", lectureenddate=" + lectureenddate + ", lectureprogress=" + lectureprogress
-				+ ", classseq=" + classseq + ", stdseq=" + stdseq + ", stdname=" + stdname + ", stdssn=" + stdssn
-				+ ", stdtel=" + stdtel + ", tchseq=" + tchseq + ", tchname=" + tchname + "]";
+				+ ", classseq=" + classseq + ", courseseq=" + courseseq + ", stdseq=" + stdseq + ", stdname=" + stdname
+				+ ", stdssn=" + stdssn + ", stdtel=" + stdtel + ", tchseq=" + tchseq + ", tchname=" + tchname + "]";
 	}
+	
+	
 	
 	
 
