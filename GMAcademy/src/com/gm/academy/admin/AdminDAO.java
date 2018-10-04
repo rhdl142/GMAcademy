@@ -1,14 +1,18 @@
 package com.gm.academy.admin;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLSyntaxErrorException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
 import com.gm.academy.Util.DBUtil;
 import com.gm.academy.Util.UtilPrint;
 import com.gm.academy.exam.GradeDTO;
+import com.gm.academy.exam.NoteTestDTO;
+import com.gm.academy.exam.SkillTestDTO;
 import com.gm.academy.lecture.LectureDTO;
 import com.gm.academy.lecture.PublisherDTO;
 import com.gm.academy.lecture.SubjectDTO;
@@ -17,6 +21,8 @@ import com.gm.academy.student.CourseRecordDTO;
 import com.gm.academy.student.StudentDTO;
 import com.gm.academy.student.StudentManageDTO;
 import com.gm.academy.teacher.TeacherDTO;
+
+import oracle.jdbc.internal.OracleTypes;
 
 public class AdminDAO {
 	private Connection conn;
@@ -710,57 +716,60 @@ public class AdminDAO {
 		}
 		return null;
 	}
+	/**
+	 * 학생 과목별 성적 출력 정보 메서드
+	 * 
+	 * @param studentSeq  학생코드
+	 * @param studentName 과목명
+	 * @param input       과목코드
+	 * @return
+	 */
+	public StudentGradeInfoDTO studentGradeInfo(String studentSeq, String studentName, String input) {
 
-	public GradeDTO studentGradeInfo(String studentSeq, String studentName, String input) {
-		
-		StudentDTO student = new StudentDTO();
-		GradeDTO grade = new GradeDTO();
-		LectureDTO lecture = new LectureDTO();
-		SubjectDTO subject = new SubjectDTO();
-		
-		//선택한 과목코드 입력받은 뒤 해당 학생의 성적 출력 메소드
+		StudentGradeInfoDTO dto = new StudentGradeInfoDTO();
+
+		// 선택한 과목코드 입력받은 뒤 해당 학생의 성적 출력 메소드
 		try {
-			
-			String sql = "select s.stdseq, s.stdname, g.gradenotescore as 필기점수, g.gradeskillscore as 실기점수, g.gradeattendancescore as 출석점수, l.lecturename, sb.subjectname from tblCourse c " + 
-					"    inner join tblStudent s " + 
-					"        on c.stdseq = s.stdseq " + 
-					"            inner join tblLecture l " + 
-					"                on c.lectureseq = l.lectureseq " + 
-					"                    inner join tblGrade g " + 
-					"                        on c.courseseq = g.courseseq " + 
-					"                            inner join tbllecturesubject ls " + 
-					"                                on ls.lectureseq = l.lectureseq " + 
-					"                                    inner join tblSubject sb " + 
-					"                                        on ls.subjectseq = sb.subjectseq " + 
-					"                                                where s.stdseq = ? and s.stdname = ? and sb.subjectseq = ? " + 
-					"                                                     and g.gradenotescore <> 0";
-			
+
+			String sql = "select s.stdseq, s.stdname, g.gradenotescore , g.gradeskillscore , g.gradeattendancescore , l.lecturename, sb.subjectname from tblCourse c "
+					+ "    inner join tblStudent s " + "        on c.stdseq = s.stdseq "
+					+ "            inner join tblLecture l " + "                on c.lectureseq = l.lectureseq "
+					+ "                    inner join tblGrade g "
+					+ "                        on c.courseseq = g.courseseq "
+					+ "                            inner join tbllecturesubject ls "
+					+ "                                on ls.lectureseq = l.lectureseq "
+					+ "                                    inner join tblSubject sb "
+					+ "                                        on ls.subjectseq = sb.subjectseq "
+					+ "                                                where s.stdseq = ? and s.stdname = ? and sb.subjectseq = ? "
+					+ "                                                     and g.gradenotescore <> 0";
+
 			PreparedStatement stat = conn.prepareStatement(sql);
-			
 			stat.setString(1, studentSeq);
 			stat.setString(2, studentName);
 			stat.setString(3, input);
-			
+
 			ResultSet rs = stat.executeQuery();
-			
-			if(rs.next()) {
-				
-				student.setSTDSeq(rs.getString("stdseq"));
-				student.setSTDName(rs.getString("stdname"));
-				grade.setGradeNoteScore(rs.getString("필기점수"));
-				grade.setGradeSkillScore(rs.getString("실기점수"));
-				grade.setGradeAttendanceScore(rs.getString("출석점수"));
-				lecture.setLectuerName(rs.getString("lecturename"));
-				subject.setSubjectName(rs.getString("subjectname"));
-				
-				return grade;
-				
+
+			if (rs.next()) {
+
+				dto.setSTDseq(rs.getString("stdseq"));
+				dto.setSTDName(rs.getString("stdname"));
+				dto.setGradeNoteScore(rs.getString("gradenotescore"));
+				dto.setGradeSkillScore(rs.getString("gradeskillscore"));
+				dto.setGradeAttendanceScore(rs.getString("gradeattendancescore"));
+				dto.setLectureName(rs.getString("lecturename"));
+				dto.setSubjectName(rs.getString("subjectname"));
+
 			}
-			
+			return dto;
+
+		} catch (SQLSyntaxErrorException e) {
+			out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
+			systemError("오라클에러", "AdminDAO.studentGradeInfo()");
 		} catch (Exception e) {
-			System.out.println("AdminDAO.studentGradeInfo() : " + e.toString());
+			out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
+			systemError("알수없는에러", "AdminDAO.studentGradeInfo()");
 		}
-		
 		return null;
 	}
 //------------------------------------------------------------------------------------------------------------------------------------------
@@ -2114,4 +2123,428 @@ public class AdminDAO {
 		return null;
 	}
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+	/**
+	 * 필기 점수 수정 메서드
+	 * 
+	 * @param studentgradeinfo 필기 점수
+	 * @return 필기 점수 수정 성공 여부
+	 */
+	public int updateNoteGrade(StudentGradeInfoDTO studentgradeinfo) {
+
+		// 필기점수 수정 메소드
+
+		try {
+
+			String sql = "update tblGrade " + "set gradenotescore = ? "
+					+ "where lecsubseq in (select lecSubSeq from tblLectureSubject where subjectSeq = ?) "
+					+ "and courseSeq =  (select courseSeq from tblCourse where stdSeq = (select stdSeq from tblStudent where stdName = ? ))";
+
+			PreparedStatement stat = conn.prepareStatement(sql);
+			stat.setString(1, studentgradeinfo.getUpdateGradeNoteScore());
+			stat.setString(2, studentgradeinfo.getSubjectSeq());
+			stat.setString(3, studentgradeinfo.getSTDName());
+
+			stat.executeUpdate();
+
+		} catch (SQLSyntaxErrorException e) {
+			out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
+			systemError("오라클에러", "AdminDAO.updateNoteGrade()");
+		} catch (Exception e) {
+			out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
+			systemError("알수없는에러", "AdminDAO.updateNoteGrade()");
+		}
+
+		return 0;
+	}
+
+	/**
+	 * 실기 점수 수정 메서드
+	 * 
+	 * @param studentgradeinfo 실기 점수
+	 * @return 실기 점수 수정 성공 여부
+	 */
+	public int updateSkillGrade(StudentGradeInfoDTO studentgradeinfo) {
+
+		// 실기점수 수정 메소드
+
+		try {
+
+			String sql = "update tblGrade " + "set gradeskillscore = ? "
+					+ "where lecsubseq in (select lecSubSeq from tblLectureSubject where subjectSeq = ?) "
+					+ "and courseSeq =  (select courseSeq from tblCourse where stdSeq = (select stdSeq from tblStudent where stdName = ? ))";
+
+			PreparedStatement stat = conn.prepareStatement(sql);
+			stat.setString(1, studentgradeinfo.getUpdateGradeSkillScore());
+			stat.setString(2, studentgradeinfo.getSubjectSeq());
+			stat.setString(3, studentgradeinfo.getSTDName());
+
+			stat.executeUpdate();
+
+		} catch (SQLSyntaxErrorException e) {
+			out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
+			systemError("오라클에러", "AdminDAO.updateSkillGrade()");
+		} catch (Exception e) {
+			out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
+			systemError("알수없는에러", "AdminDAO.updateSkillGrade()");
+		}
+
+		return 0;
+	}
+
+	/**
+	 * 출석 점수 수정 메소드
+	 * 
+	 * @param studentgradeinfo 출석 점수
+	 * @return 출석 점수 수정 성공 여부
+	 */
+	public int updateAttendanceGrade(StudentGradeInfoDTO studentgradeinfo) {
+
+		// 출석점수 수정 메소드
+
+		try {
+
+			String sql = "update tblGrade " + "set gradeattendancescore = ? "
+					+ "where lecsubseq in (select lecSubSeq from tblLectureSubject where subjectSeq = ?) "
+					+ "and courseSeq =  (select courseSeq from tblCourse where stdSeq = (select stdSeq from tblStudent where stdName = ? ))";
+
+			PreparedStatement stat = conn.prepareStatement(sql);
+			stat.setString(1, studentgradeinfo.getUpdateGradeAttendanceScore());
+			stat.setString(2, studentgradeinfo.getSubjectSeq());
+			stat.setString(3, studentgradeinfo.getSTDName());
+
+			stat.executeUpdate();
+
+		} catch (SQLSyntaxErrorException e) {
+			out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
+			systemError("오라클에러", "AdminDAO.updateAttendanceGrade()");
+		} catch (Exception e) {
+			out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
+			systemError("알수없는에러", "AdminDAO.updateAttendanceGrade()");
+		}
+
+		return 0;
+	}
+
+	/**
+	 * 필기 문제 리스트 조회 메서드
+	 * 
+	 * @param subjectname 과목명
+	 * @return 필기 문제 list 반환
+	 */
+	public ArrayList<NoteTestDTO> noteTestList(String subjectname) {
+
+		ArrayList<NoteTestDTO> list = new ArrayList<NoteTestDTO>();
+
+		// 필기 문제 리스트 조회
+		try {
+
+			String sql = "select notequeseq, notedistribution, notequestion from tblNoteTest "
+					+ "where subjectseq = (select subjectseq from tblSubject where subjectname = ?)";
+
+			PreparedStatement stat = conn.prepareStatement(sql);
+			stat.setString(1, subjectname);
+			ResultSet rs = stat.executeQuery();
+
+			while (rs.next()) {
+
+				NoteTestDTO dto = new NoteTestDTO();
+				dto.setNoteQueSeq(rs.getString("notequeseq"));
+				dto.setNoteDistribution(rs.getString("notedistribution"));
+				dto.setNoteQuestion(rs.getString("notequestion"));
+				list.add(dto);
+
+			}
+			return list;
+
+		} catch (SQLSyntaxErrorException e) {
+			out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
+			systemError("오라클에러", "AdminDAO.noteTestList()");
+		} catch (Exception e) {
+			out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
+			systemError("알수없는에러", "AdminDAO.noteTestList()");
+		}
+
+		return null;
+	}
+
+	/**
+	 * 필기 문제 수정 메서드
+	 * 
+	 * @param questnum     문제번호
+	 * @param quest        문제
+	 * @param distribution 배점
+	 * @return 필기 문제 수정 성공 여부
+	 */
+	public NoteTestDTO updateNoteTestQuest(String questnum, String quest, String distribution) {
+
+		// 필기 문제 수정 메소드
+
+		try {
+
+			String sql = "{call procUpdateNoteTest(?, ?, ?, ?)}";
+			CallableStatement stat = conn.prepareCall(sql);
+			stat.setString(1, questnum);
+			stat.setString(2, quest);
+			stat.setString(3, distribution);
+			stat.registerOutParameter(4, OracleTypes.NUMBER);
+
+			stat.execute();
+
+			if (stat.getInt(4) == 1) {
+				System.out.println("문제가 수정 되었습니다.");
+			} else {
+				System.out.println("수정 작업에 실패하였습니다.");
+			}
+
+		} catch (SQLSyntaxErrorException e) {
+			out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
+			systemError("오라클에러", "AdminDAO.updateNoteTestQuest()");
+		} catch (Exception e) {
+			out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
+			systemError("알수없는에러", "AdminDAO.updateNoteTestQuest()");
+		}
+
+		return null;
+	}
+
+	/**
+	 * 실기문제 리스트 조회 메서드
+	 * 
+	 * @param subjectname 과목명
+	 * @return 과목 실기 문제 list 반환
+	 */
+	public ArrayList<SkillTestDTO> skillTestList(String subjectname) {
+
+		ArrayList<SkillTestDTO> list = new ArrayList<SkillTestDTO>();
+
+		// 실기 문제 리스트 조회
+		try {
+
+			String sql = "select skillqueseq, skilldistribution, skillquestion "
+					+ "from tblSkillTest where subjectseq = (select subjectseq from tblSubject where subjectname = ?)";
+
+			PreparedStatement stat = conn.prepareStatement(sql);
+			stat.setString(1, subjectname);
+			ResultSet rs = stat.executeQuery();
+
+			while (rs.next()) {
+
+				SkillTestDTO dto = new SkillTestDTO();
+				dto.setSkillQueSeq(rs.getString("skillqueseq"));
+				dto.setSkillDistribution(rs.getString("skilldistribution"));
+				dto.setSkillQuestion(rs.getString("skillquestion"));
+				list.add(dto);
+
+			}
+			return list;
+
+		} catch (SQLSyntaxErrorException e) {
+			out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
+			systemError("오라클에러", "AdminDAO.skillTestList()");
+		} catch (Exception e) {
+			out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
+			systemError("알수없는에러", "AdminDAO.skillTestList()");
+		}
+
+		return null;
+	}
+
+	/**
+	 * 실기 문제 수정 메소드
+	 * 
+	 * @param questnum     문제번호
+	 * @param quest        문제
+	 * @param distribution 배점
+	 * @return 실기 문제 수정 성공 여부
+	 */
+	public SkillTestDTO updateSkillTestQuest(String questnum, String quest, String distribution) {
+
+		// 실기 문제 수정 메소드
+		try {
+
+			String sql = "{call procUpdateSkillTest(?, ?, ?, ?)}";
+			CallableStatement stat = conn.prepareCall(sql);
+			stat.setString(1, questnum);
+			stat.setString(2, quest);
+			stat.setString(3, distribution);
+			stat.registerOutParameter(4, OracleTypes.NUMBER);
+
+			stat.execute();
+
+			if (stat.getInt(4) == 1) {
+				System.out.println("문제가 수정 되었습니다.");
+			} else {
+				System.out.println("수정 작업에 실패하였습니다.");
+			}
+
+		} catch (SQLSyntaxErrorException e) {
+			out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
+			systemError("오라클에러", "AdminDAO.updateSkillTestQuest()");
+		} catch (Exception e) {
+			out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
+			systemError("알수없는에러", "AdminDAO.updateSkillTestQuest()");
+		}
+
+		return null;
+	}
+	
+	/**
+	 * errorLog 코드 발생 등록
+	 * 
+	 * @param logCode 로그 코드
+	 * @param part    에러 발생한곳
+	 * 
+	 */
+	public void systemError(String logCode, String part) {
+		try {
+			String sql = "insert into tblErrorLog values(errorSeq.nextval,?,default,?)";
+			PreparedStatement stat = conn.prepareStatement(sql);
+
+			stat.setString(1, logCode);
+			stat.setString(2, part);
+
+			stat.executeUpdate();
+		} catch (Exception e) {
+			System.out.println("AdminDAO.systemError :" + e.toString());
+		}
+
+	}
+
+	/**
+	 * 배점 수정 메서드
+	 * 
+	 * @param distribution 배점
+	 * @return 배점 수정 성공 여부
+	 */
+	public int updateDistribution(DistributionDTO distribution) {
+
+		// 배점 테이블 수정 메소드
+		try {
+
+			String sql = "update tblDistribution set dstrNote = ?, dstrskill = ?, dstrattendance = ? where dstrseq = 1";
+
+			PreparedStatement stat = conn.prepareStatement(sql);
+			stat.setString(1, distribution.getDstrNote());
+			stat.setString(2, distribution.getDstrSkill());
+			stat.setString(3, distribution.getDstrAttendance());
+
+			stat.executeUpdate();
+
+		} catch (SQLSyntaxErrorException e) {
+			out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
+			systemError("오라클에러", "AdminDAO.updateDistribution()");
+		} catch (Exception e) {
+			out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
+			systemError("알수없는에러", "AdminDAO.updateDistribution()");
+		}
+
+		return 0;
+	}
+
+	/**
+	 * 과정별 시험 성적 조회 메서드
+	 * 
+	 * @param stdSeq 교육생 코드
+	 * @return 과정별 시험 성적 조회 list
+	 */
+	public ArrayList<DetailScoreListDTO> ScoreList(String stdSeq) {
+
+		ArrayList<DetailScoreListDTO> list = new ArrayList<DetailScoreListDTO>();
+
+		try {
+
+			String sql = "select distinct  c.STDSEQ as 학생코드, std.STDName as 학생명, s.subjectname as 과목명, "
+					+ "                g.gradenotescore as 필기점수, g.gradeskillscore as 실기점수, g.gradeattendancescore as 출결점수, l.lectureName as 과정명"
+					+ " from tblGrade g " + "    inner join tblLectureSubject ls "
+					+ "        on g.lecSubSeq = ls.lecSubSeq " + "            inner join tblLecture l "
+					+ "                on l.lectureSeq = ls.lectureSeq "
+					+ "                    inner join tblSubject s "
+					+ "                        on ls.subjectSeq = s.subjectSeq "
+					+ "                            inner join tblCourse c "
+					+ "                                on c.courseSeq = g.courseSeq "
+					+ "                                    inner join tblStudent std "
+					+ "                                        on std.STDseq = c.STDSeq "
+					+ "											where std.STDseq = ? "
+					+ "                                            	order by std.STDSEQ";
+
+			PreparedStatement stat = conn.prepareStatement(sql);
+
+			stat.setString(1, stdSeq);
+
+			ResultSet rs = stat.executeQuery();
+
+			while (rs.next()) {
+
+				DetailScoreListDTO scoreDTO = new DetailScoreListDTO();
+
+				scoreDTO.setStdSeq(rs.getString("학생코드"));
+				scoreDTO.setStdName(rs.getString("학생명"));
+				scoreDTO.setSubjectName(rs.getString("과목명"));
+				scoreDTO.setGradeNoteScore(rs.getString("필기점수"));
+				scoreDTO.setGrageSkillScore(rs.getString("실기점수"));
+				scoreDTO.setGradeAttendanceScore(rs.getString("출결점수"));
+				scoreDTO.setLectureName(rs.getString("과정명"));
+
+				list.add(scoreDTO);
+			}
+			return list;
+		} catch (SQLSyntaxErrorException e) {
+			out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
+			systemError("오라클에러", "AdminDAO.ScoreList()");
+		} catch (Exception e) {
+			out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
+			systemError("알수없는에러", "AdminDAO.ScoreList()");
+		}
+
+		return null;
+	}
+
+	/**
+	 * 과정, 학생번호, 학생 명 리스트 출력 점수가 0인 학생에 대한 출력 제외 메서드
+	 * 
+	 * @return 과정 별 시험 성적 list 반환
+	 */
+	public ArrayList<LectureListDTO> LectureListDTO() {
+		ArrayList<LectureListDTO> list = new ArrayList<LectureListDTO>();
+
+		try {
+
+			String sql = "select distinct l.lectureName as lectureName, c.STDSEQ as STDSeq, std.STDName as STDName "
+					+ "from tblGrade g " + "    inner join tblLectureSubject ls "
+					+ "        on g.lecSubSeq = ls.lecSubSeq " + "            inner join tblLecture l "
+					+ "                on l.lectureSeq = ls.lectureSeq "
+					+ "                    inner join tblSubject s "
+					+ "                        on ls.subjectSeq = s.subjectSeq "
+					+ "                            inner join tblCourse c "
+					+ "                                on c.courseSeq = g.courseSeq "
+					+ "                                    inner join tblStudent std "
+					+ "                                        on std.STDseq = c.STDSeq "
+					+ "                                            where g.gradenotescore <> 0 "
+					+ "                                            order by c.STDSEQ ";
+
+			Statement stat = conn.createStatement();
+
+			ResultSet rs = stat.executeQuery(sql);
+
+			while (rs.next()) {
+				LectureListDTO lecDTO = new LectureListDTO();
+
+				lecDTO.setLectureName(rs.getString("lectureName"));
+				lecDTO.setSTDSeq(rs.getString("STDSeq"));
+				lecDTO.setSTDName(rs.getString("STDName"));
+
+				list.add(lecDTO);
+			}
+
+			return list;
+		} catch (SQLSyntaxErrorException e) {
+			out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
+			systemError("오라클에러", "AdminDAO.LectureListDTO()");
+		} catch (Exception e) {
+			out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
+			systemError("알수없는에러", "AdminDAO.LectureListDTO()");
+		}
+		return null;
+	}
 }

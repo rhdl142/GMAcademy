@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import com.gm.academy.MainClass;
 import com.gm.academy.Util.UtilPrint;
 import com.gm.academy.Util.UtilScanner;
+import com.gm.academy.exam.NoteTestDTO;
+import com.gm.academy.exam.SkillTestDTO;
 import com.gm.academy.lecture.LectureDTO;
 import com.gm.academy.lecture.PublisherDTO;
 import com.gm.academy.lecture.SubjectDTO;
@@ -119,7 +121,44 @@ public class AdminController {
 				}else if(input == 4) {
 					studentMange(); 
 				}else if(input == 5) {
-	
+					MainClass.crumb.in("시험관리 및 성적조회");
+
+					out.bigTitle(">>시험관리 및 성적조회<<");
+					out.menu(UtilPrint.ADMIN_TESTMANAGEMENT);
+
+					System.out.println();
+					input = scan.nextInt(">>선택");
+
+					// 선택
+					if (input == 1) {
+
+						MainClass.crumb.in("과정 별 시험 성적 조회");
+						Admin_ScoreList();
+						MainClass.crumb.out();
+
+					} else if (input == 2) {
+
+						MainClass.crumb.in("시험정보 수정하기");
+						updateTest();
+						MainClass.crumb.out();
+
+					} else if (input == 3) {
+
+						MainClass.crumb.in("학생별 성적조회");
+						studentTestInfo();
+						MainClass.crumb.out();
+
+					} else if (input == 4) {
+
+						MainClass.crumb.in("성적 수정하기");
+						updateGrade();
+						MainClass.crumb.out();
+
+					} else if (input == 5) {
+						out.pause();
+					}
+
+					MainClass.crumb.out();
 				}else if(input == 6) {
 					while (true) {
 						out.bigTitle("출결관리 및 출결조회");
@@ -2034,4 +2073,325 @@ public class AdminController {
 		}
 	}
 //-------------------------------------------------------------------------------------------------------------------------------------------------
+	/**
+	 * 시험관리 및 성적 조회 > 성적 수정하기 main(필기점수수정, 실기점수수정, 출결점수수정)
+	 */
+	private void updateGrade() {
+
+		out.bigTitle(">>성적 수정하기<<");
+		out.menu(UtilPrint.ADMIN_UPDATEGRADE);
+
+		// 성적 수정하기
+		System.out.println();
+		int input = scan.nextInt(">>선택");
+
+		if (input == 1) {
+			// 필기점수 수정
+			out.bigTitle(">>필기점수 수정<<");
+
+			// DAO 위임 > update
+
+			String stdname = scan.next(">>점수 수정할 학생 이름");
+			String STDseq = scan.next(">>점수 수정할 학생 코드");
+			STDseq = "ST" + STDseq.substring(2);
+
+			StudentGradeInfoDTO studentgradeinfo = new StudentGradeInfoDTO();
+
+			studentgradeinfo.setSTDseq(STDseq);
+			studentgradeinfo.setSTDName(stdname);
+
+			// 과목코드, 과목명 목록 출력
+			ArrayList<SubjectDTO> list = dao.studentSubjectList(studentgradeinfo.getSTDseq(),
+					studentgradeinfo.getSTDName());
+
+			out.bigTitle(">>현 수강중인 과목 목록<<");
+
+			out.header(new String[] { "과목번호", "과목명" });
+
+			for (SubjectDTO dto : list) {
+				out.data(new Object[] { dto.getSubjectSeq() + "\t", dto.getSubjectName() });
+			}
+
+			System.out.println();
+			String subjectseq = scan.next(">>수정할 과목 선택");
+			String updateScore = scan.next("기존점수 >> 수정할 점수");
+
+			studentgradeinfo.setSTDName(stdname); // 점수 수정할 학생이름
+			studentgradeinfo.setSubjectSeq(subjectseq); // 수정할 과목 코드
+			studentgradeinfo.setUpdateGradeNoteScore(updateScore); // 수정할 필기 점수
+
+			int result = dao.updateNoteGrade(studentgradeinfo);
+
+			out.result("필기점수를 수정하였습니다.");
+			out.pause();
+
+		} else if (input == 2) {
+			// 실기점수 수정
+			out.bigTitle(">>실기점수 수정<<");
+
+			// DAO 위임 > update
+
+			String stdname = scan.next(">>점수 수정할 학생 이름");
+			String STDseq = scan.next(">>점수 수정할 학생 코드");
+			STDseq = "ST" + STDseq.substring(2);
+
+			StudentGradeInfoDTO studentgradeinfo = new StudentGradeInfoDTO();
+
+			studentgradeinfo.setSTDseq(STDseq);
+			studentgradeinfo.setSTDName(stdname);
+
+			// 과목코드, 과목명 목록 출력
+			ArrayList<SubjectDTO> list = dao.studentSubjectList(studentgradeinfo.getSTDseq(),
+					studentgradeinfo.getSTDName());
+
+			out.bigTitle(">>현 수강중인 과목 목록<<");
+
+			out.header(new String[] { "과목번호", "과목명" });
+
+			for (SubjectDTO dto : list) {
+				out.data(new Object[] { dto.getSubjectSeq() + "\t", dto.getSubjectName() });
+			}
+
+			System.out.println();
+			String subjectseq = scan.next(">>수정할 과목 선택");
+			String updateScore = scan.next("기존점수 >> 수정할 점수");
+
+			studentgradeinfo.setSTDName(stdname); // 점수 수정할 학생이름
+			studentgradeinfo.setSubjectSeq(subjectseq); // 수정할 과목 코드
+			studentgradeinfo.setUpdateGradeSkillScore(updateScore); // 수정할 필기 점수
+
+			int result = dao.updateSkillGrade(studentgradeinfo);
+
+			out.result("실기점수를 수정하였습니다.");
+			out.pause();
+		} else if (input == 3) {
+			// 출석점수 수정
+			out.bigTitle(">>출석점수 수정<<");
+
+			// DAO 위임 > update
+
+			String stdname = scan.next(">>점수 수정할 학생 이름");
+			String STDseq = scan.next(">>점수 수정할 학생 코드");
+
+			StudentGradeInfoDTO studentgradeinfo = new StudentGradeInfoDTO();
+
+			studentgradeinfo.setSTDseq(STDseq);
+			studentgradeinfo.setSTDName(stdname);
+
+			// 과목코드, 과목명 목록 출력
+			ArrayList<SubjectDTO> list = dao.studentSubjectList(studentgradeinfo.getSTDseq(),
+					studentgradeinfo.getSTDName());
+
+			out.bigTitle(">>현 수강중인 과목 목록<<");
+
+			out.header(new String[] { "과목번호", "과목명" });
+
+			for (SubjectDTO dto : list) {
+				out.data(new Object[] { dto.getSubjectSeq() + "\t", dto.getSubjectName() });
+			}
+
+			System.out.println();
+			String subjectseq = scan.next(">>수정할 과목 선택");
+			String updateScore = scan.next("기존점수 >> 수정할 점수");
+
+			studentgradeinfo.setSTDName(stdname); // 점수 수정할 학생이름
+			studentgradeinfo.setSubjectSeq(subjectseq); // 수정할 과목 코드
+			studentgradeinfo.setUpdateGradeAttendanceScore(updateScore); // 수정할 필기 점수
+
+			int result = dao.updateAttendanceGrade(studentgradeinfo);
+
+			out.result("출석점수를 수정하였습니다.");
+			out.pause();
+
+		} else {
+			System.out.println("잘못된 입력입니다.");
+			out.pause();
+		}
+
+	}
+
+	/**
+	 * 시험관리 및 성적 조회 > 학생별 성적조회
+	 */
+	private void studentTestInfo() {
+		// 학생 별 성적조회
+
+		out.bigTitle(">>학생별 성적조회<<");
+
+		String studentName = scan.next("▶학생 명");
+		String studentSeq = scan.next("▶학생 코드");
+
+		StudentGradeInfoDTO studentgradeinfo = new StudentGradeInfoDTO();
+
+		studentgradeinfo.setSTDseq(studentSeq);
+		studentgradeinfo.setSTDName(studentName);
+
+		// 과목코드, 과목명 목록 출력
+		ArrayList<SubjectDTO> list = dao.studentSubjectList(studentgradeinfo.getSTDseq(),
+				studentgradeinfo.getSTDName());
+
+		out.bigTitle(">>현 수강중인 과목 목록<<");
+
+		out.header(new String[] { "과목번호", "과목명" });
+
+		for (SubjectDTO dto : list) {
+			out.data(new Object[] { dto.getSubjectSeq() + "\t", dto.getSubjectName() });
+		}
+
+		System.out.println();
+		String input = scan.next(">>선택");
+
+		studentgradeinfo = dao.studentGradeInfo(studentgradeinfo.getSTDseq(), studentgradeinfo.getSTDName(), input);
+
+		out.header(new String[] { "학생 코드", "학생 명", "필기점수", "실기점수", "출석점수", "과정명", "과목명" });
+		out.data(new Object[] { studentgradeinfo.getSTDseq() + "\t", studentgradeinfo.getSTDName() + "\t",
+				studentgradeinfo.getGradeNoteScore() + "\t", studentgradeinfo.getGradeSkillScore() + "\t",
+				studentgradeinfo.getGradeAttendanceScore() + "\t", studentgradeinfo.getLectureName() + "\t",
+				studentgradeinfo.getSubjectName() });
+
+	}
+
+	/**
+	 * 시험 관리 및 성적 조회 > 시험 정보 수정하기 main(문제 수정, 배점 수정)
+	 */
+	private void updateTest() {
+
+		out.bigTitle(">>시험정보 수정하기<<");
+		out.menu(UtilPrint.ADMIN_UPDATETEST);
+
+		// 시험정보 수정
+		System.out.println();
+		int input = scan.nextInt(">>선택");
+
+		if (input == 1) {
+			// 문제 수정
+			out.bigTitle(">>문제 수정<<");
+			out.menu(UtilPrint.ADMIN_UPDATETESTQUEST);
+
+			input = scan.nextInt(">>선택");
+
+			if (input == 1) {
+				// 프로시저 호출(필기문제 수정)
+				System.out.println();
+				String subjectname = scan.next(">>과목명 입력"); // 조회할 시험의 과목 코드 입력
+
+				// 입력할 정보 가지고 오기(조회)
+				ArrayList<NoteTestDTO> list = dao.noteTestList(subjectname);
+
+				out.header(new String[] { "문제번호", "문항배점", "문제" });
+
+				for (NoteTestDTO dto : list) {
+					out.data(new Object[] { dto.getNoteQueSeq() + "\t", dto.getNoteDistribution() + "\t",
+							dto.getNoteQuestion() });
+				}
+
+				System.out.println();
+				String questnum = scan.next(">>문제번호 입력"); // 수정할 문제의 문제번호 입력 받음
+				String quest = scan.next(">>문제 입력"); // 문제를 입력받아 입력받은 문제로 수정
+				String distribution = scan.next(">>문제배점 입력"); // 문제 배점 입력
+
+				// 필기 시험문제 수정
+				NoteTestDTO dto = dao.updateNoteTestQuest(questnum, quest, distribution);
+
+			} else if (input == 2) {
+				// 프로시저 호출(필기문제 수정)
+				System.out.println();
+				String subjectname = scan.next(">>과목명 입력"); // 조회할 시험의 과목 코드 입력
+
+				// 입력할 정보 가지고 오기(조회)
+				ArrayList<SkillTestDTO> list = dao.skillTestList(subjectname);
+
+				out.header(new String[] { "문제번호", "문항배점", "문제" });
+
+				for (SkillTestDTO dto : list) {
+					out.data(new Object[] { dto.getSkillQueSeq() + "\t", dto.getSkillDistribution() + "\t",
+							dto.getSkillQuestion() });
+				}
+
+				System.out.println();
+				String questnum = scan.next(">>문제번호 입력"); // 수정할 문제의 문제번호 입력 받음
+				String quest = scan.next(">>문제 입력"); // 문제를 입력받아 입력받은 문제로 수정
+				String distribution = scan.next(">>문제배점 입력"); // 문제 배점 입력
+
+				// 필기 시험문제 수정
+				SkillTestDTO dto = dao.updateSkillTestQuest(questnum, quest, distribution);
+
+			}
+
+		} else if (input == 2) {
+			// 배점 수정
+			System.out.println();
+			String noteDistribution = scan.next(">>수정할 필기배점 입력");
+			String skillDistribution = scan.next(">>수정할 실기배점 입력");
+			String attdDistribution = scan.next(">>수정할 출석배점 입력");
+
+			DistributionDTO distribution = new DistributionDTO();
+
+			// 입력받은 배점들을 DTO에 저장
+			distribution.setDstrNote(noteDistribution);
+			distribution.setDstrSkill(skillDistribution);
+			distribution.setDstrAttendance(attdDistribution);
+
+			// DAO에 위임(update문)
+			int result = dao.updateDistribution(distribution);
+
+			System.out.println("수정을 완료하였습니다.");
+
+		} else {
+			System.out.println("잘못된 입력입니다.");
+			out.pause();
+		}
+
+	}
+	
+	/**
+	 * 과정 별 시험 성적 조회
+	 */
+	private void Admin_ScoreList() {
+
+		
+		out.bigTitle("과정 별 시험 성적 조회");
+
+		// 과정명 & 학생 명 리스트 출력
+		ArrayList<LectureListDTO> lectureList = dao.LectureListDTO();
+
+		// 과정 리스트 출력 -> 전체 출력
+		out.header(new String[] { "과정 명\t\t\t\t", "학생 코드\t", "학생 명" });
+		for (LectureListDTO lec : lectureList) {
+			System.out.println(
+					String.format("%-50s\t%-10s\t%s", lec.getLectureName(), lec.getSTDSeq(), lec.getSTDName()));
+		} // for
+		out.line(UtilPrint.LONG);
+
+
+		String stdSeq = scan.next("▶세부 내용 보기(학생 코드)(0 : 돌아가기)");
+		if (!stdSeq.equals("0")) {
+
+			ArrayList<DetailScoreListDTO> detailDTO = dao.ScoreList(stdSeq);
+			// DetailScoreListDTO lec = new DetailScoreListDTO();
+
+			out.line(UtilPrint.LONG);
+			out.header(new String[] { "과목명\t", "필기점수", "실기점수", "출결점수" });
+
+			out.line(UtilPrint.LONG);
+			String name = "";
+			String seq = "";
+			String lecture = "";
+			for (DetailScoreListDTO lec : detailDTO) {
+
+				seq = lec.getStdSeq();
+				name = lec.getStdName();
+				lecture = lec.getLectureName();
+
+				System.out.println(String.format("%-10s\t%s\t\t%s\t\t%s", lec.getSubjectName(), lec.getGradeNoteScore(),
+						lec.getGrageSkillScore(), lec.getGradeAttendanceScore()));
+			}
+			out.line(UtilPrint.LONG);
+			System.out.println(String.format("\t\t[과정 : %s] %s(%s)의 성적입니다.", lecture, name, seq));
+			out.line(UtilPrint.LONG);
+		} // if
+		else
+			System.out.println("과정 과목 세부 보기 종료");
+		out.pause();
+	}
 }
