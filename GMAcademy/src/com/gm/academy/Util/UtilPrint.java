@@ -50,28 +50,12 @@ public class UtilPrint {
 	}
 	
 	// - 선긋기
-	public void bar(int size) {
-		for(int i=0; i<size; i++) {
-			System.out.print("-");
-		}
-		System.out.println();
-	}
-	
-	// - 선긋기
 	public void bar() {
 		for(int i=0; i<80; i++) {
 			System.out.print("-");
 		}
 		System.out.println();
 	}
-	
-	// - 선긋기
-		public void bar2(int size) {
-			for(int i=0; i<size; i++) {
-				System.out.print("=");
-			}
-			System.out.println();
-		}
 	
 	//일시정지 label 입력
 	public void pause(String label) {
@@ -117,7 +101,7 @@ public class UtilPrint {
 	
 	//결과 원하는 msg입력
 	public void result(String msg) {
-		System.out.println(msg);
+		System.out.println("[결과]"+ msg);
 		System.out.println();
 	}
 	

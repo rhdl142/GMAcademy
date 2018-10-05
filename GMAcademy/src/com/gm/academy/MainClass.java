@@ -10,7 +10,6 @@ import com.gm.academy.admin.AdminDAO;
 import com.gm.academy.exam.ExamController;
 import com.gm.academy.student.StudentController;
 import com.gm.academy.teacher.TeacherController;
-import com.gm.academy.teacher.TeacherDAO;
 
 /*
 변수명
@@ -25,7 +24,6 @@ public class MainClass {
 	private static AdminController adminC;
 	private static StudentController studentC;
 	private static TeacherController teacherC;
-	private static ExamController examC;
 	private static AdminDAO dao;
 
 	// 프로그램 실행 중 어디서든 항상 사용할 자원 필요 > main() 소유 클래스의 정적 public 변수 생성
@@ -76,7 +74,7 @@ public class MainClass {
 				MainClass.crumb.out();
 			} else if (input == 2) {
 				MainClass.crumb.in("찾기(ID/PW)");
-				
+
 				MainClass.crumb.out();
 			} else if (input == 3) {
 				MainClass.crumb.in("로그아웃");
@@ -99,6 +97,7 @@ public class MainClass {
 		out.result("GMAcademy 종료");
 	}
 
+	// 로그아웃
 	private static void academyStatus() {
 		while (true) {
 			out.bigTitle("학원 현황");
@@ -132,9 +131,56 @@ public class MainClass {
 				continue;
 			}
 		}
-
 	}
 
+	// ID/PW찾기
+	private static void search() {
+		MainClass.crumb.in("ID/PW 찾기");
+		
+		String name = null;
+		String tel = null;
+		
+		while(true) {
+			out.bigTitle("ID/PW 찾기");
+			
+			out.menu(UtilPrint.SEARCH_ID_PW);
+			int input = scan.nextInt("선택");
+			
+			if(input == 1) {
+				out.bigTitle("ID 찾기");
+				
+				MainClass.crumb.in("ID찾기");
+				
+				out.menu(UtilPrint.USER_CHOICE);
+				input = scan.nextInt("선택");
+				
+				name = scan.next("이름");
+				tel = scan.next("전화번호");
+				
+				if(input == 1) {
+					
+				} else if(input == 2) {
+					studentC.search(name, tel, 1);
+				}
+				
+				MainClass.crumb.out();
+				
+				out.pause();
+			} else if(input == 2) {
+				out.bigTitle("PW 찾기");
+				
+				MainClass.crumb.in("PW찾기");
+				
+				out.menu(UtilPrint.USER_CHOICE);
+				input = scan.nextInt("선택");
+			} else {
+				break;
+			}
+		}	
+		MainClass.crumb.out();
+	}
+
+	// 로그인
 	private static void completionRate() {
 		while (true) {
 			out.bigTitle("수료율 조회");
@@ -149,7 +195,7 @@ public class MainClass {
 			out.bar();
 
 			try {
-				out.header(new String[] { "[과정명]", "\t", "[수료율]","[중도탈락]" });
+				out.header(new String[] { "[과정명]", "\t", "[수료율]", "[중도탈락]" });
 				for (int i = 0; i < olist.size(); i++) {
 					out.data(olist.get(i));
 				}
@@ -339,7 +385,6 @@ public class MainClass {
 		tchSeq = null;
 		courseSeq = null;
 	}
-
 
 	// 로그인
 	private static void login() {

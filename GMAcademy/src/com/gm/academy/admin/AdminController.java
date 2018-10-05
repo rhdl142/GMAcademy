@@ -710,15 +710,15 @@ public class AdminController {
 	private void TeacherUpdateTel() { // 전화번호 수정
 		MainClass.crumb.in("전화번호 수정");
 		out.bigTitle(">> 전화번호 수정 <<");
-		out.bar(80);
+		out.bar();
 		TeacherList();
 		String tchTelBefor = scan.next("▶전화 번호");
 		String tchTelAfter = scan.next("▶변경할 전화 번호");
 
 		int result = dao.updateTel(tchTelBefor, tchTelAfter);
 
-		out.bar(80);
-		out.bar2(80);
+		out.bar();
+
 		out.result(result, "수정이 완료되었습니다.");
 		out.pause();
 		MainClass.crumb.out();
@@ -730,7 +730,7 @@ public class AdminController {
 	private void TeacherUpdateName() { // 이름 수정
 		MainClass.crumb.in("이름 수정");
 		out.bigTitle(">> 이름 수정 <<");
-		out.bar(80);
+		out.bar();
 		TeacherList();
 		String tchNameBefor = scan.next("▶교사 이름");
 		String tchNameAfter = scan.next("▶변경할 교사 이름");
@@ -739,8 +739,8 @@ public class AdminController {
 		
 			if(result > 0) {
 				int result2 = dao.updateTchId(tchNameAfter);
-				out.bar(80);
-				out.bar2(80);
+				out.bar();
+
 				out.result(result2,"수정이 완료되었습니다.");
 				out.pause();
 				MainClass.crumb.out();
@@ -756,7 +756,7 @@ public class AdminController {
 		MainClass.crumb.in("교사 삭제");
 		out.bigTitle(">> 교사 삭제 <<");
 		TeacherList();
-		out.bar(80);
+		out.bar();
 
 		String tchId = scan.next("▶ 교사ID");
 		String tchName = scan.next("▶ 교사 이름");
@@ -770,8 +770,7 @@ public class AdminController {
 			out.result("삭제가 취소 되었습니다.");
 		}
 
-		out.bar(80);
-		out.bar2(80);
+		out.bar();
 		out.pause();
 		MainClass.crumb.out();
 
@@ -784,7 +783,7 @@ public class AdminController {
 	      MainClass.crumb.in("교사 등록");
 	      out.bigTitle(">> 교사 등록 <<");
 	      TeacherList();
-	      out.bar(80);
+	      out.bar();
 	      
 	      String tchname = scan.next("▶ 이름");
 	      String tchssn = scan.next("▶ 주민번호(뒷자리)");
@@ -799,8 +798,7 @@ public class AdminController {
 	      
 	      int result = dao.TeacherRegister(register);
 	      
-	      out.bar(40);
-	      out.bar2(40);
+	      out.bar();
 	      out.result(result,"등록이 완료되었습니다.");
 	      out.pause();
 	      
@@ -812,7 +810,7 @@ public class AdminController {
 	 * 관리자 교사정보를 출력하는 메소드
 	 */
 	private void TeacherList() {
-		out.bar(80);
+		out.bar();
 		ArrayList<TeacherSelectDTO> list = dao.list();
 
 		out.header(new String[] { "[교사명]", "[전화번호]", "[아이디]" });
@@ -822,8 +820,7 @@ public class AdminController {
 					// teacher.getTCHRegdate()
 			});
 		}
-		out.bar(80);
-		out.bar2(80);
+		out.bar();
 
 	}
 
@@ -834,7 +831,7 @@ public class AdminController {
 	private void TeacherServed() {
 		MainClass.crumb.in("교사 조회");
 		out.bigTitle(">> 교사 재직 현황 <<");
-		out.bar(80);
+		out.bar();
 		ArrayList<TeacherSelectDTO> list = dao.list();
 
 		out.header(new String[] { "[교사명]", "[주민번호(뒷자리)]", "[전화번호]", "[아이디]", "[등록 일자]" });
@@ -845,8 +842,7 @@ public class AdminController {
 					teacher.getTCHName() + "\t", teacher.getTCHSsn() + "\t\t", teacher.getTCHTel(), teacher.getTCHId(),
 					teacher.getTCHRegdate() });
 		}
-		out.bar(80);
-		out.bar2(80);
+		out.bar();
 		out.pause();
 		MainClass.crumb.out();
 

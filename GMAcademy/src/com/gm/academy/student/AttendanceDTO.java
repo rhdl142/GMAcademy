@@ -1,6 +1,6 @@
 package com.gm.academy.student;
 
-public class StudentAttendanceDTO {
+public class AttendanceDTO {
 	private String attendanceSeq;
 	private String onTime;
 	private String offTime;
