@@ -1,5 +1,10 @@
 package com.gm.academy.student;
-
+/**
+ * 
+ * @author 공통
+ *
+ * 출결 <tblAttendance>
+ */
 public class AttendanceDTO {
 	private String attendanceSeq;
 	private String onTime;

@@ -1,5 +1,10 @@
 package com.gm.academy.exam;
 
+/**
+ * 필기객체
+ * @author 3조
+ *
+ */
 public class NoteTestDTO {
 	private String noteQueSeq;
 	private String noteQuestion;

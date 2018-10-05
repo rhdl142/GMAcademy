@@ -1,5 +1,10 @@
 package com.gm.academy.lecture;
 
+/**
+ * 과정과목 객체
+ * @author 3조
+ *
+ */
 public class LectureSubjectDTO {
 	private String LecSubSeq;
 	private String lectureSeq;

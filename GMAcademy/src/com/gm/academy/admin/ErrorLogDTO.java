@@ -1,5 +1,10 @@
 package com.gm.academy.admin;
 
+/**
+ * 에러로그 객체
+ * @author 3조
+ *
+ */
 public class ErrorLogDTO {
 	private String errorSeq;
 	private String errorCode;

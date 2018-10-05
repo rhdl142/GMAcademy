@@ -1,5 +1,10 @@
 package com.gm.academy.admin;
 
+/**
+ * 강좌리스트 객체 아ㅏ프로는진짜설명좀쓰면서만들어여...
+ * @author 3조
+ *
+ */
 public class LectureListDTO {
 	
 	private String lectureName;

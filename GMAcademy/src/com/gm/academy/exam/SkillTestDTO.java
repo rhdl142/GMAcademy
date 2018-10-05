@@ -1,5 +1,10 @@
 package com.gm.academy.exam;
 
+/**
+ * 실기객체
+ * @author 
+ *
+ */
 public class SkillTestDTO {
 	private String skillQueSeq;
 	private String skillQuestion;

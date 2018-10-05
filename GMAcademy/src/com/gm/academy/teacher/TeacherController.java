@@ -6,20 +6,27 @@ import com.gm.academy.MainClass;
 import com.gm.academy.Util.TeacherUtil;
 import com.gm.academy.Util.UtilPrint;
 import com.gm.academy.Util.UtilScanner;
+import com.gm.academy.admin.AdminDAO;
 import com.gm.academy.admin.DistributionDTO;
 import com.gm.academy.exam.GradeDTO;
+import com.gm.academy.lecture.LectureDAO;
 import com.gm.academy.lecture.LectureDTO;
 import com.gm.academy.student.StudentDTO;
-
+/**
+ * 티쳐컨트롤러 객체
+ * @author 3조
+ *
+ */
 public class TeacherController {
 
 	private UtilScanner scan;
 	private UtilPrint out;
 	private TeacherDAO tdao;
+	public static int logout;
 
 	public TeacherController() {
 		this.scan = new UtilScanner();
-		this.out = new UtilPrint(); 
+		this.out = new UtilPrint();
 		this.tdao = new TeacherDAO();
 	}
 
@@ -31,16 +38,23 @@ public class TeacherController {
 	 */
 	public void main(String id, String pw) {
 		TeacherUtil.distribution = tdao.getDistribution();
+		if (check(id, pw) != 1) {
+			out.pause("아이디와 비밀번호가 일치하지 않습니다. 신중히 입력해주세요.");
+		}
 		while (check(id, pw) == 1) {
+			out.bigTitle(">>교사<<");
+			tdao.LoginLog();
 			MainClass.isAuth = TeacherUtil.loginTeacher.getTCHName();
-			out.bigTitle("교사");
+			
 
 			out.menu(UtilPrint.TEACHER_LOGIN);
 			int input = 0;
 			try {
 				input = scan.nextInt("선택");
 			} catch (NumberFormatException e) {
-				out.result("입력오류가 발생했습니다. 신중히 입력해주시기 바랍니다.");
+				for(int i =0 ; i<30; i++) {
+					System.out.print(" ");
+				}out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
 			}
 			out.bar();
 			if (input == 1) {
@@ -67,31 +81,53 @@ public class TeacherController {
 				MainClass.crumb.in("상담일지");// ---------------------
 				consulting();
 				MainClass.crumb.out();
-			} else if (input == 7) {
+			} else if (input == 7) { //로그아웃
+				tdao.LogoutLog();
+				logout();
 				break;
-			}
-
-			else {
+			} else {
 				out.result("잘못입력하였습니다.");
 			}
 
 		}
-		if (check(id, pw) != 1) {
-			out.pause("아이디와 비밀번호가 일치하지 않습니다. 신중히 입력해주세요.");
-		}
+		
 
 	}
-
+	
+	/**
+	 * 로그아웃
+	 */
+	private  void logout() {
+		MainClass.isAuth = null;
+		MainClass.tel = null;
+		MainClass.name = null;
+		MainClass.lectureName = null;
+		MainClass.lectureDate = null;
+		MainClass.lectureSeq = null;
+		MainClass.tchSeq = null;
+		MainClass.courseSeq = null;
+		TeacherUtil.loginTeacher=null;
+		}
+	
+	/**
+	 * 교사의 아이디와 비밀번호의 검사 메소드
+	 * @param id 아이디
+	 * @param pw 비번
+	 * @return 결과
+	 */
 	private int check(String id, String pw) {
 		int result = tdao.login(id, pw);
 		return result;
 	}
-
+	
+	/**
+	 * 교사의 강의스케줄 정보를 출력해주는 메소드
+	 */
 	private void showSchedule() { // -----------------------------------------------------------강의스케줄조회
-		out.bigTitle("강의스케줄 조회");
+		out.bigTitle(">>강의스케줄 조회<<");
 
 		// 과정header
-		out.header(new String[] { " 과정명\t", "시작날짜   ", "종료날짜 ", "강의실", "수강인원" });
+		out.header(new String[] { " [과정명]\t", "[시작날짜]   ", "[종료날짜] ", "[강의실]", "[수강인원]" });
 		// 과정data
 		ArrayList<Object[]> olist = tdao.getLectureSchedule();
 		for (int i = 0; i < olist.size(); i++) {
@@ -112,16 +148,21 @@ public class TeacherController {
 		}
 		out.pause();
 	}
-
+	
+	/**
+	 * 교사의 시험관리파트의 메인 분기문
+	 */
 	private void examManagement() { // ---------------------------------------------------시험관리
 		while (true) {
-			out.bigTitle("시험관리");
+			out.bigTitle(">>시험관리<<");
 			out.menu(new String[] { "시험문제 등록", "시험문제 조회", "시험문제 삭제", "시험문제 수정", "돌아가기" });
 			int input = 0;
 			try {
 				input = scan.nextInt("선택");
 			} catch (Exception e) {
-				out.result("입력오류가 발생했습니다. 신중하게 입력해주시기 바랍니다.");
+				for(int i =0 ; i<30; i++) {
+					System.out.print(" ");
+				}out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
 				continue;
 			}
 			out.bar();
@@ -153,28 +194,33 @@ public class TeacherController {
 			}
 		}
 	}
-
+	
+	/**
+	 * 시험문제를 수정하는 메소드
+	 */
 	private void updateExam() {
 		while (true) {
 			int k = 0;
-			out.bigTitle("시험문제 수정");
+			out.bigTitle(">>시험문제 수정<<");
 			out.menu(new String[] { "필기", "실기", "돌아가기" });
 			int input = 0;
 			try {
 				input = scan.nextInt("선택");
 			} catch (Exception e) {
-				out.result("입력오류가 발생했습니다. 신중히 입력해주시기 바랍니다.");
+				for(int i =0 ; i<30; i++) {
+					System.out.print(" ");
+				}out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
 				continue;
 			}
 			ArrayList<Object[]> olist = new ArrayList<Object[]>();
 			if (input == 1) {
 				k = 1;
 				MainClass.crumb.in("필기");
-				out.bigTitle("필기");
+				out.bigTitle(">>필기<<");
 
 				String subjectSeq = scan.next("과목번호");
 				olist = tdao.getExamList(subjectSeq, k);
-				out.header(new String[] { "문제번호", "배점", "\t문제\t" });
+				out.header(new String[] { "[문제번호]", "[배점]", "\t[문제]\t" });
 				// 과목의 문제 받아오기
 				for (int i = 0; i < olist.size(); i++) {
 					out.data(olist.get(i));
@@ -191,11 +237,11 @@ public class TeacherController {
 			} else if (input == 2) {
 				k = 2;
 				MainClass.crumb.in("필기");
-				out.bigTitle("필기");
+				out.bigTitle(">>필기<<");
 
 				String subjectSeq = scan.next("과목번호");
 				olist = tdao.getExamList(subjectSeq, k);
-				out.header(new String[] { "문제번호", "배점", "\t문제\t" });
+				out.header(new String[] { "[문제번호]", "[배점]", "\t[문제]\t" });
 				// 과목의 문제 받아오기
 				for (int i = 0; i < olist.size(); i++) {
 					out.data(olist.get(i));
@@ -219,17 +265,22 @@ public class TeacherController {
 		}
 
 	}
-
+	
+	/**
+	 * 시험문제를 삭제하는 메소드
+	 */
 	private void removeExam() {
 		while (true) {
 			int k = 0;
-			out.bigTitle("시험문제 삭제");
+			out.bigTitle(">>시험문제 삭제<<");
 			out.menu(new String[] { "필기", "실기", "돌아가기" });
 			int input = 0;
 			try {
 				input = scan.nextInt("선택");
 			} catch (Exception e) {
-				out.result("입력오류가 발생하였습니다. 신중히 입력해주세요.");
+				for(int i =0 ; i<30; i++) {
+					System.out.print(" ");
+				}out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
 				continue;
 			}
 			ArrayList<Object[]> olist = new ArrayList<Object[]>();
@@ -237,11 +288,11 @@ public class TeacherController {
 				// 필기
 				k = 1;
 				MainClass.crumb.in("필기");
-				out.bigTitle("필기");
+				out.bigTitle(">>필기<<");
 
 				String subjectSeq = scan.next("과목번호");
 				olist = tdao.getExamList(subjectSeq, k);
-				out.header(new String[] { "문제번호", "배점", "\t문제\t" });
+				out.header(new String[] { "[문제번호]", "[배점]", "\t[문제]\t" });
 				// 과목의 문제 받아오기
 				for (int i = 0; i < olist.size(); i++) {
 					out.data(olist.get(i));
@@ -259,11 +310,11 @@ public class TeacherController {
 				// 실기
 				k = 2;
 				MainClass.crumb.in("실기");
-				out.bigTitle("실기");
+				out.bigTitle(">>실기<<");
 
 				String subjectSeq = scan.next("과목번호");
 				olist = tdao.getExamList(subjectSeq, k);
-				out.header(new String[] { "문제번호", "배점", "\t문제\t" });
+				out.header(new String[] { "[문제번호]", "[배점]", "\t[문제]\t" });
 				// 과목의 문제 받아오기
 				for (int i = 0; i < olist.size(); i++) {
 					out.data(olist.get(i));
@@ -287,17 +338,22 @@ public class TeacherController {
 		}
 
 	}
-
+	
+	/**
+	 * 시험문제를 등록하는 메소드
+	 */
 	private void addExam() {
 		while (true) {
 			int k = 0;
-			out.bigTitle("시험문제 등록");
+			out.bigTitle(">>시험문제 등록<<");
 			out.menu(new String[] { "필기", "실기", "돌아가기" });
 			int input = 0;
 			try {
 				input = scan.nextInt("선택");
 			} catch (Exception e) {
-				out.result("입력오류가 발생하였습니다. 신중히 입력해주세요.");
+				for(int i =0 ; i<30; i++) {
+					System.out.print(" ");
+				}out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
 				continue;
 			}
 
@@ -305,7 +361,7 @@ public class TeacherController {
 				// 필기
 				k = 1;
 				MainClass.crumb.in("필기");
-				out.bigTitle("필기");
+				out.bigTitle(">>필기<<");
 				String question = scan.next("문제입력");
 				String distribution = scan.next("배점입력");
 				String subjectSeq = scan.next("과목번호");
@@ -318,7 +374,7 @@ public class TeacherController {
 				// 실기
 				k = 2;
 				MainClass.crumb.in("실기");
-				out.bigTitle("실기");
+				out.bigTitle(">>실기<<");
 				String question = scan.next("문제입력");
 				String distribution = scan.next("배점입력");
 				String subjectSeq = scan.next("과목번호");
@@ -334,12 +390,15 @@ public class TeacherController {
 			}
 
 		}
-	}
-
+	}	
+	
+	/**
+	 * 시험문제를 조회하는 메소드
+	 */
 	private void showExam() {
 		while (true) {
 			int k = 0;
-			out.bigTitle("시험문제 조회");
+			out.bigTitle(">>시험문제 조회<<");
 			out.menu(new String[] { "필기", "실기", "돌아가기" });
 			int input = 0;
 			try {
@@ -351,11 +410,11 @@ public class TeacherController {
 			if (input == 1) { // 필기
 				k = 1;
 				MainClass.crumb.in("필기");
-				out.bigTitle("필기");
+				out.bigTitle(">>필기<<");
 				String subjectSeq = scan.next("과목번호");
 
 				ArrayList<Object[]> olist = tdao.getQuestionlist(subjectSeq, k);
-				out.header(new String[] { "배점", "과목", "문제" });
+				out.header(new String[] { "[배점]", "[과목]", "[문제]" });
 				for (int i = 0; i < olist.size(); i++) {
 					out.data(olist.get(i));
 				}
@@ -365,11 +424,11 @@ public class TeacherController {
 			} else if (input == 2) { // 실기
 				k = 2;
 				MainClass.crumb.in("필기");
-				out.bigTitle("필기");
+				out.bigTitle(">>필기<<");
 				String subjectSeq = scan.next("과목번호");
 
 				ArrayList<Object[]> olist = tdao.getQuestionlist(subjectSeq, k);
-				out.header(new String[] { "배점", "과목", "문제" });
+				out.header(new String[] { "[배점]", "[과목]", "[문제]" });
 				for (int i = 0; i < olist.size(); i++) {
 					out.data(olist.get(i));
 				}
@@ -383,16 +442,21 @@ public class TeacherController {
 		}
 
 	}
-
+	
+	/**
+	 * 교사의 성적관리 파트의 메인 분기문
+	 */
 	private void gradeManagement() {// ----------------------------------------성적
 		while (true) {
-			out.bigTitle("성적관리");
+			out.bigTitle(">>성적관리<<");
 			out.menu(new String[] { "배점 관리", "성적 입력", "성적 조회", "돌아가기" });
 			int input = 0;
 			try {
 				input = scan.nextInt("선택");
 			} catch (Exception e) {
-				out.result("입력오류가 발생했습니다. 신중히 입력해주시기 바랍니다.");
+				for(int i =0 ; i<30; i++) {
+					System.out.print(" ");
+				}out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
 				continue;
 			}
 			if (input == 1) {
@@ -420,17 +484,20 @@ public class TeacherController {
 		}
 
 	}
-
+	
+	/**
+	 * 학생성적을 조회하는 메소드
+	 */
 	private void showGrade() {
 		ArrayList<LectureDTO> list = TeacherUtil.getLectureDTO();
 		while (true) {
-			out.bigTitle("성적조회");
+			out.bigTitle(">>성적조회<<");
 			out.menu(new String[] { "과정별 성적조회", "개인별 성적조회", "돌아가기" });
 			int input = scan.nextInt("선택");
 			out.bar();
 			if (input == 1) {
 				MainClass.crumb.in("과정선택");
-				out.bigTitle("과정선택");
+				out.bigTitle(">>과정선택<<");
 				out.header(new String[] { "[과정코드]", "[기간]", "\t", "[과정명]" });
 				for (int i = 0; i < list.size(); i++) {
 					out.data(new Object[] { list.get(i).getLectureSeq(),
@@ -444,7 +511,7 @@ public class TeacherController {
 
 				ArrayList<GradeDTO> glist = tdao.getGradeDTO(selectedLectureSeq, selectedStdSeq);
 				out.bar();
-				out.header(new String[] { "[\t]", "[학생명]", "[필기]", "[실기]", "[출석]" });
+				out.header(new String[] { "\t", "[학생명]", "[필기]", "[실기]", "[출석]" });
 				for (int i = 0; i < glist.size(); i++) {
 					out.data(new Object[] { "\t", glist.get(i).getCourseSeq(), glist.get(i).getGradeNoteScore(),
 							glist.get(i).getGradeSkillScore(), glist.get(i).getGradeAttendanceScore() });
@@ -455,12 +522,12 @@ public class TeacherController {
 				MainClass.crumb.out();
 			} else if (input == 2) {
 				MainClass.crumb.in("학생선택");
-				out.bigTitle("학생선택");
+				out.bigTitle(">>학생선택<<");
 				out.bar();
 				String stdSeq = scan.next("학생번호");
 				out.bar();
 				ArrayList<GradeDTO> glist = tdao.getGradeDTO(stdSeq);
-				out.header(new String[] { "[\t]", "[학생명]", "[필기]", "[실기]", "[출석]" });
+				out.header(new String[] { "\t", "[학생명]", "[필기]", "[실기]", "[출석]" });
 				for (int i = 0; i < glist.size(); i++) {
 					out.data(new Object[] { "\t", glist.get(i).getCourseSeq(), glist.get(i).getGradeNoteScore(),
 							glist.get(i).getGradeSkillScore(), glist.get(i).getGradeAttendanceScore() });
@@ -478,9 +545,12 @@ public class TeacherController {
 		}
 
 	}
-
+	
+	/**
+	 * 교사가 학생성적을 등록하는 메소드
+	 */
 	private void addGrade() {
-		out.bigTitle("성적입력");
+		out.bigTitle(">>성적입력<<");
 		ArrayList<StudentDTO> list = tdao.getStudentDTO(TeacherUtil.loginTeacher.getTCHSeq());
 		int page = 1;
 		while (true) {
@@ -493,7 +563,9 @@ public class TeacherController {
 				out.data(new Object[] { list.get(i).getSTDName(), "[" + list.get(i).getSTDSeq() + "]" });
 			}
 			out.bar();
-			System.out.println("(0:학생번호 입력하기)\t\t" + page + "/"
+			for(int i =0; i<30; i++) {
+				System.out.print(" ");
+			}System.out.println("(0:학생번호 입력하기)\t\t" + page + "/"
 					+ (list.size() % onePage == 0 ? list.size() / onePage : list.size() / onePage + 1));
 			out.bar();
 			page = scan.nextInt("페이지");
@@ -515,9 +587,12 @@ public class TeacherController {
 		int result = tdao.addGrade(stdSeq, note, skill, attendance, subjectSeq);
 		out.result(result, "성적입력을 완료하였습니다.");
 	}
-
+	
+	/**
+	 * 배점관리를 진행하는 메소드
+	 */
 	private void distributionManagement() {
-		out.bigTitle("배점관리");
+		out.bigTitle(">>배점관리<<");
 		DistributionDTO dto = tdao.getDistribution();
 		out.result("현재 배점은 다음과 같습니다.");
 		System.out.println("필기 : " + dto.getDstrNote());
@@ -526,7 +601,7 @@ public class TeacherController {
 		while (true) {
 			String sel = scan.next("변경하시겠습니까?(y/n)");
 			if (sel.equals("y")) {
-				out.bigTitle("배점입력");
+				out.bigTitle(">>배점입력<<");
 				int note = scan.nextInt("필기배점");
 				int skill = scan.nextInt("실기배점");
 				int attendance = scan.nextInt("출석배점");
@@ -543,14 +618,19 @@ public class TeacherController {
 	}
 
 	// ------------------------------------------------------------출결
+	/**
+	 * 출결현황조회의 메인 분기문(기간/과정)
+	 */
 	private void Attendance() {
-		out.bigTitle("출결현황조회");
+		out.bigTitle(">>출결현황조회<<");
 		out.menu(UtilPrint.TEACHER_ATTENDANCE);
 		int input = 0;
 		try {
 			input = scan.nextInt("선택");
 		} catch (Exception e) {
-			out.result("입력오류가 발생하였습니다. 신중히 입력해주세요.");
+			for(int i =0 ; i<30; i++) {
+				System.out.print(" ");
+			}out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
 		}
 		out.bar();
 
@@ -568,10 +648,13 @@ public class TeacherController {
 			out.result("잘못입력하셨습니다. 다시 입력해주세요.");
 		}
 	}
-
+	
+	/**
+	 * 과정별 출결조회를 담당하는 메소드
+	 */
 	private void showAttendanceByLecture() {
 		LectureDTO selectedLecture = null;
-		out.bigTitle("과정별 조회");
+		out.bigTitle(">>과정별 조회<<");
 		// 현재 진행중인 과정이름을 알아야함
 		ArrayList<LectureDTO> arr = TeacherUtil.getLectureDTO();
 		String[] list = new String[arr.size()];
@@ -610,13 +693,18 @@ public class TeacherController {
 			try {
 				index = (page - 1) * onePage;
 			} catch (Exception e) {
-				System.out.println("입력오류입니다. 신중하게 입력해주세요.");
+				for(int i =0 ; i<30; i++) {
+					System.out.print(" ");
+				}System.out.println("입력오류입니다. 신중하게 입력해주세요.");
 			}
 			if (page > (olist.size() / onePage) + 1) {
+				for(int i =0 ; i<30; i++) {
+					System.out.print(" ");
+				}
 				System.out.println("페이지 범위내 숫자를 입력해주세요.");
 				break;
 			}
-			out.header(new String[] { "학생코드", "학생명", "전화번호", "날짜", "출결" });
+			out.header(new String[] { "[학생코드]", "[학생명]", "[전화번호]", "[날짜]", "[출결]" });
 			int result = index + onePage;
 			if (page == (olist.size() / onePage) + 1) {
 				result = olist.size();
@@ -631,13 +719,18 @@ public class TeacherController {
 
 			}
 			out.bar();
-			System.out.println("(0:뒤로가기)\t\t" + page + "/" + ((olist.size() / onePage) + 1));
+			for(int i =0; i<30; i++) {
+				System.out.print(" ");
+			}System.out.println("(0:뒤로가기)\t\t" + page + "/" + ((olist.size() / onePage) + 1));
 			out.bar();
 		} // while
 	}
-
+	
+	/**
+	 * 기간별 출결조회를 담당하는 메소드
+	 */
 	private void showAttendanceByDay() {
-		out.bigTitle("기간별 조회");
+		out.bigTitle(">>기간별 조회<<");
 		String year = "";
 		String month = "";
 		String day = "";
@@ -671,11 +764,16 @@ public class TeacherController {
 				if (i >= list.size()) {
 					break;
 				}
-				out.header(new String[] { "학생", "\t과정명\t", " 출석시간  ", "퇴실시간", "출결상황" });
+				out.header(new String[] { "[학생]", "\t[과정명]\t", " [출석시간]  ", "[퇴실시간]", "[출결상황]" });
 				out.data(list.get(i));
 			}
 			out.bar();
-			System.out.println("(0:돌아가기)\t\t" + page + "/"
+			for(int i =0 ; i<30; i++) {
+				System.out.print(" ");
+			}
+			for(int i =0; i<30; i++) {
+				System.out.print(" ");
+			}System.out.println("(0:돌아가기)\t\t" + page + "/"
 					+ (list.size() % onePage == 0 ? list.size() / onePage : list.size() / onePage + 1));
 			out.bar();
 			page = scan.nextInt("페이지");
@@ -687,8 +785,11 @@ public class TeacherController {
 	}
 
 	// -------------------------------------------------------------------------------교사평가
+	/**
+	 * 교사평가를 조회할 수 있게 해주는 메소드
+	 */
 	private void teacherEvaluation() {
-		out.bigTitle("교사 평가 조회");
+		out.bigTitle(">>교사 평가 조회<<");
 
 		// 데이터
 		ArrayList<Object[]> list = tdao.showTeacherEvaluation();
@@ -706,6 +807,9 @@ public class TeacherController {
 				out.data(list.get(i));
 			}
 			out.bar();
+			for(int i =0 ; i<30; i++) {
+				System.out.print(" ");
+			}
 			System.out.println("(0:돌아가기)\t\t" + page + "/"
 					+ (list.size() % onePage == 0 ? list.size() / onePage : list.size() / onePage + 1));
 			out.bar();
@@ -718,8 +822,11 @@ public class TeacherController {
 	}
 
 	// -------------------------------------------------------------------------------상담일지
+	/**
+	 * 상담일지의 작성, 조회를 담당하는 메소드
+	 */
 	private void consulting() {
-		out.bigTitle("상담일지");
+		out.bigTitle(">>상담일지<<");
 		out.menu(new String[] { "상담일지 작성", "상담일지 조회", "돌아가기" });
 		int input = scan.nextInt("선택");
 		out.bar();
@@ -730,7 +837,28 @@ public class TeacherController {
 			while (true) {
 				try {
 					// 상담일지 작성
-					lectureSeq = scan.next("과정코드");
+					AdminDAO adao = new AdminDAO();
+					out.header(new String[] {
+							"[나의 담당과정]"
+					});
+					LectureDAO ldao = new LectureDAO();
+					ArrayList<LectureDTO> llist = ldao.getLectureDTO();
+					for(int i=0; i<llist.size(); i++) {
+						if(llist.get(i).getTCHSeq().equals(TeacherUtil.loginTeacher.getTCHSeq())) {
+							out.data(new Object[] {
+									llist.get(i).getLectureSeq(),llist.get(i).getLectuerName()
+							});
+						}
+					}
+					lectureSeq = scan.next("과정번호");
+					out.bar();
+					ArrayList<StudentDTO> slist = tdao.getStudentDTO(TeacherUtil.loginTeacher.getTCHSeq());
+					for(int i =0 ; i<slist.size(); i=i+2) {
+						out.data(new Object[] {
+								slist.get(i).getSTDSeq(),": "+slist.get(i).getSTDName(),
+								slist.get(i+1).getSTDSeq(),": "+slist.get(i+1).getSTDName()
+						});
+					}
 					stdSeq = scan.next("학생 번호");				
 					content = scan.next("상담내용");
 					break;
@@ -747,11 +875,32 @@ public class TeacherController {
 			out.pause();
 		} else if (input == 2) {
 			// 상담일지 조회
-			out.bigTitle("상담일지 조회");
+			out.bigTitle(">>상담일지 조회<<");
 			while (true) {
+				out.data(new Object[] {
+						"학생번호입력"
+				});
 				try {
-					stdSeq = scan.next("학생번호");
+					AdminDAO adao = new AdminDAO();
+					ArrayList<LectureDTO> llist = tdao.lecturelist(TeacherUtil.loginTeacher.getTCHSeq());
+					for(int i =0; i<llist.size(); i++) {
+						out.data(new Object[] {
+								llist.get(i).getLectureSeq(),llist.get(i).getLectuerName()
+						});
+					}
 					lectureSeq = scan.next("과정번호");
+					
+					ArrayList<StudentDTO> slist = tdao.getStudentDTO(TeacherUtil.loginTeacher.getTCHSeq(),lectureSeq);
+					for(int i =0 ; i<slist.size(); i=i+2) {
+						out.data(new Object[] {
+								slist.get(i).getSTDSeq(),": "+slist.get(i).getSTDName(),
+								slist.get(i+1).getSTDSeq(),": "+slist.get(i+1).getSTDName()
+						});
+					}
+					out.bar();
+					stdSeq = scan.next("학생번호");
+					out.bar();
+					
 					break;
 				} catch (Exception e) {
 					System.out.println("입력오류가 발생했습니다. 신중히 입력해주시기 바랍니다.");
@@ -771,8 +920,13 @@ public class TeacherController {
 			System.out.println("잘못 입력하셨습니다. 다시 입력해주세요.");
 		}
 	}
-//---------------------------------------------------------------------------------------------------------------
-//ID/PW찾기---------------------------------------------------------------------------------------------------------------
+	
+	/**
+	 * 교사의 아이디/비밀번호를 찾을 수 있게 하는 메소드
+	 * @param name 이름
+	 * @param telCode 텔코드
+	 * @param cate 케이
+	 */
 	public void search(String name, String telCode, int cate) {
 		TeacherDTO tDTO = new TeacherDTO();
 		
@@ -799,3 +953,8 @@ public class TeacherController {
 		out.result(tDTO != null ? 1:0,"ID/PW찾기에 성공했습니다.");
 	}
 }
+
+
+
+
+

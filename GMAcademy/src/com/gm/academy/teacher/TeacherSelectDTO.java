@@ -1,5 +1,10 @@
 package com.gm.academy.teacher;
 
+/**
+ * 교사선택객체 이건또뭐야ㅜㅜ
+ * @author 3조
+ *
+ */
 public class TeacherSelectDTO {
 	private String TCHSeq;
 	private String TCHName;

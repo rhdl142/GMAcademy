@@ -1,6 +1,11 @@
 package com.gm.academy.student;
-
-public class AbsenceRecordType {
+/**
+ * 
+ * @author 공통
+ * 
+ * 근태 종류
+ */
+public class AbsenceRecordTypeDTO {
 	private String typeA;
 	private String typeB;
 	private String typeC;

@@ -1,5 +1,10 @@
 package com.gm.academy.teacher;
 
+/**
+ * 우에에엑
+ * @author 3조
+ *
+ */
 public class PossibleLecDTO {
 	private String lecSeq;
 	private String subjectSeq;
@@ -8,7 +13,7 @@ public class PossibleLecDTO {
 		return lecSeq;
 	}
 	public void setLecSeq(String lecSeq) {
-		this.lecSeq = lecSeq; 
+		this.lecSeq = lecSeq;
 	}
 	public String getSubjectSeq() {
 		return subjectSeq;

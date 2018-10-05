@@ -1,5 +1,10 @@
 package com.gm.academy.lecture;
 
+/**
+ * 출판사 객체
+ * @author 3조
+ *
+ */
 public class PublisherDTO {
 	private String publisherSeq;
 	private String publisherName;

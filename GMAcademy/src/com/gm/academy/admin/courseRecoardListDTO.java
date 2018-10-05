@@ -1,5 +1,11 @@
 package com.gm.academy.admin;
 
+
+/**
+ * 상담일지 객체
+ * @author 3조
+ *
+ */
 public class courseRecoardListDTO {
 
 	private String courseseq;

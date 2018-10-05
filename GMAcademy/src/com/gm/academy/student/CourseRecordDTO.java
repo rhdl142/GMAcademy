@@ -1,7 +1,11 @@
 package com.gm.academy.student;
-
+/**
+ * 
+ * @author 공통
+ * 
+ * 수강내역 <tblCourse>
+ */
 public class CourseRecordDTO {
-
 	private String counseSeq;
 	private String counseRegdate;
 	private String counseContents;

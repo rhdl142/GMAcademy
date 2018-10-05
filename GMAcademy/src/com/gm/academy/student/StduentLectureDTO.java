@@ -1,9 +1,9 @@
 package com.gm.academy.student;
 /**
  * 
- * @author 임광민
- * 학생 마이페이지를 위한 DTO
- *
+ * @author 공동
+ * 
+ * 마이페이지
  */
 public class StduentLectureDTO {
 	private String studentSeq;

@@ -1,5 +1,10 @@
 package com.gm.academy.exam;
 
+/**
+ * 성적객체
+ * @author 3조
+ *
+ */
 public class GradeDTO {
 	private String gradeSeq;
 	private String gradeNoteScore;

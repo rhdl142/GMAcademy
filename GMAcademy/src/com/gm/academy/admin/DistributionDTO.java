@@ -1,5 +1,10 @@
 package com.gm.academy.admin;
 
+/**
+ * 배점 객체
+ * @author 3조
+ *
+ */
 public class DistributionDTO {
 	private String dstrSeq;
 	private String dstrNote;

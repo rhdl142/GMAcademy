@@ -1,5 +1,10 @@
 package com.gm.academy.lecture;
 
+/**
+ * 교재 객체
+ * @author 3조
+ *
+ */
 public class TextBookDTO {
 	private String textBookSeq;
 	private String textBookName;

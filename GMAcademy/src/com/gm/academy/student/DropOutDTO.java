@@ -1,5 +1,10 @@
 package com.gm.academy.student;
-
+/**
+ * 
+ * @author 공동
+ *
+ * 중도탈락 <tblDropOut>
+ */
 public class DropOutDTO {
 	private String dropSeq;
 	private String dropDate;

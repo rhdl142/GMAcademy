@@ -1,5 +1,10 @@
 package com.gm.academy.admin;
 
+/**
+ * 디테일점수리스트 내역 아니이런거진짜 설명좀.....
+ * @author sist
+ *
+ */
 public class DetailScoreListDTO {
 	
 	private String stdSeq;

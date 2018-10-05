@@ -9,6 +9,11 @@ import com.gm.academy.Util.UtilPrint;
 import com.gm.academy.Util.UtilScanner;
 import com.gm.academy.exam.GradeDTO;
 
+/**
+ * 학생 컨트롤러 객체
+ * @author sist
+ *
+ */
 public class StudentController {
 	private UtilScanner scan;
 	private UtilPrint out;
@@ -20,18 +25,24 @@ public class StudentController {
 		this.dao = new StudentDAO();
 	}
 	
+	/**
+	 * 아이디와 비밀번호를 받아 교육생측의 주메서드
+	 * 
+	 * @param id 로그인 아이디
+	 * @param pw 로그인 비밀번호
+	 */
 	public void main(String id, String pw) {
 		check(id,pw);
 		while(true) {
 			if(MainClass.isAuth == null) {
 				break;
 			} else {
-				out.bigTitle("회원");
+				out.bigTitle(">>회원<<");
 				myPage();
 				
 				out.bar();
 				out.menu(UtilPrint.STUDENT_LOGIN);
-				int input = scan.nextInt("선택");
+				int input = scan.nextInt(">>선택");
 				
 				if(input == 1) {
 					MainClass.crumb.in("성적조회");
@@ -50,6 +61,8 @@ public class StudentController {
 					consulting();
 					MainClass.crumb.out();					
 				} else if(input == 5) {
+					dao.LogoutLog();
+					logout();
 					break;
 				} else {
 					out.result("잘못입력하였습니다.");
@@ -58,21 +71,37 @@ public class StudentController {
 		}
 	}
 	
-	//상담일지
+	/**
+	 * 	로그아웃
+	 */
+	private static void logout() {
+		MainClass.isAuth = null;
+		MainClass.tel = null;
+		MainClass.name = null;
+		MainClass.lectureName = null;
+		MainClass.lectureDate = null;
+		MainClass.lectureSeq = null;
+		MainClass.tchSeq = null;
+		MainClass.courseSeq = null;
+	}
+	
+	/**
+	 * 상담일지
+	 */
 	private void consulting() {
 		while(true) {
-			out.bigTitle("상담일지");
+			out.bigTitle(">>상담일지<<");
 			myPage();
 			out.bar();
 			
 			out.menu(UtilPrint.CUNSULTING);
-			int input = scan.nextInt("선택");
+			int input = scan.nextInt(">>선택");
 			
 			if(input == 1) {
 				MainClass.crumb.in("상담일지 조회");
 				ArrayList<CourseRecordDTO> list = dao.consulting();
 				
-				out.header(new String[] {"등록일","상담내용"});
+				out.header(new String[] {"[등록일]","[상담내용]"});
 				
 				for(CourseRecordDTO crDTO : list) {
 					out.data(new Object[] {crDTO.getCounseRegdate(),crDTO.getCounseContents()});
@@ -90,15 +119,17 @@ public class StudentController {
 		out.pause();
 	}
 
-	//교사평가
+	/**
+	 * 교사평가
+	 */
 	private void teacherEvaluation() {
 		while(true) {
-			out.bigTitle("교사평가");
+			out.bigTitle(">>교사평가<<");
 			myPage();
 			out.bar();
 			
 			out.menu(UtilPrint.TEACHER_EVALUATION);
-			int input = scan.nextInt("선택");
+			int input = scan.nextInt(">>선택");
 			
 			if(input == 1) {
 				MainClass.crumb.in("교사평가 등록");
@@ -112,14 +143,16 @@ public class StudentController {
 		}
 	}
 
-	//교사평가 등록
+	/**
+	 * 교사평가 등록
+	 */
 	private void teRegister() {
-		out.bigTitle("교사평가 등록");
+		out.bigTitle(">>교사평가 등록<<");
 		myPage();
 		out.bar();
 		
 		out.menu(UtilPrint.TEREGISTER);
-		int input = scan.nextInt("선택");
+		int input = scan.nextInt(">>선택");
 		
 		if(input == 1) {
 			MainClass.crumb.in("과정평가");
@@ -135,54 +168,60 @@ public class StudentController {
 		out.pause();
 	}
 
+	/**
+	 * 과목평가
+	 */
 	private void subjectEvaluation() {
-		out.bigTitle("과목평가");
+		out.bigTitle(">>과목평가<<");
 		myPage();
 		out.bar();
 		
 		ArrayList<StudentGradeDTO> list = dao.grade();
 		
-		out.header(new String[] {"과목코드","과목명"});
+		out.header(new String[] {"[과목코드]","[과목명]"});
 		
 		for(StudentGradeDTO sgDTO : list) {
 			out.data(new Object[] {sgDTO.getLecSubseq(),sgDTO.getSubjectName()});
 		}
 		
-		String name = scan.next("과목코드");
-		String score = scan.next("점수");
-		String command = scan.next("코멘트");
+		String name = scan.next(">>과목코드");
+		String score = scan.next(">>점수");
+		String command = scan.next(">>코멘트");
 		
 		int result = dao.subjectEvaluation(name,score,command);
 		
 		out.result(result,"과정평가를 완료했습니다.");
-		out.pause();
 	}
 
+	/**
+	 * 과정평가
+	 */
 	private void lectureEvaluation() {
-		out.bigTitle("과정평가");
+		out.bigTitle(">>과정평가<<");
 		myPage();
 		out.bar();
 		
-		String score = scan.next("점수");
-		String command = scan.next("코멘트");
+		String score = scan.next(">>점수");
+		String command = scan.next(">>코멘트");
 		
 		int result = dao.lectureEvaluation(score,command);
 		
 		out.result(result,"과정평가를 완료했습니다.");
-		out.pause();
 	}
 
-	//출결
+	/**
+	 * 	출결(입실,퇴실,출결현황)
+	 */
 	private void Attendance() {
 		while(true) {
 			int cate = 0;
 			
-			out.bigTitle("학생_출결");
+			out.bigTitle(">>학생_출결<<");
 			myPage();
 			out.bar();
 			
 			out.menu(UtilPrint.STUDENT_ATTENDACE);
-			int input = scan.nextInt("선택");
+			int input = scan.nextInt(">>선택");
 			
 			if(input == 1) {
 				MainClass.crumb.in("입실등록");
@@ -207,17 +246,19 @@ public class StudentController {
 		out.pause();
 	}
 
-	//출결현황
+	/**
+	 * 출결현황
+	 */
 	private void attendanceStatus() {
-		out.bigTitle("출결현황");
+		out.bigTitle(">>출결현황<<");
 		myPage();
 		out.bar();
 		
-		ArrayList<AbsenceRecordType> list = dao.attendanceStatus();
+		ArrayList<AbsenceRecordTypeDTO> list = dao.attendanceStatus();
 		
-		out.header(new String[] {"전체","정상","지각","조퇴","외출","병가","기타"});
+		out.header(new String[] {"[전체]","[정상]","[지각]","[조퇴]","[외출]","[병가]","[기타]"});
 		
-		for(AbsenceRecordType artDTO : list) {
+		for(AbsenceRecordTypeDTO artDTO : list) {
 			int total = Integer.parseInt(artDTO.getTypeA())
 					+Integer.parseInt(artDTO.getTypeB())
 					+Integer.parseInt(artDTO.getTypeC())
@@ -239,7 +280,11 @@ public class StudentController {
 		out.pause();
 	}
 
-	//입실등록
+	/**
+	 * 입실등록 
+	 * 
+	 * @param cate 입실/퇴실 구분
+	 */
 	private void inOutRegister(int cate) {
 		Calendar c = Calendar.getInstance();
 		SimpleDateFormat date = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
@@ -252,23 +297,25 @@ public class StudentController {
 		out.pause();
 	}
 
-	//성적 조회
+	/**
+	 * 성적 조회
+	 */
 	private void gradeSearch() {
 		while(true)	 {
-			out.bigTitle("성적조회");
+			out.bigTitle(">>성적조회<<");
 			myPage();
 			out.bar();
 			
 			out.menu(UtilPrint.STUDNET_GRADE);
-			int input = scan.nextInt("선택");
+			int input = scan.nextInt(">>선택");
 			
 			ArrayList<StudentGradeDTO> list = dao.grade();
 			
 			if(input == 1) {
 				MainClass.crumb.in("필기 성적 조회");
-				out.bigTitle("필기 성적 조회");
+				out.bigTitle(">>필기 성적 조회<<");
 				
-				out.header(new String[] {"필기점수","과목명"});
+				out.header(new String[] {"[필기점수]","[과목명]"});
 				
 				for(StudentGradeDTO sgDTO : list) {
 					out.data(new Object[] {sgDTO.getGradeNoteScore()
@@ -279,9 +326,9 @@ public class StudentController {
 				MainClass.crumb.out();
 			} else if(input == 2) {
 				MainClass.crumb.in("실기 성적 조회");
-				out.bigTitle("실기 성적 조회");
+				out.bigTitle(">>실기 성적 조회<<");
 				
-				out.header(new String[] {"실기점수","과목명"});
+				out.header(new String[] {"[실기점수]","[과목명]"});
 				
 				for(StudentGradeDTO sgDTO : list) {
 					out.data(new Object[] {sgDTO.getGradeSkillScore()
@@ -292,9 +339,9 @@ public class StudentController {
 				MainClass.crumb.out();
 			} else if(input == 3) {
 				MainClass.crumb.in("출결 성적 조회");
-				out.bigTitle("출결 성적 조회");
+				out.bigTitle(">>출결 성적 조회<<");
 				
-				out.header(new String[] {"출결점수","과목명"});
+				out.header(new String[] {"[출결점수]","[과목명]"});
 				
 				for(StudentGradeDTO sgDTO : list) {
 					out.data(new Object[] {sgDTO.getGradeAttendanceScore()
@@ -305,9 +352,9 @@ public class StudentController {
 				MainClass.crumb.out();
 			} else if(input == 4) {
 				MainClass.crumb.in("전체 성적 조회");
-				out.bigTitle("전체 성적 조회");
+				out.bigTitle(">>전체 성적 조회<<");
 				
-				out.header(new String[] {"전체점수","과목명"});
+				out.header(new String[] {"[전체점수]","[과목명]"});
 				
 				for(StudentGradeDTO sgDTO : list) {
 					out.data(new Object[] {(int)((Float.parseFloat(sgDTO.getGradeNoteScore()) * 0.3)
@@ -327,7 +374,12 @@ public class StudentController {
 		out.pause();
 	}
 
-	//로그인 인증
+	/**
+	 * ID/PW를 인증하는 메서드
+	 * 
+	 * @param id 아이디
+	 * @param pw 패스워드
+	 */
 	private void check(String id, String pw) {
 		StudentLogInDTO slDTO = new StudentLogInDTO();
 		
@@ -345,6 +397,7 @@ public class StudentController {
 			MainClass.lectureSeq = sltDTO.getLectureSeq();
 			MainClass.tchSeq = sltDTO.getTchSeq();
 			MainClass.courseSeq = sltDTO.getCourseSeq();
+			dao.LoginLog();
 		} else {
 			MainClass.isAuth = null;
 			MainClass.name = null;
@@ -357,7 +410,9 @@ public class StudentController {
 		out.pause();
 	}
 	
-	//항시출력하는 마이페이지
+	/**
+	 * 항시출력하는 마이페이지
+	 */
 	private void myPage() {
 		System.out.printf("[회원번호] : %s\n",MainClass.isAuth);
 		System.out.printf("[이름] : %s\n",MainClass.name);
@@ -365,8 +420,7 @@ public class StudentController {
 		System.out.printf("[과정명] : %s\n",MainClass.lectureName);
 		System.out.printf("[과정기간] : %s\n",MainClass.lectureDate);
 	}
-//------------------------------------------------------------------------------------------
-//ID/PW찾기------------------------------------------------------------------------------------------
+
 	/**
 	 * 교육생 ID/PW찾기
 	 * 
@@ -400,3 +454,21 @@ public class StudentController {
 		out.result(sDTO != null ? 1:0,"ID/PW찾기에 성공했습니다.");
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

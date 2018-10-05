@@ -1,12 +1,17 @@
 package com.gm.academy.teacher;
 
+/**
+ * 교사로그인 객체
+ * @author 3조
+ *
+ */
 public class TeacherLogInDTO {
 	private String TCHSeq;
 	private String TCHID;
 	private String TCHPW;
 	private String TCHRegdate;
 	public String getTCHSeq() {
-		return TCHSeq; 
+		return TCHSeq;
 	}
 	public void setTCHSeq(String tCHSeq) {
 		TCHSeq = tCHSeq;

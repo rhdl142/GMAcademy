@@ -1,9 +1,9 @@
 package com.gm.academy.student;
 /**
  * 
- * @author 임광민
- * 학생 성적 DTO
- *
+ * @author 공동
+ * 
+ * 학생 성적
  */
 public class StudentGradeDTO {
 	private String subjectName;

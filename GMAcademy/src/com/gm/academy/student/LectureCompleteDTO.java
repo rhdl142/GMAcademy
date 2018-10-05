@@ -1,7 +1,11 @@
 package com.gm.academy.student;
-
+/**
+ * 
+ * @author 공동
+ *
+ * 과정수료여부 <tblLectureComplete>
+ */
 public class LectureCompleteDTO {
-
 	private String LecCompSeq;
 	private String LecCompDate;
 	private String courseSeq;

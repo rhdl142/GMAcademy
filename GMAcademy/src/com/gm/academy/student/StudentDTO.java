@@ -1,5 +1,10 @@
 package com.gm.academy.student;
-
+/**
+ * 
+ * @author 공동
+ *
+ * 교육생 <tblStudent>
+ */
 public class StudentDTO {
 	private String STDSeq;
 	private String STDName;

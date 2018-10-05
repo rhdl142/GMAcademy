@@ -1,5 +1,10 @@
 package com.gm.academy.admin;
 
+/**
+ * 추천회사 객체
+ * @author 3조
+ *
+ */
 public class RecommendCompanyDTO {
 	private String RecCompanySeq;
 	private String RecCompanyName;

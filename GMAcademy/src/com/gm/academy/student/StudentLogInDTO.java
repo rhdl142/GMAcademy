@@ -1,5 +1,10 @@
 package com.gm.academy.student;
-
+/**
+ * 
+ * @author 공동
+ * 
+ * 교육생 로그인 <tblStudentLogin>
+ */
 public class StudentLogInDTO {
 	private String STDSeq;
 	private String STDID;

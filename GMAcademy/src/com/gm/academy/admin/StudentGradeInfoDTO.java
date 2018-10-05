@@ -1,5 +1,10 @@
 package com.gm.academy.admin;
 
+/**
+ * 학생성적정보..
+ * @author 3조
+ *
+ */
 public class StudentGradeInfoDTO {
 	private String STDseq;
 	private String STDName;

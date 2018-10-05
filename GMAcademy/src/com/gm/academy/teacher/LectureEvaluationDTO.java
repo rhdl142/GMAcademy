@@ -1,5 +1,10 @@
 package com.gm.academy.teacher;
-
+/**
+ * 
+ * @author 공동
+ *
+ * 교사과정_평가 <tblLectureEvaluation>
+ */
 public class LectureEvaluationDTO {
 	private String evalLecSeq;
 	private String TCHSeq;
@@ -8,7 +13,7 @@ public class LectureEvaluationDTO {
 	private String lectureSeq;
 	private String courseSeq;
 	
-	public String getEvalLecSeq() { 
+	public String getEvalLecSeq() {
 		return evalLecSeq;
 	}
 	public void setEvalLecSeq(String evalLecSeq) {

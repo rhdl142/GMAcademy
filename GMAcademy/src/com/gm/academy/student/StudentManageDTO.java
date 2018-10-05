@@ -1,5 +1,10 @@
 package com.gm.academy.student;
-
+/**
+ * 
+ * @author 공동
+ *
+ * 사후처리 <tblStudentManager>
+ */
 public class StudentManageDTO {
 	private String ManageSeq;
 	private String companyName;

@@ -1,5 +1,10 @@
 package com.gm.academy.student;
-
+/**
+ * 
+ * @author 공통
+ * 
+ * 근태 <tblAbsenceRecord>
+ */
 public class AbsenceRecordDTO {
 	private String absenceSeq;
 	private String absenceSituation;
@@ -20,6 +25,4 @@ public class AbsenceRecordDTO {
 	public String toString() {
 		return "AbsenceRecord [absenceSeq=" + absenceSeq + ", absenceSituation=" + absenceSituation + "]";
 	}
-	
-	
 }

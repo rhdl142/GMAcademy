@@ -1,10 +1,16 @@
 package com.gm.academy.admin;
 
+/**
+ * 로그 객체
+ * @author 3조
+ *
+ */
 public class LogDTO {
 	private String logSeq;
 	private String logCode;
 	private String logContents;
 	private String logDate;
+
 	public String getLogSeq() {
 		return logSeq;
 	}
@@ -34,6 +40,4 @@ public class LogDTO {
 		return "Log [logSeq=" + logSeq + ", logCode=" + logCode + ", logContents=" + logContents + ", logDate="
 				+ logDate + "]";
 	}
-	
-	
 }

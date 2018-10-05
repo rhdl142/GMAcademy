@@ -1,5 +1,10 @@
 package com.gm.academy.admin;
 
+/**
+ * 관리자 로그인 객체
+ * @author 3조
+ *
+ */
 public class AdminLogInDTO {
 	private String AdminID;
 	private String AdminPW;

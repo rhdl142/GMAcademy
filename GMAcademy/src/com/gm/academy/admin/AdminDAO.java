@@ -26,13 +26,18 @@ import com.gm.academy.teacher.TeacherSelectDTO;
 
 import oracle.jdbc.internal.OracleTypes;
 
+/**
+ * 관리자와 DB와의 연동부분
+ * @author 3조
+ *
+ */
 public class AdminDAO {
 	private Connection conn;
 	private PreparedStatement stat;
 	private static UtilPrint out;
 
 	public AdminDAO() {
-		this.conn = DBUtil.getConnection("localhost", "Project", "JAVA1234");
+		this.conn = DBUtil.getConnection("211.63.89.42", "Project", "JAVA1234");
 		out = new UtilPrint();
 	}
 
@@ -53,7 +58,7 @@ public class AdminDAO {
 
 			stat.executeUpdate();
 		} catch (Exception e) {
-			System.out.println("AdminDAO.systemError :" + e.toString());
+			out.result("에러가 발생했습니다.");
 		}
 
 	}
@@ -83,7 +88,8 @@ public class AdminDAO {
 			out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
 			systemError("오라클에러", "AdminDAO.auth()");
 		} catch (Exception e) {
-			out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
+
+out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
 			systemError("알수없는에러", "AdminDAO.auth()");
 		}
 
@@ -234,10 +240,12 @@ public class AdminDAO {
 
 			return list;
 		} catch (SQLSyntaxErrorException e) {
+			
 			out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
 			systemError("오라클에러", "AdminDAO.subject()");
 		} catch (Exception e) {
 			out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
+			
 			systemError("알수없는에러", "AdminDAO.subject()");
 		}
 		return null;
@@ -272,6 +280,7 @@ public class AdminDAO {
 			out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
 			systemError("오라클에러", "AdminDAO.publisher()");
 		} catch (Exception e) {
+			
 			out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
 			systemError("알수없는에러", "AdminDAO.publisher()");
 		}
@@ -298,9 +307,11 @@ public class AdminDAO {
 
 			return stat.executeUpdate();
 		} catch (SQLSyntaxErrorException e) {
+			
 			out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
 			systemError("오라클에러", "AdminDAO.textBookApplicationWrite()");
 		} catch (Exception e) {
+			
 			out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
 			systemError("알수없는에러", "AdminDAO.textBookApplicationWrite()");
 		}
@@ -340,9 +351,11 @@ public class AdminDAO {
 			return list;
 
 		} catch (SQLSyntaxErrorException e) {
+			
 			out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
 			systemError("오라클에러", "AdminDAO.list()");
 		} catch (Exception e) {
+			
 			out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
 			systemError("알수없는에러", "AdminDAO.list()");
 		}
@@ -372,7 +385,7 @@ public class AdminDAO {
 	         return stat.executeUpdate();
 	         
 	      } catch (Exception e) {
-	         System.out.println("AdminDAO.TeacherRegister()" + e.toString());
+	    	  out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
 	      }
 	      
 	      return 0;
@@ -384,16 +397,16 @@ public class AdminDAO {
 	 * 
 	 * @return 교사 삭제 성공 유무
 	 */
-	public int Remove(String tchId, String tchName) {// 교사 삭제 기능
+	public int Remove(String tchId, String tchssn) {// 교사 삭제 기능
 
 		try {
 			String sql = "select count(*) as cnt from tblTeacher where tchseq = "
-					+ "(select tchseq from tblTeacherLogin where TCHseq = ?)" + "and tchname = ?";
+					+ "(select tchseq from tblTeacherLogin where TCHID= ?)" + "and tchssn = ?";
 
 			stat = conn.prepareStatement(sql);
 
 			stat.setString(1, tchId);
-			stat.setString(2, tchName);
+			stat.setString(2, tchssn);
 
 			ResultSet rs = stat.executeQuery();
 
@@ -403,16 +416,19 @@ public class AdminDAO {
 				if (result > 0) {
 
 					sql = "delete from tblTeacher where tchseq = "
-							+ "(select tchseq from tblTeacherLogin where tchseq = ?) " + " and tchname = ?";
+							+ "(select tchseq from tblTeacherLogin where tchID = ?) " + " and tchssn = ?";
 
 					stat = conn.prepareStatement(sql);
 
 					stat.setString(1, tchId);
-					stat.setString(2, tchName);
+					stat.setString(2, tchssn);
 
 					return stat.executeUpdate();
 
 				} else {
+					for(int i =0 ; i<30; i++) {
+						System.out.print(" ");
+					}
 					System.out.println("해당 교사는 존재하지 않습니다.");
 				}
 
@@ -423,9 +439,11 @@ public class AdminDAO {
 
 		} catch (SQLSyntaxErrorException e) {
 			out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
+			
 			systemError("오라클에러", "AdminDAO.Remove()");
 		} catch (Exception e) {
 			out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
+			
 			systemError("알수없는에러", "AdminDAO.Remove()");
 		}
 		return 0;
@@ -1133,14 +1151,22 @@ public class AdminDAO {
 
 		try {
 
-			String sql = "delete from tblLecture where lectureSeq = ? ";
+			String sql = "delete from tblLectureSubject where lectureSeq = ?";
 
 			PreparedStatement stat = conn.prepareStatement(sql);
 
 			stat.setString(1, lecDTO.getLectureSeq());
+			
+			stat.executeUpdate();
+			
+			sql = "delete from tblLecture where lectureSeq = ?";
+			
+			stat = conn.prepareStatement(sql);
+
+			stat.setString(1, lecDTO.getLectureSeq());
 
 			return stat.executeUpdate();
-
+	
 		} catch (SQLSyntaxErrorException e) {
 			out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
 			systemError("오라클에러", "AdminDAO.LectureRemove()");
@@ -1377,10 +1403,14 @@ public class AdminDAO {
 			}
 			return olist;
 		} catch (SQLSyntaxErrorException e) {
-			out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
+			for(int i =0 ; i<30; i++) {
+				System.out.print(" ");
+			}out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
 			systemError("오라클에러", "AdminDAO.getLecture()");
 		} catch (Exception e) {
-			out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
+			for(int i =0 ; i<30; i++) {
+				System.out.print(" ");
+			}out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
 			systemError("알수없는에러", "AdminDAO.getLecture()");
 		}
 
@@ -1635,12 +1665,12 @@ public class AdminDAO {
 	 */
 	public ArrayList<Object[]> getEmploymentRate(String sel) {
 		String sql = "select (select lectureName from tblLecture where lectureSeq = ?) as 과정명, "
-				+ " (select count(*) from tblStudent s inner join tblCourse c on s.stdSeq = c.stdSeq "
+				+ " round((select count(*) from tblStudent s inner join tblCourse c on s.stdSeq = c.stdSeq "
 				+ "    inner join tblLecture l on l.lectureSeq = c.lectureSeq "
 				+ "        inner join tblStudentManage sm on sm.courseseq = c.courseseq "
 				+ "            where l.lectureSeq = ?)/(select count(*) from tblCourse c inner join tblStudent s on s.stdseq = c.stdSeq "
 				+ "    inner join tblLecture l on l.lectureSeq = c.lectureSeq "
-				+ "        where l.lectureSeq = ?)*100 as 취업률 from dual";
+				+ "        where l.lectureSeq = ?)*100,2) as 취업률 from dual";
 		try {
 			stat = conn.prepareStatement(sql);
 			stat.setString(1, sel);
@@ -3509,11 +3539,11 @@ public class AdminDAO {
 	}
 
 	/**
-	 * 관리자 로그인 기록
+	 * 관리자 로그인 기록 리스트 메서드
 	 * 
-	 * @return 관리자 로그인 기록 리스트 반환
+	 * @return 관리자 로그인 기록 반환
 	 */
-	public ArrayList<LoginDTO> AdminLoginLog() {	
+	public ArrayList<LoginDTO> AdminLoginLog() {
 		ArrayList<LoginDTO> list = new ArrayList<>();
 		
 		try {
@@ -3524,27 +3554,37 @@ public class AdminDAO {
 			ResultSet rs = stat.executeQuery(sql);
 			
 			while(rs.next()) {
-				LoginDTO ldto = new LoginDTO();
+				LoginDTO lDTO = new LoginDTO();
 				
-				ldto.setLogInSeq(rs.getString("loginSeq"));
-				ldto.setLogInCode(rs.getString("loginCode"));
-				ldto.setLogInDate(rs.getString("loginDate"));
-				ldto.setLogoutDate(rs.getString("logoutDate"));
+				lDTO.setLogInSeq(rs.getString("loginSeq"));
+				lDTO.setLogInCode(rs.getString("logincode"));
+				lDTO.setLogInDate(rs.getString("loginDate"));
+				lDTO.setLogOutDate(rs.getString("logoutDate"));
 				
-				list.add(ldto);
+				list.add(lDTO);
 			}
 			
 			return list;
 		} catch (SQLSyntaxErrorException e) {
-			out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
+			for(int i =0 ; i<30; i++) {
+				System.out.print(" ");
+			}out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
 			systemError("오라클에러", "AdminDAO.AdminLoginLog()");
 		} catch (Exception e) {
-			out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
+			for(int i =0 ; i<30; i++) {
+				System.out.print(" ");
+			}out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
 			systemError("알수없는에러", "AdminDAO.AdminLoginLog()");
 		}
+		
 		return null;
 	}
 
+	/**
+	 * 교사 로그인 로그 리스트 메서드
+	 * 
+	 * @return 교사 로그인 로그 리스트 반환
+	 */
 	public ArrayList<LoginDTO> TeacherLoginLog() {
 		ArrayList<LoginDTO> list = new ArrayList<>();
 		
@@ -3556,27 +3596,36 @@ public class AdminDAO {
 			ResultSet rs = stat.executeQuery(sql);
 			
 			while(rs.next()) {
-				LoginDTO ldto = new LoginDTO();
+				LoginDTO lDTO = new LoginDTO();
 				
-				ldto.setLogInSeq(rs.getString("loginSeq"));
-				ldto.setLogInCode(rs.getString("loginCode"));
-				ldto.setLogInDate(rs.getString("loginDate"));
-				ldto.setLogoutDate(rs.getString("logoutDate"));
+				lDTO.setLogInSeq(rs.getString("tchlogSeq"));
+				lDTO.setLogInCode(rs.getString("code"));
+				lDTO.setLogInDate(rs.getString("login"));
+				lDTO.setLogOutDate(rs.getString("logout"));
 				
-				list.add(ldto);
+				list.add(lDTO);
 			}
 			
 			return list;
 		} catch (SQLSyntaxErrorException e) {
-			out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
+			for(int i =0 ; i<30; i++) {
+				System.out.print(" ");
+			}out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
 			systemError("오라클에러", "AdminDAO.TeacherLoginLog()");
 		} catch (Exception e) {
-			out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
+			for(int i =0 ; i<30; i++) {
+				System.out.print(" ");
+			}out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
 			systemError("알수없는에러", "AdminDAO.TeacherLoginLog()");
 		}
 		return null;
 	}
 
+	/**
+	 * 교육생 로그인 로그 리스트 메서드
+	 * 
+	 * @return 교육생 로그인 로그 리스트 반환
+	 */
 	public ArrayList<LoginDTO> StudentLoginLog() {
 		ArrayList<LoginDTO> list = new ArrayList<>();
 		
@@ -3588,23 +3637,27 @@ public class AdminDAO {
 			ResultSet rs = stat.executeQuery(sql);
 			
 			while(rs.next()) {
-				LoginDTO ldto = new LoginDTO();
+				LoginDTO lDTO = new LoginDTO();
 				
-				ldto.setLogInSeq(rs.getString("loginSeq"));
-				ldto.setLogInCode(rs.getString("loginCode"));
-				ldto.setLogInDate(rs.getString("loginDate"));
-				ldto.setLogoutDate(rs.getString("logoutDate"));
+				lDTO.setLogInSeq(rs.getString("stdlogSeq"));
+				lDTO.setLogInCode(rs.getString("code"));
+				lDTO.setLogInDate(rs.getString("login"));
+				lDTO.setLogOutDate(rs.getString("logout"));
 				
-				list.add(ldto);
+				list.add(lDTO);
 			}
 			
 			return list;
 		} catch (SQLSyntaxErrorException e) {
-			out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
-			systemError("오라클에러", "AdminDAO.AdminLoginLog()");
+			for(int i =0 ; i<30; i++) {
+				System.out.print(" ");
+			}out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
+			systemError("오라클에러", "AdminDAO.StudentLoginLog()");
 		} catch (Exception e) {
-			out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
-			systemError("알수없는에러", "AdminDAO.AdminLoginLog()");
+			for(int i =0 ; i<30; i++) {
+				System.out.print(" ");
+			}out.result("문제가 발생하였습니다. 관리자에게 문의해주세요");
+			systemError("알수없는에러", "AdminDAO.StudentLoginLog()");
 		}
 		return null;
 	}

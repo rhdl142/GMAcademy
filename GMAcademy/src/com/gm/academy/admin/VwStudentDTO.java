@@ -1,5 +1,10 @@
 package com.gm.academy.admin;
 
+/**
+ * 뷰 학생 객체...이건또뭐야
+ * @author 3조
+ *
+ */
 public class VwStudentDTO {
 
 	private String lectureseq;
