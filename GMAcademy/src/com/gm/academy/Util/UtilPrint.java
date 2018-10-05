@@ -1,6 +1,7 @@
 package com.gm.academy.Util;
 
 import java.util.Scanner;
+
 import com.gm.academy.MainClass;
 
 public class UtilPrint {
@@ -41,6 +42,11 @@ public class UtilPrint {
 	public final static String[] ADMIN_UPDATETESTQUEST = {"필기문제 수정","실기문제 수정"};
 	public final static String[] LOG_MENU = {"에러로그","로그인로그","로그","돌아가기"};
 	public final static String[] LOGIN_LOG = {"관리자 로그인 로그","교사 로그인 로그","교육생 로그인 로그","돌아가기"};
+
+	//teacher
+	public final static String[] TEACHER_LOGIN= {"강의스케줄 조회","시험관리","성적관리","출결 현황 조회","교사 평가 조회","상담일지","돌아가기"};
+	public final static String[] TEACHER_ATTENDANCE = {"기간별 조회","과정별 조회","돌아가기"};
+
 	
 	//일자 menu
 	public void menu(String[] list) {
@@ -81,12 +87,20 @@ public class UtilPrint {
 		}
 		System.out.println(label);
 		line(UtilPrint.LONG);
+		if(TeacherUtil.loginTeacher!=null&&MainClass.crumb.size()>=3) {
+			TeacherUtil.myPage();
+			bar();
+		}
 	}
 	
 	//사용자 접속중
 	public void header(String[] labels) {
 		for(String label : labels) {
-			System.out.printf("[%s]\t",label);
+			if(labels.equals("\t")) {
+				System.out.printf("%s\t",label);
+				continue;
+			}
+			System.out.printf("%s\t",label);
 		}
 		System.out.println();
 	}
@@ -122,22 +136,6 @@ public class UtilPrint {
 		System.out.println();
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

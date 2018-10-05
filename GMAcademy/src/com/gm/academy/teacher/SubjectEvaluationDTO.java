@@ -10,7 +10,7 @@ public class SubjectEvaluationDTO {
 	public String getEvalsubSeq() {
 		return evalsubSeq;
 	}
-	public void setEvalsubSeq(String evalsubSeq) {
+	public void setEvalsubSeq(String evalsubSeq) { 
 		this.evalsubSeq = evalsubSeq;
 	}
 	public String getTCHSeq() {

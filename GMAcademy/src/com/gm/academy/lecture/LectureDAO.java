@@ -18,7 +18,8 @@ public class LectureDAO {
 
 	public ArrayList<String> getLectureNameList() {
 		String sql = "select lectureName from tblLecture where lectureprogress = '강의중'";
-		try {
+
+		try { 
 			Statement stat = conn.createStatement();
 			ResultSet rs = stat.executeQuery(sql);
 			ArrayList<String> array = new ArrayList<String>();

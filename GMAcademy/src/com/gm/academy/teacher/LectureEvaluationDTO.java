@@ -8,7 +8,7 @@ public class LectureEvaluationDTO {
 	private String lectureSeq;
 	private String courseSeq;
 	
-	public String getEvalLecSeq() {
+	public String getEvalLecSeq() { 
 		return evalLecSeq;
 	}
 	public void setEvalLecSeq(String evalLecSeq) {

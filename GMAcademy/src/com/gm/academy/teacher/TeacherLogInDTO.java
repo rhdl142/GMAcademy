@@ -6,7 +6,7 @@ public class TeacherLogInDTO {
 	private String TCHPW;
 	private String TCHRegdate;
 	public String getTCHSeq() {
-		return TCHSeq;
+		return TCHSeq; 
 	}
 	public void setTCHSeq(String tCHSeq) {
 		TCHSeq = tCHSeq;

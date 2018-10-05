@@ -8,7 +8,7 @@ public class PossibleLecDTO {
 		return lecSeq;
 	}
 	public void setLecSeq(String lecSeq) {
-		this.lecSeq = lecSeq;
+		this.lecSeq = lecSeq; 
 	}
 	public String getSubjectSeq() {
 		return subjectSeq;
