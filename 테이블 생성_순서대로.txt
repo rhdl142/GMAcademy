@@ -1,0 +1,712 @@
+
+--테이블 생성 : 순서대로 테이블 추가
+
+-------------------------------------------------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------------------------------------------------- Create Table
+create table tblTeacher                             --교사 테이블
+(
+    --TCHSeq number primary key,
+    TCHSeq varchar2(15) primary key,
+    TCHName varchar2(100) not null,
+    TCHSsn varchar2(50) not null,
+    TCHTel varchar2(100)
+);
+drop table tblTeacher cascade constraints;
+select *from tblTeacher;
+desc tblTeacher;
+
+
+
+
+create table tblTeacherLogin                    --교사 로그인 테이블
+(
+    TCHSeq varchar2(15) primary key references tblTeacher(TCHSeq),
+    TCHName varchar2(50) not null,
+    TCHPW number not null,
+    TCHRegdate date default(sysdate) not null
+);
+drop table tblTeacherLogin cascade constraints;
+desc tblTeacherLogIn;
+
+
+
+
+create table tblStudent -- 교육생
+(
+    --STDSeq number primary key not null, -- 교육생코드 PK
+    STDSeq varchar2(15) primary key not null,
+    STDName varchar2(50) not null, -- 교육생명
+    STDSsn varchar2(50) not null, -- 주민번호뒷자리
+    STDTel varchar2(100) null, -- 전화번호
+    STDLecCnt number not null -- 수강횟수
+);
+drop table tblStudent cascade constraints;
+desc tblStudent;
+
+
+
+
+create table tblStudentLogIn -- 교육생 로그인
+(
+    --STDSeq number primary key references tblStudent(STDSeq), -- 교육생 코드(PK&FK) 
+    STDSeq varchar2(15) primary key references tblStudent(STDSeq),
+    STDName varchar2(100) not null, -- 교육생 명
+    STDPW number not null, -- 비밀번호
+    STDRegdate date default(sysdate) not null -- 등록일
+);
+drop table tblStudentLogIn cascade constraints;
+desc tblStudentLogIn;
+commit;
+
+
+
+
+create table tblAbsenceRecord -- 근태
+(
+    absenceSeq number primary key not null, -- 근태 번호
+    absenceSituation varchar2(50) not null -- 근태 상황
+);
+select *from tblAbsenceRecord;
+drop table tblAbsenceRecord cascade constraints;
+desc tblAbsenceRecord;
+
+
+
+
+create table tblAttendance -- 출결 ---------------------------------------------------------------------------------------------------------course생성 후 alter
+(
+    attendanceSeq number primary key not null, -- 출결번호
+    onTime date not null, -- 출근 시간
+    offTime date not null, -- 퇴근 시간
+    absenceSeq number references tblAbsenceRecord(absenceSeq) not null
+);
+
+alter table tblAttendance add courseSeq number references tblCourse(courseSeq);
+alter table tblAttendance modify courseSeq not null;
+desc tblAttendance;
+
+
+
+
+create table tblClassroom(      -- 강의실
+    classSeq number primary key,
+    className varchar2(100) not null,
+    classAcceptSTD number not null
+);
+desc tblClassroom;
+commit;
+
+
+
+
+create table tblPublisher --출판사
+(
+    publisherSeq number primary key,
+    publisherName varchar2(100) not null 
+);
+create sequence publisherSeq;
+desc tblPublisher;
+
+
+
+
+create table tblSubject(            --과목테이블
+    subjectSeq varchar2(10)primary key, --과목코드
+    subjectName varchar2(100) not null --과목명
+);
+select *from tblSubject;
+desc tblSubject;
+
+
+
+
+create table tblTextBook(   --교재테이블
+    textBookSeq number primary key,
+    --textBookName varchar2(200) not null,
+    textBookName varchar2(50) not null,
+    textBookWriter varchar2(20) null,
+    textBookPrice number,
+    publisherSeq number references tblPublisher(publisherSeq) not null,
+    subjectSeq varchar2(10) references tblSubject(subjectSeq) not null
+    
+);
+desc tblTextBook;
+alter table tblTextBook modify textBookName varchar2(200);
+--cnt  : 10
+
+
+
+
+create table tblNoteTest(   --필기
+    noteQueSeq number primary key,
+    noteQuestion varchar2(2000) not null,
+    noteDistribution number not null,
+    subjectSeq varchar2(10) references tblSubject(subjectSeq) not null
+);
+desc tblNoteTest;
+
+create table tblNoteTestGrading( --필기 채점
+    --noteQueSeq number references tblNoteTest(noteQueSeq) primary key,
+    noteQandQ number primary key, --seq
+    noteQueSeq number references tblNoteTest(noteQueSeq) not null,
+    noteAnswerPF varchar2(10) not null,
+    courseSeq number references tblCourse(courseSeq) not null
+);
+drop table tblNoteTestGrading;
+desc tblNoteTestGrading;
+
+
+
+create table tblSkillTest(  --실기
+    skillQueSeq number primary key,
+    skillQuestion varchar2(2000) not null,
+    skillDistribution number not null,
+    subjectSeq varchar2(10) references tblSubject(subjectSeq) not null
+);
+desc tblSkillTest;
+
+create table tblSkillTestGrading( --실기 채점
+    --skillQueSeq number references tblSkillTest(skillQueSeq) primary key,
+    skillQandAseq number primary key, --seq
+    skillQueSeq number references tblSkillTest(skillQueSeq) not null, --실기 문제 번호(FK)
+    skillAnswerPF varchar2(10) not null,--실기 문제 정답 여부 -> O, x
+    courseSeq number references tblCourse(courseSeq) not null
+);
+drop table tblSkillTestGrading;
+desc tblSkillTestGrading;
+
+
+
+create table tblPossibleLec --강의 가능 과목
+(
+    lecSeq number primary key,
+    subjectSeq varchar2(10) references tblSubject(subjectSeq) not null,
+    TCHSeq varchar2(15) references tblTeacher(TCHSeq) not null
+);
+desc tblPossibleLec;
+
+
+
+
+create table tblLecture(        -- 과정
+    --lectureSeq number primary key,---
+    lectureSeq varchar2(10) primary key,---
+    lectuerName varchar2(200) not null,
+    lectureStartDate date not null,
+    lectureEndDate date not null,
+    lectureProgress varchar2(50) not null,
+    lectureAcceptSTD number not null,
+    lectureCurrentSTD number not null,
+    classSeq number references tblClassroom(classSeq) not null,
+    TCHSeq varchar(15) references tblTeacher(TCHSeq) not null
+);
+desc tblLecture;
+commit;
+
+
+
+
+create table tblLectureSubject --과정-과목
+(
+    LecSubSeq number primary key,
+    LectureSeq varchar2(10) references tblLecture(lectureSeq) not null,
+    subjectSeq varchar2(10) references tblSubject(subjectSeq) not null,
+    subjectStartDate date not null, 
+    subjectEndDate date not null, 
+    textBookSeq number references tblTextBook(textBookSeq) not null
+);
+select *From tblLectureSubject;
+alter table tblLectureSubject modify textBookSeq null;
+desc tblLectureSubject;
+
+
+
+
+create table tblCourse --수강내역
+(
+    courseSeq number primary key,
+    STDSeq varchar2(15) references tblStudent(STDSeq),
+    lectureSeq varchar2(10) references tblLecture(lectureSeq)
+);
+desc tblCourse;
+alter table tblCourse modify STDSeq not null;
+alter table tblCourse modify lectureSeq not null;
+commit;
+
+
+
+
+create table tblDropOut -- 중도 탈락 
+(
+    dropSeq number primary key not null, -- 번호(PK)
+    dropDate date not null, -- 중도탈락날짜
+    courseSeq number references tblCourse(courseSeq) not null
+);
+desc tblDropOut;
+
+
+
+
+create table tblLectureEvaluation                   --교사과정_평가
+(
+    evalLecSeq number primary key,
+    TCHSeq varchar2(15) references tblTeacher(TCHSeq) not null,
+    evalLecScore number default(0.0) not null,
+    evalLecComment varchar2(4000) default(null),
+    lectureSeq varchar2(10) references tblLecture(lectureSeq) not null,
+    courseSeq number references tblCourse(courseSeq) not null
+);
+desc tblLectureEvaluation;
+
+
+
+
+create table tblSubjectEvaluation                   --교사과목_평가 테이블
+(
+    evalsubSeq number primary key,
+    TCHSeq varchar2(15) references tblTeacher(TCHSeq) not null,
+    evalsubScore number default(0.0) not null,
+    evalsubComment varchar2(4000) default(null),
+    LecSubSeq number references tblLectureSubject(LecSubSeq) not null,
+    courseSeq number references tblCourse(courseSeq) not null
+);
+desc tblSubjectEvaluation;
+
+
+
+
+create table tblCourseRecord -- 상담일지
+(
+    counseSeq number primary key not null, -- 번호(PK)
+    counseRegdate date not null, -- 등록일
+    counseContents varchar2(4000) null, -- 상담내용
+    courseSeq number references tblCourse(courseSeq) not null
+);
+desc tblCourseRecord;
+
+
+
+
+create table tblStudentManage -- 사후관리 
+(
+    ManageSeq number primary key not null, -- 관리번호 (PK)
+    companyName varchar2(100) not null, -- 회사명
+    courseSeq number references tblCourse(courseSeq) not null
+);
+desc tblStudentManage;
+
+
+
+
+create table tblGrade(      -- 성적
+    gradeSeq number primary key,
+    gradeNoteScore number not null,
+    gradeSkillScore number not null,
+    gradeAttendanceScore number not null,
+    LecSubSeq number references tblLectureSubject(LecSubSeq) not null,
+    courseSeq number references tblCourse(courseSeq) not null
+);
+desc tblGrade;
+commit;
+alter table tblGrade modify gradeNoteScore null;
+alter table tblGrade modify gradeSkillScore null;
+alter table tblGrade modify gradeAttendanceScore null;
+
+
+
+
+
+
+--단일 테이블
+create table tblDistribution -- 배점 테이블
+(
+    dstrSeq number primary key not null, -- 배점번호 PK
+    dstrNote number not null, -- 필기배점
+    dstrSkill number not null, -- 실기배점
+    dstrAttendance number not null -- 출결점수
+);
+desc tblDistribution;
+
+
+
+
+desc tblRecommendCompany;
+
+create table tblRecommendCompany -- 추천회사 테이블
+(
+    RecCompanySeq number primary key not null, -- 회사코드
+    RecCompanyName varchar2(50) not null, -- 회사명
+    RecCompanyLocation varchar2(500) null,
+    RecCompanyPayment number null
+);
+
+create table tblAdminLogin -- 관리자 로그인 테이블
+(
+    AdminID varchar2(50) not null, -- 아이디
+    AdminPW number not null -- 비밀번호
+);
+
+create table tblErrorLog -- 에러로그 테이블
+(
+    errorSeq number primary key not null, -- 번호
+    errorCode varchar2(10) null, -- 코드
+    errorContents varchar2(300) null, -- 내용
+    errorDate date null -- 날짜
+);
+
+create table tblLog -- 로그 테이블
+(
+    logSeq number primary key not null, -- 번호
+    logCode varchar2(10) null, -- 코드
+    logContents varchar2(300) null, -- 내용
+    logDate date null -- 날짜
+);
+
+
+
+desc tblAdminLogIn;
+
+desc tblErrorLog;
+
+desc tblLog;
+
+
+
+-------------------------------------------------------------------------------------------------------------------------------------Insert data
+
+-------------------------------------------------------------------------------------------------------------------------------------TblTeacher : 교사
+--(강사코드, 강사명, 전화번호, 주민번호 뒷자리)
+create sequence TCHSeq;
+drop sequence TCHseq;
+
+--cnt = 10
+insert into tblTeacher values ('TC' || TCHSeq.nextval, '곽우신', '010-3358-1157', '1815687');
+insert into tblTeacher values ('TC' || TCHSeq.nextval, '이응수', '010-4865-7844', '1575515');
+insert into tblTeacher values ('TC' || TCHSeq.nextval, '채제원', '010-5161-8445', '1426174');
+insert into tblTeacher values ('TC' || TCHSeq.nextval, '이민종', '010-4865-5625', '1253164');
+insert into tblTeacher values ('TC' || TCHSeq.nextval, '이창익', '010-6233-1108', '1551517');
+insert into tblTeacher values ('TC' || TCHSeq.nextval, '박세인', '010-8520-1256', '1325258');
+insert into tblTeacher values ('TC' || TCHSeq.nextval, '김호진', '010-9357-0287', '1152721');
+insert into tblTeacher values ('TC' || TCHSeq.nextval, '김명선', '010-7733-8579', '2350251');
+insert into tblTeacher values ('TC' || TCHSeq.nextval, '추호진', '010-3233-1168', '1872013');
+insert into tblTeacher values ('TC' || TCHSeq.nextval, '천성일', '010-4244-3655', '1182827');
+
+select *from tblTeacher;
+delete tblTeacher;
+
+
+
+
+-------------------------------------------------------------------------------------------------------------------------------------TblStudent : 교육생
+--(학생코드, 학생 명, 주민번호 뒷자리, 전화번호, 수강횟수)
+create sequence STDSeq;
+drop sequence STDSeq;
+
+--cnt = 50
+insert into tblStudent values ('ST' || STDSeq.nextval,'윤하한','1973811','010-2318-7370',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'이연석','1745656','010-1583-7082',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'윤한아','1362747','010-0505-4360',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'건수인','1130027','010-8883-2577',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'하운세','1822505','010-6535-8398',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'김한기','2367865','010-6673-2163',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'우세송','1997032','010-4525-0644',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'민승현','2072039','010-4959-0174',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'우동김','1050262','010-4088-0846',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'백영연','2611241','010-7532-6094',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'하선민','1437442','010-7007-3024',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'김지미','2290928','010-2664-1482',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'빙서은','2887368','010-8944-5551',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'권지','2668847','010-8971-5634',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'박우시','2083452','010-5508-2116',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'민경찬','1954814','010-7106-5646',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'백진연','1977356','010-4703-7462',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'이필광','1440268','010-2622-8690',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'김기지','1803125','010-3962-6535',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'박형아','1281509','010-9863-0758',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'최세상','1756921','010-4512-6661',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'김한재','2498155','010-2599-3887',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'이인필','1701549','010-2031-1854',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'조지선','1471717','010-5894-2168',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'우김한','2197866','010-1981-8135',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'박원동','2793786','010-2607-6782',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'조지건','1946407','010-6024-2319',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'유선영','2474966','010-6580-9978',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'서용충','1838524','010-5135-2782',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'강송인','1646777','010-8261-5636',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'공동상','1125469','010-0503-4216',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'전필동','1004756','010-8026-3010',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'정은석','1888602','010-6081-1162',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'박열동','2067092','010-4694-8062',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'빙김유','2314019','010-6217-2390',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'우성전','2412519','010-7258-0332',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'이수진','2163597','010-9162-1412',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'류상지','1751317','010-0721-3583',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'서경세','2833162','010-2415-9091',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'신열석','2642200','010-4613-9583',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'홍수연','2564584','010-1223-4300',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'최경상','2029579','010-1386-1908',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'김시신','2385830','010-6592-2681',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'김립','1500925','010-0906-7070',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'박석운','2910260','010-1601-2527',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'김수규','2064772','010-9742-5955',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'홍 시','1647039','010-7061-1849',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'조건우','2940207','010-1980-2644',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'도진천','1075819','010-8017-8459',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'김정서','1459575','010-1884-5966',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'신근윤','1322265','010-5196-5864',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'신민성','2679600','010-8638-5712',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'문형욱','2537187','010-6684-2743',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'박민경','1374448','010-5130-9149',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'최수현','1769236','010-8749-3697',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'송호시','1465900','010-3002-7408',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'윤현지','1154809','010-9792-3596',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'신서찬','2028465','010-9970-8768',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'성원월','2406327','010-2630-4329',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'이규지','2549666','010-2724-5744',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'김민열','1945187','010-2813-0946',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'전김영','2862321','010-8366-1930',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'김연민','1892037','010-0006-4579',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'이장정','1281696','010-8319-0610',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'김필민','1404803','010-7714-5216',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'김미미','1038960','010-6475-0271',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'안민성','1124833','010-9697-5236',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'박미하','1626089','010-1829-3034',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'김미근','1846625','010-3854-0016',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'윤동호','1956887','010-8085-1519',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'조광경','1311296','010-8499-6730',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'이수민','2462681','010-7436-2328',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'이아향','2635266','010-0637-6141',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'정향해','1087898','010-6334-5501',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'이종경','2160936','010-7032-8767',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'서현손','1355646','010-1591-1864',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'우우유','1655074','010-5953-4764',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'김준진','2796339','010-0806-7765',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'이김민','2412041','010-3075-2222',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'홍지철','1736896','010-1419-2004',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'민희경','2674510','010-8208-8006',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'김석지','1912968','010-5729-1481',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'정호장','2363136','010-9206-9665',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'윤석손','1254265','010-0698-1469',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'도은치','1576659','010-5904-4658',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'최규기','2242889','010-8793-0964',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'최충군','1173947','010-1220-8070',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'안예민','2838685','010-4625-2988',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'박기예','2861358','010-4092-1372',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'이세영','1336733','010-1987-9085',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'안상국','1683972','010-2104-7639',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'이한승','2674064','010-2718-3939',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'박열소','2357027','010-2860-3529',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'진민열','1850061','010-5339-0739',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'이형준','2168197','010-4930-6031',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'이해세','1159495','010-1118-0383',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'이영진','2316111','010-3308-2258',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'안창태','2572349','010-6618-1735',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'박진전','1680947','010-7882-9212',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'김미민','2050684','010-6339-2926',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'도김','2326293','010-5012-6231',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'김건현','2391856','010-4100-3916',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'김열진','1510309','010-9593-7198',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'김현해','2287941','010-5462-7359',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'최현김','2192083','010-0773-1003',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'김한손','2124306','010-0573-5233',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'신현희','2692483','010-6194-9051',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'이란경','1787155','010-9002-8373',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'우건진','1705321','010-3883-8690',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'이열호','2033965','010-0126-3726',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'이필장','2344031','010-0037-7273',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'최용민','1689353','010-2286-5673',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'이지아','2796157','010-9340-2585',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'이지현','2480507','010-6457-0009',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'최한종','2146081','010-4433-6323',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'구보이','1655780','010-9750-1590',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'이인지','1476425','010-4779-2229',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'이지이','1019949','010-4540-6510',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'최란재','1505598','010-3041-5419',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'박이윤','2652170','010-7173-0888',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'안영태','2544149','010-7031-3925',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'정길연','1377205','010-9695-2593',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'서건동','2446213','010-4771-3560',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'홍근해','2992937','010-6359-6170',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'이인경','2567467','010-3541-8761',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'조손우','2771748','010-2182-3589',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'박진형','1537177','010-5415-9256',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'김진민','2283030','010-9472-9839',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'김장','1035768','010-3766-9848',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'김연수','2818401','010-3508-3541',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'안순령','1524695','010-4314-7693',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'조태상','1770534','010-6736-2152',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'빙민민','1619936','010-7073-6035',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'최연민','2105853','010-6904-6855',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'김민국','2369461','010-2972-3480',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'김호재','1568133','010-7124-7579',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'전지한','1495958','010-0200-2841',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'김효민','1984055','010-1596-4117',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'민종김','1448110','010-6159-5965',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'류영치','2318728','010-8885-4847',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'유지창','1911566','010-7084-0795',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'빙영우','1118903','010-7642-8570',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'도열재','2563527','010-4168-8675',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'박선현','1317672','010-7360-6162',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'이하진','1788608','010-5011-7241',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'하경연','2151469','010-8435-8457',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'건원수','1215431','010-0379-9529',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'최연선','1248945','010-0411-0129',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'최지은','2371393','010-4306-4295',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'이현민','1596629','010-2301-9396',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'이이필','2894106','010-0789-6157',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'최운령','1312776','010-6721-8967',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'박우민','1710778','010-9670-7422',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'이민현','2502305','010-0284-1899',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'이서건','1062275','010-8932-2233',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'신원선','1446488','010-0136-4937',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'김찬희','2565319','010-2856-1943',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'김동진','1233991','010-5867-2507',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'송령윤','2947992','010-7501-2130',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'윤시용','2525223','010-0117-3292',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'신영동','2577751','010-1277-6974',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'김아민','2687008','010-9895-0440',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'안아종','1067683','010-8162-0083',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'이현건','2467003','010-4916-3282',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'이수석','2537788','010-5262-7383',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'정용민','2962387','010-4306-2484',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'신연현','1349797','010-5815-7500',0);
+insert into tblStudent values ('ST' || STDSeq.nextval,'조상시','2901249','010-4867-0787',0);
+
+select *from tblStudent;
+delete tblStudent;
+commit;
+
+
+
+
+-------------------------------------------------------------------------------------------------------------------------------------tblAbsenceRecord : 근태
+insert into tblAbsenceRecord values (1,'정상');
+insert into tblAbsenceRecord values (2,'지각');
+insert into tblAbsenceRecord values (3,'조퇴');
+insert into tblAbsenceRecord values (4,'외출');
+insert into tblAbsenceRecord values (5,'병가');
+insert into tblAbsenceRecord values (6,'기타');
+
+select *from tblAbsenceRecord;
+
+
+
+
+-------------------------------------------------------------------------------------------------------------------------------------tblClassRoom : 강의실
+--(강의실코드, 강의실 명, 수강 가능 인원)
+create sequence classSeq;
+drop sequence classSeq;
+
+insert into tblClassroom values (classSeq.nextVal, '1강의실', 30);
+insert into tblClassroom values (classSeq.nextval, '2강의실', 30);
+insert into tblClassroom values (classSeq.nextval, '3강의실', 30);
+insert into tblClassroom values (classSeq.nextval, '4강의실', 26);
+insert into tblClassroom values (classSeq.nextval, '5강의실', 26);
+insert into tblClassroom values (classSeq.nextval, '6강의실', 26);
+
+select *from tblClassroom;
+delete tblClassRoom;
+
+
+
+
+-------------------------------------------------------------------------------------------------------------------------------------tblPublisher : 출판사
+--(seq, 출판사 명)
+
+create sequence publisherSeq;
+drop sequence publisherSeq;
+
+insert into tblPublisher values(publisherSeq.nextval, '생능출판사');         --1
+insert into tblPublisher values(publisherSeq.nextval, '이지스퍼블리싱');      --2
+insert into tblPublisher values(publisherSeq.nextval, '도우 출판');         --3
+insert into tblPublisher values(publisherSeq.nextval, '한빛미디어');         --4
+insert into tblPublisher values(publisherSeq.nextval, '오렌지미디어');         --5
+insert into tblPublisher values(publisherSeq.nextval, '디비안(주XDBian)');      --6
+insert into tblPublisher values(publisherSeq.nextval, '길벗');            --7
+insert into tblPublisher values(publisherSeq.nextval, '엑셈');            --8
+insert into tblPublisher values(publisherSeq.nextval, '아티오');         --9
+insert into tblPublisher values(publisherSeq.nextval, '한빛아카데미');         --10
+insert into tblPublisher values(publisherSeq.nextval, '위키북스');         --11
+insert into tblPublisher values(publisherSeq.nextval, '인피니티북스');         --12
+insert into tblPublisher values(publisherSeq.nextval, '제이펍');         --13
+insert into tblPublisher values(publisherSeq.nextval, '에이콘출판');         --14
+insert into tblPublisher values(publisherSeq.nextval, '지앤선');         --15
+insert into tblPublisher values(publisherSeq.nextval, '삼양미디어');         --16
+insert into tblPublisher values(publisherSeq.nextval, '북스홀릭퍼블리싱');      --17
+insert into tblPublisher values(publisherSeq.nextval, '혜지원');         --18
+insert into tblPublisher values(publisherSeq.nextval, '로드북');         --19
+insert into tblPublisher values(publisherSeq.nextval, '한티미디어');         --20
+insert into tblPublisher values(publisherSeq.nextval, '매경출판');         --21
+
+select *from tblPublisher;
+delete tblPublisher;
+commit;
+
+
+
+
+-------------------------------------------------------------------------------------------------------------------------------------tblSubject : 과목 
+--(과목코드, 과목명)
+create sequence subjectSeq;
+drop sequence subjectSeq;
+
+insert into tblSubject values('S' || subjectSeq.nextval,'Window');
+insert into tblSubject values('S' || subjectSeq.nextval,'MaxOS');
+insert into tblSubject values('S' || subjectSeq.nextval,'Linux');
+insert into tblSubject values('S' || subjectSeq.nextval,'Unix');
+insert into tblSubject values('S' || subjectSeq.nextval,'CentOS');
+insert into tblSubject values('S' || subjectSeq.nextval,'Oracle');
+insert into tblSubject values('S' || subjectSeq.nextval,'MariaDB');
+insert into tblSubject values('S' || subjectSeq.nextval,'MongoDB');
+insert into tblSubject values('S' || subjectSeq.nextval,'MySQL');
+insert into tblSubject values('S' || subjectSeq.nextval,'hadoop');
+insert into tblSubject values('S' || subjectSeq.nextval,'Spring');
+insert into tblSubject values('S' || subjectSeq.nextval,'Java');
+insert into tblSubject values('S' || subjectSeq.nextval,'JDBC');
+insert into tblSubject values('S' || subjectSeq.nextval,'Android');
+insert into tblSubject values('S' || subjectSeq.nextval,'Android Studio');
+insert into tblSubject values('S' || subjectSeq.nextval,'cook Android');
+insert into tblSubject values('S' || subjectSeq.nextval,'Swift');
+insert into tblSubject values('S' || subjectSeq.nextval,'코틀린');
+insert into tblSubject values('S' || subjectSeq.nextval,'JQuery');
+insert into tblSubject values('S' || subjectSeq.nextval,'Javascript');
+insert into tblSubject values('S' || subjectSeq.nextval,'CSS3');
+insert into tblSubject values('S' || subjectSeq.nextval,'HTML5');
+insert into tblSubject values('S' || subjectSeq.nextval,'JSP');
+insert into tblSubject values('S' || subjectSeq.nextval,'Node.js');
+insert into tblSubject values('S' || subjectSeq.nextval,'Angular');
+insert into tblSubject values('S' || subjectSeq.nextval,'빅데이터 이론');
+insert into tblSubject values('S' || subjectSeq.nextval,'빅데이터 실습');
+insert into tblSubject values('S' || subjectSeq.nextval,'Python');
+insert into tblSubject values('S' || subjectSeq.nextval,'Django');
+insert into tblSubject values('S' || subjectSeq.nextval,'Flask');
+insert into tblSubject values('S' || subjectSeq.nextval,'네트워크 이론');
+insert into tblSubject values('S' || subjectSeq.nextval,'네트워크 실습');
+insert into tblSubject values('S' || subjectSeq.nextval,'Socket');
+insert into tblSubject values('S' || subjectSeq.nextval,'TCP/IP');
+
+select *from tblSubject;
+delete tblSubject;
+
+
+
+
+-------------------------------------------------------------------------------------------------------------------------------------tblTextBook  : 교재
+--(seq, 교재명, 저자명, 가격, 출판사 코드, 과목코드)
+create sequence textBookSeq;
+drop sequence textBookSeq;
+
+set escape on;
+set define off;
+desc tblTextBook;
+
+insert into tblTextBook values(textBookSeq.nextval, '명품 Java Essential','하운세',30000, 1, 'S12');
+insert into tblTextBook values(textBookSeq.nextval, 'Do it! 자료구조와 함꼐 배우는 알고리즘 입문: 자바 편','김이지',25000, 2, 'S12');
+insert into tblTextBook values(textBookSeq.nextval, '명품 자바 에센셜', '강동원',32000, 1, 'S12');
+insert into tblTextBook values(textBookSeq.nextval, 'JAVA의 정석', '우성진',27800, 3, 'S12');
+insert into tblTextBook values(textBookSeq.nextval, '이것이 자바다','백종원',31000, 4, 'S12');
+insert into tblTextBook values(textBookSeq.nextval, '윤성우의 열혈 Java 프로그래밍','윤성우',29000, 5, 'S12');
+insert into tblTextBook values(textBookSeq.nextval, '자바 프로그래밍(예제로 배우는)', '윤성현',24000, 4, 'S12');
+insert into tblTextBook values(textBookSeq.nextval, '불친절한 SQL 프로그래밍','한동근',31500, 6, 'S6');
+insert into tblTextBook v
